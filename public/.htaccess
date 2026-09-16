@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Don't rewrite index.html itself
+    RewriteRule ^index\.html$ - [L]
+
+    # Don't rewrite existing files
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+
+    # Don't rewrite existing directories
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Send all other routes to React
+    RewriteRule ^ index.html [L]
+</IfModule>
