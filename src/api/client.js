@@ -44,7 +44,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        store.dispatch(logout());
+        store.dispatch(logoutUser());
         // ⛔ DO NOT redirect here – let the app handle it
         return Promise.reject(refreshError);
       } finally {
