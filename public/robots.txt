@@ -1,0 +1,21 @@
+# public/robots.txt
+User-agent: *
+Allow: /
+
+# ─── Disallow sensitive pages ──────────────────────────
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /login/
+Disallow: /signup/
+Disallow: /dashboard/
+Disallow: /profile/
+
+# ─── Allow product and category pages ──────────────────
+Allow: /product/
+Allow: /products/
+Allow: /category/
+Allow: /categories/
+
+# ─── Sitemap location ──────────────────────────────────
+Sitemap: https://yourdomain.com/sitemap.xml

@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+@theme {
+  /* --color-primary: #471396;
+  --color-secondary: #B13BFF;
+  --color-accent: #FFCC00;
+  --color-background: #090040;
+  --color-text: #333333; */
+  
+
+--color-Primary : #14C6D8;
+--color-Primary-Hover : #0FB2C3;
+--color-Dark : #18212A;
+--color-Text : #5F6C7B;
+--color-Border : #E8EEF2;
+--color-Background : #FFFFFF;
+--color-Section : #F8FBFC;
+--color-Success : #22C55E;
+--color-Warning : #F59E0B;
+--color-Danger : #EF4444;
+
+
+   /* Custom breakpoints */
+  
+  --breakpoint-xsm: 280px;
+  --breakpoint-ssm: 320px;
+  --breakpoint-sssm: 375px;
+  --breakpoint-ssssm: 425px;
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-1xl: 1440px;
+  --breakpoint-2xl: 1536px;
+}
+
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 15s linear infinite;
+}
+
+/* Optional: pause animation on hover */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@media print {
+  /* Hide unnecessary elements */
+  .no-print { display: none; }
+  
+  /* Remove backgrounds, shadows, and borders */
+  .bg-white, .dark\:bg-gray-900 { background: white !important; }
+  .shadow-sm, .shadow-lg { box-shadow: none !important; }
+  
+  /* Ensure dark text on white background */
+  .dark\:text-white { color: black !important; }
+  .dark\:text-gray-400 { color: #666 !important; }
+  
+  /* Remove sidebars and navigation */
+  nav, .sidebar, .navbar, footer { display: none !important; }
+  
+  /* Improve spacing */
+  .p-6 { padding: 0 !important; }
+  .mb-6 { margin-bottom: 1rem !important; }
+}
