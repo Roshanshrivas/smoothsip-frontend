@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authService } from '../../services/authService';
 import { fetchCart } from './cartSlice';
 import { fetchWishlist } from './wishlistSlice';
+import { resetRefreshCircuit } from '../../api/client';
 
 // Login Thunk
 export const loginUser = createAsyncThunk(
@@ -126,6 +127,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        resetRefreshCircuit();
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
