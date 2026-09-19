@@ -313,7 +313,6 @@ const TrendingSection = () => {
               WebkitOverflowScrolling: "touch",
               overscrollBehaviorX: "contain",
               willChange: "scroll-position",
-              touchAction: "pan-x",
             }}
           >
             {isLoading
