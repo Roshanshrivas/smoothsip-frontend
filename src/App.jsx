@@ -18,7 +18,7 @@ import ProductsPage from './pages/ProductsPage';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 import { MaintenanceGuard } from './components/MaintenanceGuard';
 import PageTracker from './components/PageTracker';
-
+import ScrollToTop from './components/ScrollToTop';
 import ForgotPassword from './pages/ForgotPassword';
 import VerifyResetOTP from './pages/VerifyResetOTP';
 import ResetPassword from './pages/ResetPassword';
@@ -73,7 +73,7 @@ import Maintenance from './pages/Maintenance';
 
 
 // Lazy load pages
-const Home = lazy(() => import('./pages/Home'));
+import Home from './pages/Home';
 const CustomizePage = lazy(() => import('./pages/CustomizePage'));
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/signup'));
@@ -96,6 +96,7 @@ if (GA4_ID && GA4_ID !== 'YOUR_GA_ID' && GA4_ID !== '') {
 // Layout components
 const PublicLayout = () => (
   <>
+    <ScrollToTop />
     <PageTracker />
     <TopBar />
     <Navbar />
@@ -106,6 +107,7 @@ const PublicLayout = () => (
 
 const AuthLayout = () => (
   <div className="min-h-screen">
+    <ScrollToTop />
     <PageTracker />
     <Navbar />
     <Outlet />
@@ -134,11 +136,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <Home />
-          </Suspense>
-        ),
+        element: <Home />
       },
       {
         path: "/customize/:productId?",
@@ -386,7 +384,7 @@ const router = createBrowserRouter([
 // ─── App Wrapper ──────────────────────────────────
 const AppContent = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, isLoading, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const hasCalled = useRef(false);
   
   useEffect(() => {
@@ -395,7 +393,6 @@ const AppContent = () => {
       dispatch(getCurrentUser());
     }
   }, [dispatch]);
-
   
    useEffect(() => {
     if (isAuthenticated && user) {
@@ -405,15 +402,6 @@ const AppContent = () => {
 
     usePushNotifications();
     useRemovePushToken();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
 
   return <RouterProvider router={router} />;
 };

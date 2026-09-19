@@ -82,3 +82,27 @@
   .p-6 { padding: 0 !important; }
   .mb-6 { margin-bottom: 1rem !important; }
 }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+
+/* src/index.css */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}

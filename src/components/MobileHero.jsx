@@ -75,7 +75,7 @@ export default function MobileEcommerceUI() {
       subtitle: "Premium tumblers for every sip of your day.",
       // Full banner graphic image
       bannerImage:
-        "https://res.cloudinary.com/dbkpwluh0/image/upload/v1783755632/ChatGPT_Image_Jul_11_2026_01_10_16_PM_ilivvu.png", // Replace with your uploaded image URL or local asset path e.g. '/images/banner1.png'
+        "https://res.cloudinary.com/dbkpwluh0/image/upload/v1789723309/ChatGPT_Image_Sep_18_2026_02_51_34_PM_u56l7x.png", // Replace with your uploaded image URL or local asset path e.g. '/images/banner1.png'
       cta: "Shop Now",
       link: "/shop",
     },
@@ -85,7 +85,7 @@ export default function MobileEcommerceUI() {
       title: "Premium Steel. Timeless Design.",
       subtitle: "Eco-friendly tumblers for conscious living.",
       bannerImage:
-        "https://res.cloudinary.com/dbkpwluh0/image/upload/v1784353050/ChatGPT_Image_Jul_18_2026_11_07_14_AM_abspmv.png",
+        "https://res.cloudinary.com/dbkpwluh0/image/upload/v1789724848/ChatGPT_Image_Sep_18_2026_03_15_44_PM_pbnhtb.png",
       cta: "Explore Now",
       link: "/new-arrivals",
     },
@@ -95,7 +95,7 @@ export default function MobileEcommerceUI() {
       title: "Most Loved. Most Refreshing.",
       subtitle: "Join 12,000+ happy customers worldwide.",
       bannerImage:
-        "https://res.cloudinary.com/dbkpwluh0/image/upload/v1786093480/ChatGPT_Image_Jul_9_2026_12_31_38_PM_kgus5z.png",
+        "https://res.cloudinary.com/dbkpwluh0/image/upload/v1789724908/ChatGPT_Image_Sep_18_2026_03_17_53_PM_ljuxu0.png",
       cta: "View Best Sellers",
       link: "/best-sellers",
     },
@@ -119,7 +119,7 @@ export default function MobileEcommerceUI() {
           name: cat.name,
           img: cat.image || "https://via.placeholder.com/150",
           active: idx === 0,
-          id: cat.id,
+          id: cat._id || cat.id,
           slug: cat.slug,
         }));
         setCategories(formatted);
@@ -376,9 +376,26 @@ export default function MobileEcommerceUI() {
 
   const locationInfo = getLocationDisplay();
   const handleLocationChange = () => {
-    if (!isAuthenticated) navigate("/login");
-    else navigate("/dashboard/addresses");
-  };
+  if (!isAuthenticated) {
+    toast.error("Please sign in to add your delivery location", {
+      duration: 3000,
+      icon: "📍",
+      style: {
+        background: "#E9F7F9",
+        color: "#1E293B",
+        border: "1px solid #B8E4EA",
+        borderRadius: "12px",
+        fontSize: "13px",
+        fontWeight: "500",
+        padding: "12px 16px",
+      },
+    });
+    // Small delay so the user reads the toast before the page changes
+    setTimeout(() => navigate("/login"), 700);
+    return;
+  }
+  navigate("/dashboard/addresses");
+};
 
   // ─── Render Inline Search Results ────────────────────────
   const renderSearchResults = () => {
@@ -455,23 +472,23 @@ export default function MobileEcommerceUI() {
     );
   };
   return (
-    <div className="bg-white mb-8 flex justify-center items-center p-0 sm:py-6">
+    <div className="bg-white mb-5 flex justify-center items-center p-0 sm:py-6">
       <div className="w-full sm:w-[390px] bg-white sm:rounded-[40px] shadow-none sm:shadow-2xl overflow-hidden border-0 sm:border border-gray-100 flex flex-col">
         {/* ─── Clean Outlined Search Bar ───────────────────────── */}
-        <div className="px-3 pt-3 pb-2 bg-white">
+        <div className="px-2 pt-3 pb-2 bg-white">
           <div className="relative flex items-center">
             {/* Left Search Icon */}
-            <Search className="absolute left-4 w-5 h-5 text-[#8C98A9] pointer-events-none stroke-[2.2]" />
+            <Search className="absolute left-4 w-4 h-4 text-[#7A8B9E] pointer-events-none stroke-[1.5]" />
 
             {/* Outlined Search Input */}
             <input
               type="text"
-              placeholder="Search for Sarees, Kurtis, Cosmetics, etc."
+              placeholder="Search for Sarees, Kurtis, Cosmetic..."
               value={searchQuery}
               onChange={handleSearchChange}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-              className={`w-full bg-white text-[#1E293B] text-[14px] font- pl-11 pr-10 py-3.5 rounded-xl border border-[#D5DCED] focus:border-[#00A9C0] focus:outline-none placeholder-gray-400 transition-colors duration-200 ${
+              className={`w-full bg-white text-[#1E293B] text-[13px] font-normal pl-11 pr-10 py-2.5 rounded-2xl border border-[#E1E7F0] focus:border-[#00A9C0] focus:outline-none placeholder-[#94A3B8] transition-colors duration-200 ${
                 isSearchFocused
                   ? "border-[#00A9C0] ring-1 ring-[#00A9C0]/20"
                   : ""
@@ -498,37 +515,39 @@ export default function MobileEcommerceUI() {
         </div>
 
         {/* ─── Minimal Deliver To Bar ─── */}
-        <div className="w-full bg-[#14C6D8]/5 px-5 py-2.5 flex items-center justify-between border-b border-gray-100">
-          <button
-            onClick={handleLocationChange}
-            className="flex items-center space-x-2 text-left hover:opacity-80 transition-opacity w-full"
-          >
-            {/* Location Pin Icon */}
-            <div className="flex items-center justify-center flex-shrink-0">
-              <MapPin className="w-4 h-4 text-[#f9f8ff] fill-[#8BAEED]" />
-            </div>
+        <div className="px-2 py-1 bg-white">
+          <div className="w-full rounded-xl bg-[#E9F7F9] px-4 py-2.5 flex items-center justify-between border border-[#DCEFF2]">
+            <button
+              onClick={handleLocationChange}
+              className="flex items-center space-x-2 text-left hover:opacity-80 transition-opacity w-full"
+            >
+              {/* Location Pin Icon */}
+              <div className="flex items-center justify-center flex-shrink-0">
+                <MapPin className="w-4 h-4 text-[#E9F7F9] fill-[#5B7FE8]" />
+              </div>
 
-            {/* Text Label */}
-            <div className="flex items-center space-x-1.5 text-xs text-[#52637A] font-normal truncate">
-              {!isAuthenticated || !defaultAddress ? (
-                <span className="font-medium text-[#1E293B]">
-                  Select delivery location
-                </span>
-              ) : (
-                <>
-                  <span>Delivering to</span>
-                  <span className="font-semibold text-[#1E293B]">
-                    {locationInfo.isAddressPresent
-                      ? locationInfo.fullAddress
-                      : locationInfo.city}
+              {/* Text Label */}
+              <div className="flex items-center space-x-1.5 text-xs text-[#52637A] font-normal truncate">
+                {!isAuthenticated || !defaultAddress ? (
+                  <span className="font-medium text-[#1E293B]">
+                    Select delivery location
                   </span>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <span>Delivering to</span>
+                    <span className="font-semibold text-[#1E293B]">
+                      {locationInfo.isAddressPresent
+                        ? locationInfo.fullAddress
+                        : locationInfo.city}
+                    </span>
+                  </>
+                )}
+              </div>
 
-            {/* Right Chevron Arrow */}
-            <ChevronRight className="w-3.5 h-3.5 text-[#334155] stroke-[2.5] flex-shrink-0 ml-auto" />
-          </button>
+              {/* Right Chevron Arrow */}
+              <ChevronRight className="w-3.5 h-3.5 text-[#334155] stroke-[2.5] flex-shrink-0 ml-auto" />
+            </button>
+          </div>
         </div>
 
         {/* ─── Deliver To Section (unchanged design) ────── */}
@@ -562,45 +581,51 @@ export default function MobileEcommerceUI() {
           </div>
         </div>
 
-        {/* ─── Categories (Dynamic) ────────────────────── */}
-        <div className="px-4 py-3 bg-white">
+        {/* ─── Categories (Dynamic Meesho-style) ────────────────────── */}
+        <div className="px-3 py-3 bg-white border-b border-gray-50">
           {loadingCategories ? (
-            <div className="flex justify-center py-2">
+            <div className="flex justify-center py-4">
               <div className="w-6 h-6 border-2 border-[#00A9C0] border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div className="flex justify-between items-start gap-2 overflow-x-auto no-scrollbar pb-1">
+            <div className="flex items-start gap-4 overflow-x-auto no-scrollbar scroll-smooth px-1 pb-1">
               {categories.map((cat, idx) => (
                 <div
-                  key={idx}
-                  className="flex flex-col items-center flex-shrink-0 w-[44px] group cursor-pointer"
+                  key={cat.id || idx}
+                  onClick={() => {
+                    if (cat.id) navigate(`/allproducts?category=${cat.id}`);
+                  }}
+                  className="flex flex-col items-center flex-shrink-0 w-[64px] group cursor-pointer"
                 >
-                  <div
-                    className={`w-[44px] h-[44px] rounded-full p-[2px] flex items-center justify-center transition-all duration-200 ${cat.active ? "border-2 border-[#00A9C0] shadow-sm" : "border border-transparent group-hover:border-gray-200"}`}
-                  >
+                  {/* Circular Image Container */}
+                  <div className="w-[60px] h-[60px] rounded-full overflow-hidden bg-[#F0F4F8] flex items-center justify-center transition-transform duration-200 active:scale-95">
                     {cat.isGift ? (
-                      <div className="w-full h-full rounded-full bg-[#EBF5F6] flex items-center justify-center text-lg hover:scale-110 transition-transform">
+                      <div className="w-full h-full rounded-full bg-[#EBF5F6] flex items-center justify-center text-2xl">
                         🎁
                       </div>
                     ) : cat.isMore ? (
-                      <div className="w-full h-full rounded-full bg-[#EBF5F6] flex items-center justify-center hover:scale-110 transition-transform">
-                        <div className="grid grid-cols-2 gap-1">
-                          <span className="w-1.5 h-1.5 bg-[#00A9C0] rounded-full"></span>
-                          <span className="w-1.5 h-1.5 bg-[#00A9C0] rounded-full"></span>
-                          <span className="w-1.5 h-1.5 bg-[#00A9C0] rounded-full"></span>
-                          <span className="w-1.5 h-1.5 bg-[#00A9C0] rounded-full"></span>
+                      <div className="w-full h-full rounded-full bg-[#EBF5F6] flex items-center justify-center">
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <span className="w-2 h-2 bg-[#00A9C0] rounded-full"></span>
+                          <span className="w-2 h-2 bg-[#00A9C0] rounded-full"></span>
+                          <span className="w-2 h-2 bg-[#00A9C0] rounded-full"></span>
+                          <span className="w-2 h-2 bg-[#00A9C0] rounded-full"></span>
                         </div>
                       </div>
                     ) : (
                       <img
                         src={cat.img}
                         alt={cat.name}
-                        className="w-full h-full object-cover rounded-full"
+                        className="w-full h-full object-cover object-center"
+                        loading="lazy"
                       />
                     )}
                   </div>
+
+                  {/* Single-line truncated text matching reference image */}
                   <span
-                    className={`text-[10px] font-medium mt-1.5 text-center leading-tight transition-colors ${cat.active ? "text-[#00A9C0]" : "text-gray-700 group-hover:text-[#00A9C0]"}`}
+                    title={cat.name}
+                    className="w-full text-[12px] font-normal text-[#334155] text-center mt-1.5 truncate leading-tight tracking-tight block"
                   >
                     {cat.name}
                   </span>
@@ -616,7 +641,7 @@ export default function MobileEcommerceUI() {
           onMouseEnter={() => setIsHoveringBanner(true)}
           onMouseLeave={() => setIsHoveringBanner(false)}
         >
-          <div className="relative overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 h-[210px]">
+          <div className="relative overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 h-[180px]">
             {/* Slider Track */}
             <div
               className="flex transition-transform duration-700 ease-out h-full"
@@ -625,13 +650,13 @@ export default function MobileEcommerceUI() {
               {bannerSlides.map((slide) => (
                 <div
                   key={slide.id}
-                  className="min-w-full h-full relative flex-shrink-0 bg-cover bg-center overflow-hidden"
+                  className="min-w-full h-full relative flex-shrink-0 bg-cover bg- overflow-hidden"
                   style={{
                     backgroundImage: `url(${slide.bannerImage})`,
                   }}
                 >
                   {/* Subtle overlay for enhanced text readability if image background is bright */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent w-3/4 z-0 pointer-events-none" />
+                  <div className="absolute inset-0 z-0 pointer-events-none" />
 
                   {/* Foreground Text & Action Content */}
                   <div className="relative z-10 p-1 h-full flex flex-col justify-between max-w-[210px]">
@@ -698,7 +723,7 @@ export default function MobileEcommerceUI() {
         </div>
 
         {/* ─── Features / Benefits Footer Bar ──────────── */}
-        <div className="px-2 py-3 mb-4 bg-white">
+        <div className="px-2 py-3 mb-4 bg-white xsm:hidden">
           <div className="bg-[#FAFDFD] border border-[#EAF4F6] rounded-lg p-1 flex items-center justify-between text-center shadow-2xs">
             {/* 1. Free Shipping */}
             <div className="flex flex-col items-center flex-1 border-r border-[#EBF2F4] px-1">

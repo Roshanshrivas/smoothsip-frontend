@@ -106,7 +106,8 @@ export const deleteAccount = createAsyncThunk(
 
 const initialState = {
   user: null,
-  isLoading: true,
+  isLoading: false,
+  isAuthChecked: false,
   isAuthenticated: false,
   error: null,
 };
@@ -156,15 +157,15 @@ const authSlice = createSlice({
       })
       // GET CURRENT USER (RE-HYDRATION)
       .addCase(getCurrentUser.pending, (state) => {
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isAuthChecked = true;
         state.isAuthenticated = true;
         state.user = action.payload;
       })
       .addCase(getCurrentUser.rejected, (state) => {
-        state.isLoading = false;
+        state.isAuthChecked = true;
         state.isAuthenticated = false;
         state.user = null;
       })

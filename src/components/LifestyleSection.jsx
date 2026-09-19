@@ -106,7 +106,7 @@ const LifestyleSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="w-full bg-gradient-to-b from-[#EAF9FB]/30 via-white to-white overflow-hidden py-12 md:py-14">
+      className="w-full bg-gradient-to-b from-[#EAF9FB]/30 via-white to-white overflow-hidden py-6 md:py-14">
       <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
@@ -140,13 +140,13 @@ const LifestyleSection = () => {
               {heading}
             </motion.h2>
             <motion.p
-              className="text-gray-600 text-[15px] sssm:text-base md:text-lg leading-relaxed max-w-md"
+              className="text-gray-600 text-[15px] xsm:m-0 sm:my-6  sssm:text-base md:text-lg leading-relaxed max-w-md"
               variants={textVariants}>
               {subtitle}
             </motion.p>
 
             <motion.div
-              className="grid grid-cols-2 sm:grid-cols-2 gap-3 pt-2"
+              className="grid grid-cols-2 sm:grid-cols-2 sm:gap-3 sm:pt-2"
               variants={containerVariants}
             >
               {features.map((item, idx) => {
@@ -154,7 +154,7 @@ const LifestyleSection = () => {
                 return (
                   <motion.div
                     key={idx}
-                    className="flex items-center gap-1 sm:gap-3"
+                    className="md:flex items-center gap-1 sm:gap-3 xsm:hidden"
                     variants={featureItemVariants}
                   >
                     <div className="w-8 h-8 sm:w-6 sm:h-6 rounded-full bg-[#EAF9FB] flex items-center justify-center flex-shrink-0">
@@ -168,7 +168,7 @@ const LifestyleSection = () => {
 
             <motion.a
               href={ctaLink}
-              className="group mt-4 inline-flex items-center gap-2 bg-[#14C6D8] hover:bg-[#09AFC0] text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+              className="group text-[12px] mt-1 sm:mt-4 inline-flex items-center gap-2 bg-[#14C6D8] hover:bg-[#09AFC0] text-white font-semibold px-4 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"

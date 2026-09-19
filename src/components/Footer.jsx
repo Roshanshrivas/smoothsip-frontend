@@ -20,7 +20,7 @@ const Footer = () => {
 
   const quickLinks = [
     { name: "Home", path: "/" },
-    { name: "Shop", path: "/shop" },
+    { name: "Shop", path: "/allproducts" },
     { name: "Customize", path: "/customize" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
@@ -37,7 +37,7 @@ const Footer = () => {
   const socialLinks = [
     { icon: <FiFacebook />, url: "https://facebook.com", label: "Facebook", color: "#1877F2" },
     { icon: <FiTwitter />, url: "https://twitter.com", label: "Twitter", color: "#1DA1F2" },
-    { icon: <FiInstagram />, url: "https://instagram.com", label: "Instagram", color: "#E4405F" },
+    { icon: <FiInstagram />, url: "https://www.instagram.com/smoothsip.co?stkn=YW0xMDB4Nzk1bjBj", label: "Instagram", color: "#E4405F" },
     { icon: <FiYoutube />, url: "https://youtube.com", label: "YouTube", color: "#FF0000" },
   ];
 

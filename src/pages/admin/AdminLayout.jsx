@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import { Menu } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
 import Header from "../../components/admin/Header";
-import { Menu } from "lucide-react";
 import PageTracker from "../../components/PageTracker";
+import ScrollToTop from '../../components/ScrollToTop';
 
 const AdminLayout = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -24,6 +25,7 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <ScrollToTop />
       <PageTracker />
       {/* Mobile header with menu button */}
       <div className="lg:hidden bg-white dark:bg-gray-900 shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-20 border-b border-gray-200 dark:border-gray-800">

@@ -17,6 +17,7 @@ import toast from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { logoutUser, selectUser } from '../store/slices/authSlice';
+import ScrollToTop from '../components/ScrollToTop';
 
 const navItems = [
   { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard/overview' },
@@ -53,6 +54,7 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+      <ScrollToTop /> 
       <Navbar />
 
       <div className="flex-1 py-4 px-4">

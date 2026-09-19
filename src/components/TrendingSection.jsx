@@ -1,6 +1,6 @@
 // src/components/TrendingSection.jsx
-import React, { useRef, useState, useEffect } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
@@ -8,10 +8,10 @@ import { productService } from "../services/productService";
 
 // ─── Fallback static data ──────────────────────────
 const fallbackProducts = [
-  // ... (your original Trending products array)
   {
     id: 1,
-    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779190990/imgi_1001_8901372268840_2_p0mioc.jpg",
+    image:
+      "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779190990/imgi_1001_8901372268840_2_p0mioc.jpg",
     title: "Matte Black 24oz",
     price: 600,
     oldPrice: 750,
@@ -20,166 +20,233 @@ const fallbackProducts = [
     bg: "#fff5f2",
     discount: 20,
   },
-  // ... add all the others
 ];
+
+// ─── Timing & Constants ────────────────────────────
+const isTouchDevice =
+  typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+const AUTOPLAY_INTERVAL = isTouchDevice ? 3500 : 4500;
+const RESUME_DELAY = 5000;
+const GAP_PX = 20;
+
+// ─── Skeleton Card ─────────────────────────────────
+const SkeletonCard = () => (
+  <div className="flex-shrink-0 basis-[78%] xs:basis-[60%] sm:basis-[46%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.5%]">
+    <div className="w-full rounded-2xl bg-white shadow-sm overflow-hidden">
+      <div
+        className="aspect-square bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 bg-[length:200%_100%]"
+        style={{ animation: "shimmer 1.6s linear infinite" }}
+      />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+        <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+        <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
+      </div>
+    </div>
+  </div>
+);
 
 const TrendingSection = () => {
   const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const scrollRef = useRef(null);
-  const autoScrollInterval = useRef(null);
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+  const autoTimer = useRef(null);
+  const resumeTimer = useRef(null);
+  const pausedRef = useRef(false);
 
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
+  // ─── Data Fetching (Original Logic Preserved) ─────
   useEffect(() => {
+    let cancelled = false;
     const fetchTrending = async () => {
       try {
         setIsLoading(true);
         const data = await productService.getProducts({ tag: "TRENDING", limit: 8 });
-        if (data.products && data.products.length > 0) {
+        if (cancelled) return;
+        if (data?.products && data.products.length > 0) {
           setProducts(data.products);
         } else {
           setProducts(fallbackProducts);
         }
       } catch (error) {
         console.error("Failed to fetch trending:", error);
-        setProducts(fallbackProducts);
+        if (!cancelled) setProducts(fallbackProducts);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
+
     fetchTrending();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // ─── Carousel logic (original) ──────────────────────
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === "left" ? -320 : 320;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
-
-  const checkScrollButtons = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 15);
-    }
-  };
-
-  const startAutoScroll = () => {
-    if (autoScrollInterval.current) clearInterval(autoScrollInterval.current);
-    autoScrollInterval.current = setInterval(() => {
-      if (!isPaused && scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 10) {
-          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          scrollRef.current.scrollBy({ left: 320, behavior: "smooth" });
-        }
-      }
-    }, 5000);
-  };
+  // ─── Arrow Visibility ────────────────────────────
+  const updateArrows = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
 
   useEffect(() => {
-    startAutoScroll();
+    const el = scrollRef.current;
+    if (!el) return;
+    updateArrows();
+    el.addEventListener("scroll", updateArrows, { passive: true });
+    window.addEventListener("resize", updateArrows);
     return () => {
-      if (autoScrollInterval.current) clearInterval(autoScrollInterval.current);
+      el.removeEventListener("scroll", updateArrows);
+      window.removeEventListener("resize", updateArrows);
     };
-  }, [isPaused]);
+  }, [products, updateArrows]);
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (container) {
-      checkScrollButtons();
-      container.addEventListener("scroll", checkScrollButtons);
-      window.addEventListener("resize", checkScrollButtons);
-      return () => {
-        container.removeEventListener("scroll", checkScrollButtons);
-        window.removeEventListener("resize", checkScrollButtons);
-      };
+  // ─── Scroll Step Calculation ─────────────────────
+  const getStep = () => {
+    const el = scrollRef.current;
+    if (!el) return 300;
+    const first = el.firstElementChild;
+    return (first ? first.getBoundingClientRect().width : 280) + GAP_PX;
+  };
+
+  const clearTimers = () => {
+    if (autoTimer.current) {
+      clearTimeout(autoTimer.current);
+      autoTimer.current = null;
     }
-  }, [products]);
-
-  // ─── Drag handlers ──────────────────────────────────
-  const handleDragStart = (e) => {
-    const pageX = e.pageX ?? e.touches[0]?.pageX;
-    if (!pageX) return;
-    setIsDragging(true);
-    setStartX(pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-    setIsPaused(true);
+    if (resumeTimer.current) {
+      clearTimeout(resumeTimer.current);
+      resumeTimer.current = null;
+    }
   };
 
-  const handleDragMove = (e) => {
-    if (!isDragging) return;
-    const pageX = e.pageX ?? e.touches[0]?.pageX;
-    if (!pageX) return;
-    e.preventDefault();
-    const x = pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.2;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
+  const pauseAuto = useCallback(() => {
+    pausedRef.current = true;
+    if (autoTimer.current) clearTimeout(autoTimer.current);
+  }, []);
+
+  const scheduleResume = useCallback(() => {
+    if (resumeTimer.current) clearTimeout(resumeTimer.current);
+    resumeTimer.current = setTimeout(() => {
+      pausedRef.current = false;
+    }, RESUME_DELAY);
+  }, []);
+
+  // ─── Autoplay Engine ─────────────────────────────
+  useEffect(() => {
+    if (isLoading || products.length === 0) return;
+
+    const tick = () => {
+      const el = scrollRef.current;
+
+      if (!el || pausedRef.current) {
+        autoTimer.current = setTimeout(tick, AUTOPLAY_INTERVAL);
+        return;
+      }
+
+      const step = getStep();
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - step * 0.6;
+
+      el.scrollBy({ left: atEnd ? -el.scrollWidth : step, behavior: "smooth" });
+
+      autoTimer.current = setTimeout(tick, AUTOPLAY_INTERVAL);
+    };
+
+    autoTimer.current = setTimeout(tick, AUTOPLAY_INTERVAL);
+    return () => {
+      if (autoTimer.current) clearTimeout(autoTimer.current);
+    };
+  }, [isLoading, products.length]);
+
+  useEffect(() => () => clearTimers(), []);
+
+  // ─── Manual Controls ─────────────────────────────
+  const scrollByCard = (dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    pauseAuto();
+    el.scrollBy({ left: dir === "left" ? -getStep() : getStep(), behavior: "smooth" });
+    scheduleResume();
   };
 
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    setIsPaused(false);
+  // ─── Pointer Drag System ─────────────────────────
+  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
+
+  const onPointerDown = (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    drag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft, moved: false, id: e.pointerId };
+    el.style.cursor = "grabbing";
+    el.style.userSelect = "none";
+    try {
+      el.setPointerCapture(e.pointerId);
+    } catch {}
+    pauseAuto();
   };
 
-  // ─── Animation variants ──────────────────────────────
-  const headerVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", damping: 12 } },
+  const onPointerMove = (e) => {
+    const d = drag.current;
+    if (!d.active) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 4) d.moved = true;
+    el.scrollLeft = d.startLeft - dx;
   };
 
-  const cardContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+  const endDrag = () => {
+    const d = drag.current;
+    if (!d.active) return;
+    const el = scrollRef.current;
+    if (el) {
+      el.style.cursor = "";
+      el.style.userSelect = "";
+      try {
+        el.releasePointerCapture(d.id);
+      } catch {}
+    }
+    d.active = false;
+    scheduleResume();
   };
 
-  const cardVariants = {
-    hidden: { opacity: 0, x: 30 },
-    visible: { opacity: 1, x: 0, transition: { type: "spring", damping: 12 } },
+  const onClickCapture = (e) => {
+    if (drag.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      drag.current.moved = false;
+    }
   };
-
-  if (isLoading) {
-    return (
-      <div className="w-full py-12 md:py-20 bg-gradient-to-b from-blue-50/40 via-white to-white">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center h-40">
-            <div className="w-8 h-8 border-4 border-[#00C2D6] border-t-transparent rounded-full animate-spin" />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <section ref={sectionRef} className="w-full py-2 sm:py-12 bg-gradient-to-b from-blue-50/40 via-white to-white overflow-hidden">
+    <section className="w-full py-4 sm:py-12 bg-gradient-to-b from-blue-50/40 via-white to-white overflow-hidden">
       <div className="w-full mx-auto px-3 sm:px-4 lg:px-6">
+        
+        {/* Header */}
         <motion.div
-          className="flex flex-row sm:flex-row justify-between items-center mb-5 sm:mb-10 gap-4"
-          variants={headerVariants}
-          initial="hidden"
-          whileInView="visible"
+          className="flex flex-row justify-between items-center mb-5 sm:mb-10 gap-4"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
+          transition={{ type: "spring", damping: 14 }}
         >
           <div className="text-left">
-            <h2 className="text-[21px] sm:text-3xl md:text-4xl font-bold text-gray-900">Trending Now</h2>
-            {/* <p className="text-gray-500 mt-1 text-sm md:text-base">See what's hot in the world of tumblers</p> */}
+            <h2 className="text-[25px] sm:text-3xl md:text-4xl font-bold md:font-extrabold text-gray-900">
+              Trending <span className="text-[#00C2D6]">Now</span>
+            </h2>
+            <p className="text-gray-500 mt-1 text-sm md:text-base hidden md:block">
+              See what's hot in the world of tumblers
+            </p>
           </div>
+
           <motion.button
             onClick={() => navigate("/allproducts")}
-            className="flex items-center text-[12px] sm:text-[14px] gap-1 sm:gap-2 sm:border border-gray-200 sm:px-5 sm:py-2.5 rounded-full text-[#00C2D6] sm:text-gray-700 font-medium hover:bg-gray-900 hover:text-white transition-all"
+            className="flex items-center text-[12px] sm:text-[14px] gap-1 sm:gap-2 sm:border border-[#00C2D6] sm:px-5 sm:py-2.5 rounded-full text-[#00a8bb] sm:text-[#00C2D6] font-medium hover:bg-gray-900 hover:text-white transition-all"
             whileHover={{ scale: 1.02, backgroundColor: "#111", color: "#fff" }}
             whileTap={{ scale: 0.98 }}
           >
@@ -187,64 +254,86 @@ const TrendingSection = () => {
           </motion.button>
         </motion.div>
 
+        {/* Carousel Container */}
         <div
           className="relative"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
+          onMouseEnter={pauseAuto}
+          onMouseLeave={scheduleResume}
         >
+          {/* Left arrow */}
           <AnimatePresence>
-            {showLeftArrow && (
+            {canScrollLeft && (
               <motion.button
-                initial={{ opacity: 0, x: -20 }}
+                key="left"
+                initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                onClick={() => scroll("left")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all -ml-4 lg:-ml-5 cursor-pointer"
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.18 }}
+                onClick={() => scrollByCard("left")}
+                aria-label="Scroll left"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 hidden sm:flex items-center justify-center hover:bg-gray-900 hover:text-white transition-colors -ml-3 lg:-ml-5 cursor-pointer"
               >
                 <FiChevronLeft size={22} />
               </motion.button>
             )}
           </AnimatePresence>
+
+          {/* Right arrow */}
           <AnimatePresence>
-            {showRightArrow && (
+            {canScrollRight && (
               <motion.button
-                initial={{ opacity: 0, x: 20 }}
+                key="right"
+                initial={{ opacity: 0, x: 12 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                onClick={() => scroll("right")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all -mr-4 lg:-mr-5 cursor-pointer"
+                exit={{ opacity: 0, x: 12 }}
+                transition={{ duration: 0.18 }}
+                onClick={() => scrollByCard("right")}
+                aria-label="Scroll right"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 hidden sm:flex items-center justify-center hover:bg-gray-900 hover:text-white transition-colors -mr-3 lg:-mr-5 cursor-pointer"
               >
                 <FiChevronRight size={22} />
               </motion.button>
             )}
           </AnimatePresence>
 
-          <motion.div
+          {/* Track */}
+          <div
             ref={scrollRef}
-            className="flex overflow-x-auto gap-5 pb-6 scroll-smooth hide-scrollbar cursor-grab active:cursor-grabbing"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            variants={cardContainerVariants}
-            initial="visible"
-            animate="visible"
-            onMouseDown={handleDragStart}
-            onMouseMove={handleDragMove}
-            onMouseUp={handleDragEnd}
-            onMouseLeave={handleDragEnd}
-            onTouchStart={handleDragStart}
-            onTouchMove={handleDragMove}
-            onTouchEnd={handleDragEnd}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onClickCapture={onClickCapture}
+            onTouchStart={pauseAuto}
+            onTouchEnd={scheduleResume}
+            className="flex gap-5 overflow-x-auto pb-6 hide-scrollbar cursor-grab active:cursor-grabbing"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+              overscrollBehaviorX: "contain",
+              willChange: "scroll-position",
+              touchAction: "pan-x",
+            }}
           >
-            {products.map((product) => (
-              <motion.div
-                key={product.id}
-                className="min-w-[200px] sm:min-w-[270px] md:min-w-[275px] flex-shrink-0 w-full max-w-[275px]"
-                variants={cardVariants}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                <ProductCard product={product} displayTag="TRENDING" />
-              </motion.div>
-            ))}
-          </motion.div>
+            {isLoading
+              ? Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
+              : products.map((product, i) => (
+                  <motion.div
+                    key={product.id || product._id || i}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.35,
+                      ease: "easeOut",
+                      delay: Math.min(i * 0.05, 0.3),
+                    }}
+                    className="flex-shrink-0 basis-[78%] xs:basis-[60%] sm:basis-[46%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.5%]"
+                  >
+                    <ProductCard product={product} displayTag="TRENDING" />
+                  </motion.div>
+                ))}
+          </div>
         </div>
       </div>
     </section>

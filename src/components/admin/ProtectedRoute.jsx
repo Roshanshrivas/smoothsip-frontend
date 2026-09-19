@@ -6,10 +6,10 @@ import LoadingSpinner from '../LoadingSpinner';
 
 const ProtectedRoute = ({ allowedRoles = [] }) => {
   const location = useLocation();
-  const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, isAuthChecked } = useSelector((state) => state.auth);
 
   // 1. Wait for auth state re-hydration before evaluating protection
-  if (isLoading) {
+  if (!isAuthChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <LoadingSpinner />

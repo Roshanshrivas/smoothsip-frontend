@@ -151,11 +151,11 @@ const ProductCard = ({ product, displayTag = null }) => {
       {/* CONTENT */}
       <div className="p-2 sm:p-4 flex flex-col flex-grow">
         {/* TITLE */}
-        <h3 className="text-[16px] sm:text-[17px] font-bold text-gray-800/90 line-clamp-2 mb-1">
+        <h3 className="text-[16px] sm:text-[17px] font-bold text-gray-800/90 line-clamp-2">
           {product.title}
         </h3>
         {/* RATING */}
-        <div className="flex items-center gap-1 mb-2">
+        <div className="flex items-center gap-1 mb-1">
           <div className="flex text-[20px]">
             {renderStars(product.rating)}
           </div>
@@ -168,7 +168,7 @@ const ProductCard = ({ product, displayTag = null }) => {
           <span className="text-[19px] sm:text-xl md:text-2xl font-bold text-[#21BFC8]">
             ₹{product.price}
           </span>
-          <span className="text-gray-400 line-through text-sm">
+          <span className="text-gray-500 line-through decoration-1 text-[18px]">
             ₹{product.oldPrice}
           </span>
         </div>
