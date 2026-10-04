@@ -22,6 +22,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ForgotPassword from './pages/ForgotPassword';
 import VerifyResetOTP from './pages/VerifyResetOTP';
 import ResetPassword from './pages/ResetPassword';
+import PolicyPage from './pages/PolicyPage';
 
 import AdminLayout from './pages/admin/AdminLayout';        
 import AdminDashboard from './pages/admin/AdminDashboard'; 
@@ -49,12 +50,14 @@ import AdminReviews from './pages/admin/AdminReviews';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminContacts from './pages/admin/AdminContacts';
+import AdminBulkInquiries from './pages/admin/AdminBulkInquiries';
 
 import OrderPrint from './components/admin/orders/OrderPrint';
 import CustomProductForm from './components/admin/customization/CustomProductForm';
 import CustomProductDetail from './components/admin/customization/CustomProductDetail';
 import BroadcastForm from './components/admin/broadcast/BroadcastForm';
 import { usePushNotifications, useRemovePushToken } from './hooks/usePushNotifications';
+
 
 // ─── USER DASHBOARD IMPORTS ────────────────────────
 import UserDashboard from './pages/UserDashboard';
@@ -81,7 +84,7 @@ const ProductDetailPage = lazy(() => import('./pages/ProductDetails'));
 const CartPage = lazy(() => import('./pages/CartPage'));
 const Checkout  = lazy(() => import('./pages/Checkout'));
 const OrderSuccess  = lazy(() => import('./pages/OrderSuccess'));
-
+const BulkOrders = lazy(() => import('./pages/BulkOrders'));
 
 // ─── Google Analytics Setup ──────────────────────────────
 const GA4_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -136,7 +139,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/customize/:productId?",
@@ -187,6 +190,54 @@ const router = createBrowserRouter([
         ),
       },
       { path: "/track/order/:id", element: <TrackOrder /> },
+      {
+        path: "/bulk-orders",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <BulkOrders />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/privacy-policy",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <PolicyPage slug="privacy-policy" />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/refund-policy",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <PolicyPage slug="refund-policy" />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/shipping-policy",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <PolicyPage slug="shipping-policy" />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/cancellation-policy",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <PolicyPage slug="cancellation-policy" />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/terms-of-service",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <PolicyPage slug="terms-of-service" />
+          </Suspense>
+        ),
+      },
     ],
   },
   {
@@ -369,6 +420,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingSpinner />}>
                 <AdminContacts />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/bulk-inquiries",
+            element: (
+              <Suspense fallback={<LoadingSpinner />}>
+                <AdminBulkInquiries />
               </Suspense>
             ),
           },

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import adminlogo from "../../assets/Adminlogo.png"
+import { FiPackage } from "react-icons/fi";
 
 const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave, isMobile, onMobileClose }) => {
   const location = useLocation();
@@ -80,6 +81,7 @@ const Sidebar = ({ isExpanded, onMouseEnter, onMouseLeave, isMobile, onMobileClo
     { name: "Reviews", path: "/admin/reviews", icon: <Star size={20} />, section: "management" },
     { name: "Notifications", path: "/admin/notifications", icon: <Bell size={20} />, section: "management" },
     { name: "Contact Messages", path: "/admin/contacts", icon: <MessageSquare size={20} />, section: "management" },
+    { name: "Bulk Inquiries", path: "/admin/bulk-inquiries", icon: <FiPackage size={20} />, section: "management" },
     { name: "Settings", path: "/admin/settings", icon: <Settings size={20} />, section: "management" },
   ];
 

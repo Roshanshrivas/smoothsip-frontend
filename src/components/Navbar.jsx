@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoSearchSharp } from "react-icons/io5";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { HiOutlineShoppingBag, HiMenu, HiX } from "react-icons/hi";
-import { FiLogOut, FiUser, FiPackage, FiHeart as FiHeartOutline } from "react-icons/fi";
+import { FiLogOut, FiUser, FiPackage, FiHeart as FiHeartOutline, FiMapPin } from "react-icons/fi";
 import CartDrawer from "./CartDrawer";
 import WishlistDrawer from "./WishlistDrawer";
 import SearchModal from "./SearchModal";
@@ -266,7 +266,7 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
-              <ul className="flex space-x-7 font-medium">
+              <ul className="flex space-x-8 font-medium">
                 <li>
                   <NavLink to="/" className={navLinkClass} end>
                     Home
@@ -279,17 +279,17 @@ const Navbar = () => {
                 </li>
                 <li>
                   <NavLink to="/customize" className={navLinkClass}>
-                    Customize
+                    Personalize It
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/about" className={navLinkClass}>
-                    About us
+                  <NavLink to="/bulk-orders" className={navLinkClass}>
+                    Bulk & Custom Orders
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/contact" className={navLinkClass}>
-                    Contact
+                    Track Order
                   </NavLink>
                 </li>
               </ul>
@@ -657,35 +657,35 @@ const Navbar = () => {
                         <div className="w-9 h-9 rounded-xl bg-[#F4EBFB] flex items-center justify-center text-[#A663EC]">
                           <FiEdit3 className="text-lg" />
                         </div>
-                        <span className="text-[14px]">Customize</span>
+                        <span className="text-[14px]">Personalize It</span>
                       </div>
                       <FiChevronRight className="text-lg text-gray-400" />
                     </Link>
 
                     <Link
-                      to="/about"
+                      to="/bulk-orders"
                       onClick={closeMenu}
                       className="flex items-center justify-between p-3 rounded-2xl hover:bg-gray-50 text-[#1E293B] transition font-semibold active:scale-[0.98]"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-[#E7F8EE] flex items-center justify-center text-[#2ECC71]">
-                          <FiInfo className="text-lg" />
+                          <FiPackage className="text-lg" />
                         </div>
-                        <span className="text-[14px]">About Us</span>
+                        <span className="text-[14px]">Bulk & Custom Orders</span>
                       </div>
                       <FiChevronRight className="text-lg text-gray-400" />
                     </Link>
 
                     <Link
-                      to="/contact"
+                      to="/"
                       onClick={closeMenu}
                       className="flex items-center justify-between p-3 rounded-2xl hover:bg-gray-50 text-[#1E293B] transition font-semibold active:scale-[0.98]"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-[#FDEEEE] flex items-center justify-center text-[#E74C3C]">
-                          <FiPhone className="text-lg" />
+                          <FiMapPin className="text-lg" />
                         </div>
-                        <span className="text-[14px]">Contact</span>
+                        <span className="text-[14px]">Track Order</span>
                       </div>
                       <FiChevronRight className="text-lg text-gray-400" />
                     </Link>

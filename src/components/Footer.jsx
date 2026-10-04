@@ -21,17 +21,18 @@ const Footer = () => {
   const quickLinks = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/allproducts" },
-    { name: "Customize", path: "/customize" },
+    { name: "Personalize It", path: "/customize" },
+    { name: "Bulk & Custom Orders", path: "/bulk-orders" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
 
   const supportLinks = [
-    { name: "FAQ", path: "/faq" },
-    { name: "Shipping Info", path: "/shipping" },
-    { name: "Returns", path: "/returns" },
-    { name: "Privacy Policy", path: "/privacy" },
-    { name: "Terms of Service", path: "/terms" },
+    { name: "Privacy Policy", path: "/privacy-policy" },
+    { name: "Refund Policy", path: "/refund-policy" },
+    { name: "Shipping Policy", path: "/shipping-policy" },
+    { name: "Cancellation Policy", path: "/cancellation-policy" },
+    { name: "Terms of Service", path: "/terms-of-service" },
   ];
 
   const socialLinks = [
