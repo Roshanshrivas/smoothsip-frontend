@@ -1,12 +1,16 @@
 import apiClient from '../api/client';
 
 export const productService = {
+
   // ─── PUBLIC ──────────────────────────────────────────
-  getProducts: async ({ page = 1, limit = 12, category, sort, search, minPrice, maxPrice, color, size, material, inStock, tag }) => {
-    const params = new URLSearchParams({ page, limit, ...(category && { category }), ...(sort && { sortBy: sort === 'price_asc' ? 'price' : sort === 'price_desc' ? 'price' : 'createdAt', sortOrder: sort === 'price_asc' ? 'asc' : 'desc' }), ...(search && { search }), ...(minPrice && { minPrice }), ...(maxPrice && { maxPrice }), ...(color && { color }), ...(size && { size }), ...(material && { material }), ...(inStock !== undefined && { inStock }), ...(tag && { tag }) });
-    const response = await apiClient.get(`/products?${params}`);
-    return response.data;
-  },
+getProducts: async (params = {}) => {
+  const clean = {};
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') clean[k] = v;
+  });
+  const response = await apiClient.get('/products', { params: clean });
+  return response.data;
+},
 
   getProductById: async (id) => {
     const response = await apiClient.get(`/products/${id}`);
@@ -15,6 +19,11 @@ export const productService = {
 
   getCategories: async () => {
     const response = await apiClient.get('/products/categories');
+    return response.data;
+  },
+
+  getAvailableFilters: async () => {
+    const response = await apiClient.get('/products/filters');
     return response.data;
   },
 

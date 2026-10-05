@@ -5,9 +5,9 @@ import { productService } from '../../services/productService';
 // ─── Async Thunks ──────────────────────────────────
 export const fetchProducts = createAsyncThunk(
   'products/fetch',
-  async ({ page = 1, limit = 12, category, sort, search } = {}, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      const data = await productService.getProducts({ page, limit, category, sort, search });
+      const data = await productService.getProducts(filters);
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
@@ -39,6 +39,21 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+// fetch available filters
+export const fetchAvailableFilters = createAsyncThunk(
+  'products/fetchAvailableFilters',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await productService.getAvailableFilters();
+      return data.filters || { colors: [], materials: [], tags: [], sizes: [] };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch filters'
+      );
+    }
+  }
+);
+
 // ─── Slice ─────────────────────────────────────────
 const initialState = {
   items: [],
@@ -48,6 +63,18 @@ const initialState = {
   totalPages: 0,
   currentProduct: null,
   categories: [],
+
+  // ✅ NEW — available filter options from backend
+  availableFilters: {
+    colors: [],
+    materials: [],
+    tags: [],
+    sizes: [],
+  },
+  filtersLoaded: false,
+  isFiltersLoading: false,
+  filtersError: null,
+
   isLoading: false,
   error: null,
 };
@@ -108,6 +135,21 @@ const productsSlice = createSlice({
       .addCase(fetchCategories.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      // ✅ Fetch Available Filters
+      .addCase(fetchAvailableFilters.pending, (state) => {
+        state.isFiltersLoading = true;
+        state.filtersError = null;
+      })
+      .addCase(fetchAvailableFilters.fulfilled, (state, action) => {
+        state.isFiltersLoading = false;
+        state.filtersLoaded = true;
+        state.availableFilters = action.payload;
+      })
+      .addCase(fetchAvailableFilters.rejected, (state, action) => {
+        state.isFiltersLoading = false;
+        state.filtersLoaded = true; // mark as loaded even on error so we don't loop
+        state.filtersError = action.payload;
       });
   },
 });
@@ -121,5 +163,10 @@ export const selectCurrentProduct = (state) => state.products.currentProduct;
 export const selectCategories = (state) => state.products.categories;
 export const selectProductsLoading = (state) => state.products.isLoading;
 export const selectProductsTotalPages = (state) => state.products.totalPages;
+
+// ✅ NEW selectors
+export const selectAvailableFilters = (state) => state.products.availableFilters;
+export const selectFiltersLoaded = (state) => state.products.filtersLoaded;
+export const selectFiltersLoading = (state) => state.products.isFiltersLoading;
 
 export default productsSlice.reducer;

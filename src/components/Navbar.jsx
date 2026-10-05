@@ -288,7 +288,7 @@ const Navbar = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/contact" className={navLinkClass}>
+                  <NavLink to="/track-order" className={navLinkClass}>
                     Track Order
                   </NavLink>
                 </li>
@@ -677,7 +677,7 @@ const Navbar = () => {
                     </Link>
 
                     <Link
-                      to="/"
+                      to="/track-order"
                       onClick={closeMenu}
                       className="flex items-center justify-between p-3 rounded-2xl hover:bg-gray-50 text-[#1E293B] transition font-semibold active:scale-[0.98]"
                     >

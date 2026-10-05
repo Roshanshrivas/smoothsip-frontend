@@ -85,6 +85,8 @@ const CartPage = lazy(() => import('./pages/CartPage'));
 const Checkout  = lazy(() => import('./pages/Checkout'));
 const OrderSuccess  = lazy(() => import('./pages/OrderSuccess'));
 const BulkOrders = lazy(() => import('./pages/BulkOrders'));
+const TrackOrderPublic = lazy(() => import('./pages/TrackOrderPage'));
+
 
 // ─── Google Analytics Setup ──────────────────────────────
 const GA4_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -189,7 +191,14 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      { path: "/track/order/:id", element: <TrackOrder /> },
+      {
+        path: "/track-order",
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <TrackOrderPublic />
+          </Suspense>
+        ),
+      },
       {
         path: "/bulk-orders",
         element: (
