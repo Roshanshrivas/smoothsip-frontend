@@ -5,6 +5,7 @@ import { FiGrid, FiChevronRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { customProductService } from '../services/customProductService';
 import TumblerCustomizer from '../components/TumblerCustomizer';
+import PersonalizedOrderPolicy from '../components/PersonalizedOrderPolicy';
 
 const CustomizePage = () => {
   const { productId } = useParams();

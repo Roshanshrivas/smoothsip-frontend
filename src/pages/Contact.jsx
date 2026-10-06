@@ -192,19 +192,19 @@ const Contact = () => {
     {
       icon: Mail,
       label: "Email",
-      value: "support@tumblerstudio.com",
+      value: "connectsmoothsip@gmail.com",
       sub: "We reply within 24 hours",
     },
     {
       icon: Phone,
       label: "Phone",
-      value: "+91 98765 43210",
+      value: "+91",
       sub: "Mon–Sat, 10 AM – 7 PM",
     },
     {
       icon: MapPin,
       label: "Address",
-      value: "Sector 62, Noida",
+      value: "28/1 Shirdipuram, Mandakini society, Kolar Road, Bhopal (M.P.), 462042",
       sub: "Uttar Pradesh, India - 201301",
     },
     {
@@ -216,7 +216,7 @@ const Contact = () => {
   ];
 
   const socialLinks = [
-    { icon: FaInstagramSquare, label: "Instagram", href: "#" },
+    { icon: FaInstagramSquare, label: "Instagram", href: "https://www.instagram.com/smoothsip.co"},
     { icon: FaFacebook, label: "Facebook", href: "#" },
     { icon: FaTwitterSquare, label: "Twitter", href: "#" },
     { icon: FaYoutube, label: "YouTube", href: "#" },
@@ -488,7 +488,7 @@ const Contact = () => {
             </div>
             <div className="relative h-64 md:h-80 bg-gray-200 dark:bg-gray-800">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.639929740043!2d77.318653775735!3d28.58151977569374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce44c6c0ffd73%3A0xc3be4c3f5b607ff9!2sSector%2062%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2201.9333578133965!2d77.41778721829023!3d23.18463357745719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c43007d942bc7%3A0x1fe81e50e9599373!2sMandakini%20Colony%2C%20Kolar%20Road!5e0!3m2!1sen!2sus!4v1791278400234!5m2!1sen!2sus"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -500,7 +500,7 @@ const Contact = () => {
               />
               <div className="absolute bottom-4 left-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg px-4 py-2 border border-gray-200 dark:border-gray-700">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  📍 Sector 62, Bhopal M.P.
+                  📍 28/1 Shirdipuram, Mandakini society, Kolar Road, Bhopal (M.P.), 462042
                 </p>
               </div>
             </div>
@@ -584,7 +584,7 @@ const Contact = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
-                href="mailto:support@tumblerstudio.com"
+                href="mailto:connectsmoothsip@gmail.com"
                 className="px-8 py-3 bg-white text-[#00C2D6] hover:bg-[#E6F9FA] rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
               >
                 <Mail size={18} /> Email Us

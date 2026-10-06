@@ -223,7 +223,7 @@ const BestSellers = () => {
         >
           <div className="text-left">
             <h2 className="text-[25px] sm:text-3xl md:text-4xl font-bold md:font-extrabold text-gray-900">
-              Best <span className="text-[#02B5D1]">Sellers</span>
+              Featured <span className="text-[#02B5D1]">Products</span>
             </h2>
             <p className="text-gray-500 mt-1 text-sm md:text-base hidden md:block">
               Top picks from our happy customers

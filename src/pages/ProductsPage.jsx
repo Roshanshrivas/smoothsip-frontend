@@ -85,8 +85,9 @@ const SidebarContent = ({
           Reset all
         </button>
       </div>
-
-      <div className="mb-6">
+       
+      {/* Price Range Filter (currently hidden) */}
+      <div className="mb-6 hidden">
         <h3 className="font-bold text-gray-800 text-lg mb-3">Price</h3>
         <input
           type="range"
@@ -200,7 +201,7 @@ const ProductsPage = () => {
     if (!availableFilters) return {};
 
     const sections = {
-      "Quick Filters": availableFilters.tags || [],
+      // "Quick Filters": availableFilters.tags || [],
       Color: availableFilters.colors || [],
       "Size Range": availableFilters.sizes || [],
       Material: availableFilters.materials || [],

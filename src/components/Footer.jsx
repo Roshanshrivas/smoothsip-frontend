@@ -24,7 +24,7 @@ const Footer = () => {
     { name: "Personalize It", path: "/customize" },
     { name: "Bulk & Custom Orders", path: "/bulk-orders" },
     { name: "About Us", path: "/about" },
-    { name: "Contact", path: "/contact" },
+    { name: "Contact Us", path: "/contact" },
   ];
 
   const supportLinks = [
@@ -36,9 +36,9 @@ const Footer = () => {
   ];
 
   const socialLinks = [
+    { icon: <FiInstagram />, url: "https://www.instagram.com/smoothsip.co?stkn=YW0xMDB4Nzk1bjBj", label: "Instagram", color: "#E4405F" },
     { icon: <FiFacebook />, url: "https://facebook.com", label: "Facebook", color: "#1877F2" },
     { icon: <FiTwitter />, url: "https://twitter.com", label: "Twitter", color: "#1DA1F2" },
-    { icon: <FiInstagram />, url: "https://www.instagram.com/smoothsip.co?stkn=YW0xMDB4Nzk1bjBj", label: "Instagram", color: "#E4405F" },
     { icon: <FiYoutube />, url: "https://youtube.com", label: "YouTube", color: "#FF0000" },
   ];
 
@@ -147,18 +147,18 @@ const Footer = () => {
             <ul className="space-y-3 mb-6">
               <li className="flex items-start gap-3 text-sm text-gray-400">
                 <FiMapPin className="mt-0.5 flex-shrink-0 text-[#14C6D8]" />
-                <span>123 Tumbler Street, Mumbai, India</span>
+                <span>28/1 Shirdipuram, Mandakini society, Kolar Road, Bhopal, 462042</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <FiMail className="flex-shrink-0 text-[#14C6D8]" />
                 <a href="mailto:hello@tumblerco.com" className="hover:text-[#14C6D8] transition">
-                  hello@tumblerco.com
+                  connectsmoothsip@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <FiPhone className="flex-shrink-0 text-[#14C6D8]" />
                 <a href="tel:+911234567890" className="hover:text-[#14C6D8] transition">
-                  +91 12345 67890
+                  +91 9999999998
                 </a>
               </li>
             </ul>

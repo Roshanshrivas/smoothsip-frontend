@@ -11,6 +11,8 @@ import {
 } from 'react-icons/fi';
 import { CiUndo, CiRedo } from 'react-icons/ci';
 import { addCustomItemToCart } from '../store/slices/cartSlice';
+import { PersonalizedOrderPolicyCompact } from './PersonalizedOrderPolicy';
+
 
 // ---------- Built‑in patterns ----------
 const createPattern = (type, color = '#ff6b00') => {
@@ -500,6 +502,8 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
         `}
       >
         <div className="p-5">
+          {/* ─── POLICY WARNING (always visible at top of sidebar) ─── */}
+  <PersonalizedOrderPolicyCompact />
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-xl font-bold">Tools</h2>
             <button onClick={() => setSidebarOpen(false)} className="text-gray-500 hover:text-orange-500">

@@ -58,16 +58,16 @@ const DesktopHero = () => {
 
   return (
     <section className="w-full bg-[#09AFBD]/18 overflow-hidden relative">
-      <div className="grid lg:grid-cols-2 min-h-screen items-center">
+      <div className="grid lg:grid-cols-2 min-h-screen items-start">
         {/* Left Content – animated with stagger */}
         <motion.div
-          className="relative z-20 flex justify-center items-center"
+          className="relative z-20 flex justify-center items-start"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={!shouldReduceMotion ? containerVariants : {}}
         >
-          <div className="w-full max-w-full px-6 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-2 sm:py-16 mx-auto lg:mx-0">
+          <div className="w-full max-w-full px-6 sm:px-6 md:px-8 lg:px-10 xl:px-10 py-2 sm:py-16 mx-auto lg:mx-0">
             <motion.div variants={itemVariants}>
               <div className="hidden sm:inline-flex items-center rounded-full border border-[#14C6D8] bg-white/60 backdrop-blur-sm px-4 py-[7px] shadow-sm">
                 <span className="text-[#14C6D8] text-[11px] font-bold tracking-wide uppercase">✨ Premium Quality</span>
@@ -76,22 +76,23 @@ const DesktopHero = () => {
 
             <motion.h1
               variants={itemVariants}
-              className="mt-7 text-[54px] sm:text-[68px] lg:text-[54px] xl:text-[72px] leading-[1.2] font-bold tracking-[-3px] text-[#111111]"
+              className="mt-5 text-[54px] sm:text-[68px] lg:text-[54px] xl:text-[72px] leading-[1.2] font-bold tracking-[-3px] text-[#111111]"
             >
-              Stay <span className="text-[#18C6D9] relative inline-block">
-                Refreshed.
+              From a <span className="text-[#18C6D9] relative inline-block">
+                Mom's
                 <span className="absolute -bottom-2 left-0 w-full h-1 bg-[#14C6D8]/30 rounded-full"></span>
               </span>
               <br />
-              Everywhere <span className="text-[#14C6D8]">You Go.</span>
+              Heart to <span className="text-[#14C6D8]  lg:text-[54px] xl:text-[62px]">Your Everyday.</span>
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="mt-5 text-[#5F5F5F] text-base sm:text-lg max-w-[480px] font-medium leading-relaxed">
-              Premium tumblers designed for work, gym, travel & lifestyle.
+            <motion.p variants={itemVariants} className="mt-8 text-[#5F5F5F] text-base sm:text-lg font-medium leading-8 max-w-[600px]">
+              Meet Smooth Sip — your everyday companion, thoughtfully crafted with premium-grade craftsmanship and 
+              loving care. From morning routines to late-night adventures, every sip feels like home. A Little Love in Every Sip.
             </motion.p>
 
             {/* Social Proof */}
-            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-8 mt-8">
+            {/* <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-8 mt-8">
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-3">
                   <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="" className="w-11 h-11 rounded-full border-2 border-white object-cover shadow-sm" loading="lazy" />
@@ -104,7 +105,7 @@ const DesktopHero = () => {
                 <div className="flex gap-1 text-[#ffb400]"><FaStar /><FaStar /><FaStar /><FaStar /><FaStar /></div>
                 <p className="text-[15px] text-[#555]"><span className="font-semibold text-[#111]">4.9</span> (2.5k Reviews)</p>
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* CTA Buttons */}
             <motion.div variants={itemVariants} className="flex flex-wrap gap-5 mt-10">
@@ -117,7 +118,7 @@ const DesktopHero = () => {
             </motion.div>
 
             {/* Features Grid */}
-            <motion.div
+            {/* <motion.div
               variants={containerVariants}
               className="grid grid-cols-2 sm:grid-cols-4 gap-7 mt-16"
             >
@@ -138,7 +139,7 @@ const DesktopHero = () => {
                   )}
                 </motion.div>
               ))}
-            </motion.div>
+            </motion.div> */}
           </div>
         </motion.div>
 

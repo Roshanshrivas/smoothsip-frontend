@@ -6,10 +6,6 @@ import {
   Shield,
   Users,
   Heart,
-  Mail,
-  MapPin,
-  Phone,
-  Clock,
   CheckCircle,
   Zap,
   Globe,
@@ -18,6 +14,12 @@ import {
   Rocket,
   Leaf,
   Star,
+  Thermometer,
+  Droplets,
+  Hand,
+  Coffee,
+  Car,
+  Gift,
 } from "lucide-react";
 
 // ==============================================
@@ -79,72 +81,88 @@ const AboutUs = () => {
     }
   }, [isInView, controls]);
 
-  // Team members data
-  const teamMembers = [
+  // ─── Product highlights (replaces fake team) ───
+  const productHighlights = [
     {
-      name: "Rahul Sharma",
-      role: "Founder & CEO",
-      bio: "Passionate about sustainable products and design innovation.",
-      image: "https://ui-avatars.com/api/?name=Rahul+Sharma&background=00C2D6&color=fff&size=128",
+      name: "1200 ML Capacity",
+      role: "Perfect Everyday Size",
+      bio: "Large enough to last a full day, compact enough to carry everywhere.",
+      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
     },
     {
-      name: "Priya Patel",
-      role: "Head of Design",
-      bio: "Industrial designer with a love for minimalist aesthetics.",
-      image: "https://ui-avatars.com/api/?name=Priya+Patel&background=00A0B0&color=fff&size=128",
+      name: "24H Cold · 8H Hot",
+      role: "Double-Wall Insulation",
+      bio: "Vacuum-sealed technology keeps drinks at the perfect temperature.",
+      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
     },
     {
-      name: "Amit Kumar",
-      role: "Operations Manager",
-      bio: "Ensuring every tumbler reaches you in perfect condition.",
-      image: "https://ui-avatars.com/api/?name=Amit+Kumar&background=008F9E&color=fff&size=128",
+      name: "Everyday Essentials",
+      role: "Straw + Cleaning Brush",
+      bio: "Comes with a reusable straw, cleaning brush, and spill-resistant lid.",
+      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
     },
     {
-      name: "Sneha Reddy",
-      role: "Head of Marketing",
-      bio: "Connecting our brand with customers around the world.",
-      image: "https://ui-avatars.com/api/?name=Sneha+Reddy&background=00B8CC&color=fff&size=128",
+      name: "Personalize It",
+      role: "Your Name, Your Colour",
+      bio: "Beautiful colours and name personalization make it uniquely yours.",
+      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
     },
   ];
 
-  // Values data – icons remain, but we'll style them teal
+  // ─── Values (founder-aligned) ───
   const values = [
     {
-      icon: Shield,
-      title: "Uncompromising Quality",
-      description: "Every tumbler is crafted with premium materials and passes rigorous quality checks.",
-    },
-    {
       icon: Heart,
-      title: "Customer First",
-      description: "Your satisfaction drives everything we do – we're with you every step of the way.",
+      title: "Made with Love",
+      description: "Every tumbler carries the same care a mother puts into every reminder.",
     },
     {
-      icon: Zap,
-      title: "Sustainable Innovation",
-      description: "We design for the planet, using eco‑friendly materials and processes.",
+      icon: Shield,
+      title: "Built to Last",
+      description: "Premium stainless-steel construction that stays with you for years.",
+    },
+    {
+      icon: Leaf,
+      title: "Eco-Conscious",
+      description: "Reusable design means fewer plastic bottles and a lighter footprint.",
     },
     {
       icon: Sparkles,
-      title: "Design Excellence",
-      description: "Our products are not just functional – they're a statement of style and elegance.",
+      title: "Thoughtfully Yours",
+      description: "Personalization options make every Smooth Sip uniquely yours.",
     },
   ];
 
-  // Stats data
+  // ─── Honest product stats ───
   const stats = [
-    { label: "Years of Excellence", value: "5+", icon: Award },
-    { label: "Happy Customers", value: "50K+", icon: Users },
-    { label: "Products Sold", value: "1.2M+", icon: TrendingUp },
-    { label: "Countries Served", value: "30+", icon: Globe },
+    { label: "Pure Care", value: "100%", icon: Heart },
+    { label: "Tumbler Capacity", value: "1200ml", icon: Droplets },
+    { label: "Cold Retention", value: "24H", icon: Thermometer },
+    { label: "Hot Retention", value: "8H", icon: Coffee },
   ];
 
-  // Milestones data for timeline
+  // ─── Founder's journey (replaces fake timeline) ───
   const milestones = [
-    { year: "2019", title: "Founded", description: "Tumbler Studio was born with a vision to redefine hydration." },
-    { year: "2020", title: "First Product Launch", description: "Launched our signature 24oz tumbler, receiving rave reviews." },
-    { year: "2022", title: "Expansion", description: "Expanded to 4 new countries and hit 10,000 customers." },
-    { year: "2024", title: "Innovation", description: "Introduced our eco‑friendly line with 100% recycled materials." },
+    {
+      year: "The Reminder",
+      title: "A Mother's Daily Words",
+      description: "\"Paani pee lo.\" — spoken for years, to children, students, and loved ones.",
+    },
+    {
+      year: "The Observation",
+      title: "We Know. We Still Forget.",
+      description: "She noticed something simple: knowing we should drink water doesn't mean we do.",
+    },
+    {
+      year: "The Question",
+      title: "\"What If It Could Be Enjoyable?\"",
+      description: "A mother's wondering became the seed of a brand built on everyday care.",
+    },
+    {
+      year: "The Answer",
+      title: "Smooth Sip Is Born",
+      description: "A product designed to stay within reach — and gently remind you to take a sip.",
+    },
   ];
 
   return (
@@ -155,7 +173,6 @@ const AboutUs = () => {
     >
       {/* ===== HERO SECTION ===== */}
       <section className="relative overflow-hidden pt-20 pb-24 bg-white dark:bg-gray-900">
-        {/* Decorative blobs – teal tinted */}
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#00C2D6]/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#00C2D6]/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
@@ -168,14 +185,16 @@ const AboutUs = () => {
             >
               <SectionBadge text="Our Story" />
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
-                Crafting <span className="text-[#00C2D6]">Premium</span>{" "}
-                <br className="hidden sm:block" />
-                Hydration, <span className="text-[#00C2D6]">One Tumbler</span> at a Time
+                It All <span className="text-[#00C2D6]">Began</span> With a{" "}
+                <span className="text-[#00C2D6]">Mother's</span> Reminder
               </h1>
               <p className="mt-6 text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg">
-                At Tumbler Studio, we believe hydration should be both functional and beautiful.
-                Our tumblers combine cutting‑edge insulation technology with timeless design,
-                keeping your drinks at the perfect temperature while elevating your everyday style.
+                <span className="font-semibold text-[#00C2D6]">"Paani pee lo."</span> ❤️
+                <br />
+                For our founder — a 60-year-old mother and school teacher — these
+                were more than just words. She had spent years reminding her
+                children, students, and loved ones to stay hydrated and take care
+                of themselves.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <motion.a
@@ -224,7 +243,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ===== STATS SECTION – PROFESSIONAL REDESIGN ===== */}
+      {/* ===== STATS SECTION ===== */}
       <section className="relative py-16 bg-white dark:bg-gray-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#E6F9FA]/20 via-transparent to-[#E6F9FA]/20 dark:from-[#00C2D6]/10 dark:to-[#00C2D6]/10 pointer-events-none" />
         <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#00C2D6]/10 rounded-full blur-3xl" />
@@ -288,8 +307,9 @@ const AboutUs = () => {
                 Our Mission
               </h3>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                To revolutionize the way people hydrate by creating stylish, sustainable,
-                and functional tumblers that make every sip an experience.
+                To make hydration something you actually look forward to — by
+                creating premium drinkware that gently reminds you to take care
+                of yourself, every day.
               </p>
             </motion.div>
 
@@ -305,11 +325,11 @@ const AboutUs = () => {
                 <Rocket className="w-7 h-7 text-[#00C2D6]" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                Our Vision
+                Our Promise
               </h3>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                To become the world's most loved premium hydration brand – known for
-                quality, design, and commitment to the planet.
+                Every Smooth Sip carries the same care a mother puts into every
+                reminder — because sometimes, care can be something you carry.
               </p>
             </motion.div>
           </div>
@@ -367,7 +387,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ===== TIMELINE / JOURNEY ===== */}
+      {/* ===== FOUNDER'S JOURNEY (was timeline) ===== */}
       <section className="py-20 bg-gray-50/50 dark:bg-gray-950/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -377,9 +397,9 @@ const AboutUs = () => {
             variants={fadeInUp}
             className="text-center max-w-2xl mx-auto mb-14"
           >
-            <SectionBadge text="Our Journey" />
+            <SectionBadge text="The Story Behind Smooth Sip" />
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-              Milestones
+              From Reminder to Reality
             </h2>
           </motion.div>
 
@@ -421,7 +441,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ===== TEAM SECTION ===== */}
+      {/* ===== PRODUCT HIGHLIGHTS (was team) ===== */}
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -431,17 +451,20 @@ const AboutUs = () => {
             variants={fadeInUp}
             className="text-center max-w-2xl mx-auto mb-14"
           >
-            <SectionBadge text="Meet the Team" />
+            <SectionBadge text="Our Signature Tumbler" />
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-              Behind the Brand
+              Thoughtfully Designed.
+              <br />
+              Effortlessly Everyday.
             </h2>
             <p className="mt-4 text-gray-500 dark:text-gray-400">
-              Passionate individuals dedicated to delivering excellence in every product.
+              Our signature 1200 ML stainless-steel vacuum-insulated tumbler
+              combines style with everyday functionality.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamMembers.map((member, idx) => (
+            {productHighlights.map((item, idx) => (
               <motion.div
                 key={idx}
                 initial="hidden"
@@ -453,22 +476,22 @@ const AboutUs = () => {
               >
                 <div className="relative inline-block">
                   <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-[#00C2D6]/30 group-hover:border-[#00C2D6] transition-colors"
+                    src={item.image}
+                    alt={item.name}
+                    className="w-24 h-24 rounded-full mx-auto mb-4 object-contain bg-white p-2 border-2 border-[#00C2D6]/30 group-hover:border-[#00C2D6] transition-colors"
                   />
                   <div className="absolute -bottom-1 right-1 bg-[#00C2D6] rounded-full p-1 border-2 border-white dark:border-gray-900">
                     <CheckCircle className="w-3 h-3 text-white" />
                   </div>
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {member.name}
+                  {item.name}
                 </h4>
                 <p className="text-sm text-[#00C2D6] font-medium mt-0.5">
-                  {member.role}
+                  {item.role}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-                  {member.bio}
+                  {item.bio}
                 </p>
               </motion.div>
             ))}
@@ -487,11 +510,11 @@ const AboutUs = () => {
             variants={fadeInUp}
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Ready to Experience Premium Hydration?
+              Love in Every Sip.
             </h2>
             <p className="text-[#D6F5F8] text-lg max-w-2xl mx-auto mb-8">
-              Join thousands of happy customers and elevate your hydration game with
-              Tumbler Studio.
+              Because sometimes, care can be something you carry. Join us in
+              making hydration feel like home.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <motion.a
