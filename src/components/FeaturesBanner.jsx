@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 
 const bannerData = [
-  { icon: <FiTruck />, title: "Free Shipping", subtitle: "Orders above ₹999" },
+  { icon: <FiTruck />, title: "Free Shipping", subtitle: "Orders above ₹2999" },
   { icon: <FiRefreshCw />, title: "7 Days Returns", subtitle: "No questions asked" },
   { icon: <FiLock />, title: "Safe Checkout", subtitle: "Secure payments" },
   { icon: <FiAward />, title: "Premium Quality", subtitle: "Built to last" },

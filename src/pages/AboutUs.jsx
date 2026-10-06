@@ -2,24 +2,18 @@
 import React, { useEffect, useRef } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
 import {
-  Award,
-  Shield,
-  Users,
   Heart,
+  Shield,
   CheckCircle,
-  Zap,
   Globe,
-  TrendingUp,
   Sparkles,
   Rocket,
   Leaf,
   Star,
   Thermometer,
   Droplets,
-  Hand,
   Coffee,
-  Car,
-  Gift,
+  Quote,
 } from "lucide-react";
 
 // ==============================================
@@ -81,35 +75,35 @@ const AboutUs = () => {
     }
   }, [isInView, controls]);
 
-  // ─── Product highlights (replaces fake team) ───
+  // ─── Product highlights ───
   const productHighlights = [
     {
       name: "1200 ML Capacity",
       role: "Perfect Everyday Size",
       bio: "Large enough to last a full day, compact enough to carry everywhere.",
-      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791289083/lifesection.jpg",
     },
     {
-      name: "24H Cold · 8H Hot",
+      name: "12H Cold · 8H Hot",
       role: "Double-Wall Insulation",
       bio: "Vacuum-sealed technology keeps drinks at the perfect temperature.",
-      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791288553/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_6.jpg",
     },
     {
       name: "Everyday Essentials",
       role: "Straw + Cleaning Brush",
       bio: "Comes with a reusable straw, cleaning brush, and spill-resistant lid.",
-      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791284318/tumbler/products/lwqztggdb4jw3db49bug.jpg",
     },
     {
       name: "Personalize It",
       role: "Your Name, Your Colour",
       bio: "Beautiful colours and name personalization make it uniquely yours.",
-      image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png",
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791284177/tumbler/products/vrdai9czdoityrq5taia.jpg",
     },
   ];
 
-  // ─── Values (founder-aligned) ───
+  // ─── Values ───
   const values = [
     {
       icon: Heart,
@@ -133,15 +127,7 @@ const AboutUs = () => {
     },
   ];
 
-  // ─── Honest product stats ───
-  const stats = [
-    { label: "Pure Care", value: "100%", icon: Heart },
-    { label: "Tumbler Capacity", value: "1200ml", icon: Droplets },
-    { label: "Cold Retention", value: "24H", icon: Thermometer },
-    { label: "Hot Retention", value: "8H", icon: Coffee },
-  ];
-
-  // ─── Founder's journey (replaces fake timeline) ───
+  // ─── Founder's journey ───
   const milestones = [
     {
       year: "The Reminder",
@@ -226,7 +212,7 @@ const AboutUs = () => {
                 <div className="absolute inset-0 bg-gradient-to-tr from-[#00C2D6]/20 via-[#00C2D6]/10 to-transparent rounded-3xl -rotate-6 scale-105" />
                 <motion.img
                   animate={floatAnimation}
-                  src="https://res.cloudinary.com/dbkpwluh0/image/upload/v1779963032/blacktumbler_dbd4a2.png"
+                  src="https://res.cloudinary.com/ghqmmyvr/image/upload/v1791308659/Pastel_SmoothSip_Tumbler_Cutout.png"
                   alt="Premium Tumbler"
                   className="relative w-full h-full object-contain drop-shadow-2xl"
                 />
@@ -243,48 +229,146 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ===== STATS SECTION ===== */}
-      <section className="relative py-16 bg-white dark:bg-gray-900 overflow-hidden">
+      {/* ═══════════ FOUNDER'S FULL STORY (was stats section) ═══════════ */}
+      <section className="relative py-16 sm:py-20 bg-white dark:bg-gray-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#E6F9FA]/20 via-transparent to-[#E6F9FA]/20 dark:from-[#00C2D6]/10 dark:to-[#00C2D6]/10 pointer-events-none" />
         <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#00C2D6]/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-[#00C2D6]/10 rounded-full blur-3xl" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div ref={ref} className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Section header */}
           <motion.div
-            ref={ref}
+            variants={fadeInUp}
+            initial="hidden"
+            animate={controls}
+            className="text-center mb-12"
+          >
+            <SectionBadge text="From a Mother's Heart" />
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+              The Simple Truth She Noticed
+            </h2>
+          </motion.div>
+
+          <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate={controls}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-8"
+            className="space-y-6"
           >
-            {stats.map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={idx}
-                  variants={scaleIn}
-                  className="group relative flex flex-col items-center text-center p-6 rounded-2xl bg-gradient-to-b from-gray-50/80 to-white dark:from-gray-800/50 dark:to-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="absolute inset-0 rounded-2xl bg-[#00C2D6]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Block 1 — Her observation */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8"
+            >
+              <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                After years of reminding her children, her students, and everyone
+                she loved to stay hydrated, she noticed something simple — and
+                surprisingly universal:
+              </p>
+            </motion.div>
 
-                  <div className="relative mb-4">
-                    <div className="absolute inset-0 bg-[#00C2D6]/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300 scale-75 group-hover:scale-100" />
-                    <div className="relative w-14 h-14 rounded-2xl bg-[#E6F9FA] dark:bg-[#00C2D6]/30 flex items-center justify-center group-hover:bg-[#E6F9FA] dark:group-hover:bg-[#00C2D6]/50 transition-all duration-300 border border-[#00C2D6]/20 dark:border-[#00C2D6]/30">
-                      <Icon className="w-7 h-7 text-[#00C2D6] group-hover:scale-110 transition-transform duration-300" />
-                    </div>
-                  </div>
+            {/* Highlight quote 1 */}
+            <motion.div
+              variants={fadeInUp}
+              className="relative bg-[#E6F9FA] dark:bg-[#00C2D6]/15 border-l-4 border-[#00C2D6] rounded-r-2xl p-6 sm:p-8"
+            >
+              <Quote className="absolute top-4 right-4 w-10 h-10 text-[#00C2D6]/20" />
+              <p className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white leading-relaxed">
+                We know we should drink water.{" "}
+                <span className="text-[#00C2D6]">We just forget.</span>
+              </p>
+            </motion.div>
 
-                  <p className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white group-hover:text-[#00C2D6] transition-colors duration-300">
-                    {stat.value}
+            {/* Block 2 — Her question */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8"
+            >
+              <p className="text-sm font-semibold uppercase tracking-wider text-[#00C2D6] mb-3">
+                So she wondered —
+              </p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white italic leading-snug">
+                "What if carrying water could become something people actually
+                enjoy?"
+              </p>
+            </motion.div>
+
+            {/* Big statement */}
+            <motion.div variants={fadeInUp} className="text-center py-6">
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                And that question became{" "}
+                <span className="text-[#00C2D6]">Smooth Sip.</span>
+              </p>
+            </motion.div>
+
+            {/* Block 3 — What we make */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#E6F9FA] dark:bg-[#00C2D6]/20 flex items-center justify-center text-[#00C2D6] flex-shrink-0">
+                  <Heart size={22} className="fill-[#00C2D6]" />
+                </div>
+                <div>
+                  <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Born from a mother's care, <strong>Smooth Sip</strong> creates
+                    premium everyday drinkware designed to make hydration easier,
+                    more enjoyable and more personal.
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium tracking-wide">
-                    {stat.label}
-                  </p>
+                </div>
+              </div>
+            </motion.div>
 
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-12 h-0.5 bg-[#00C2D6] transition-all duration-300" />
-                </motion.div>
-              );
-            })}
+            {/* Block 4 — Product description */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-gradient-to-br from-[#F8FBFC] to-white dark:from-gray-800/50 dark:to-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8"
+            >
+              <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                Our signature <strong className="text-gray-900 dark:text-white">1200 ML stainless-steel vacuum-insulated tumblers</strong> combine style with everyday functionality — featuring double-wall insulation, a comfortable handle, spill-resistant lid, reusable straw, straw-cleaning brush, anti-slip base and car cup-holder-friendly design.
+              </p>
+              <p className="mt-4 text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                They keep your drinks cold for up to <strong className="text-gray-900 dark:text-white">12 hours</strong> and hot for up to <strong className="text-gray-900 dark:text-white">8 hours</strong>, while the sweat-free matte finish makes them comfortable to carry from gym to office, car to travel, and everywhere in between.
+              </p>
+            </motion.div>
+
+            {/* Block 5 — Personal */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#E6F9FA] dark:bg-[#00C2D6]/20 flex items-center justify-center text-[#00C2D6] flex-shrink-0">
+                  <Sparkles size={22} />
+                </div>
+                <div>
+                  <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    And because something you carry every day should feel like{" "}
+                    <strong className="text-[#00C2D6]">yours</strong>, our
+                    tumblers are available in beautiful colours with name
+                    personalization — making every Smooth Sip a little more
+                    personal.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Closing quote */}
+            <motion.div
+              variants={fadeInUp}
+              className="relative text-center py-8 sm:py-10 bg-[#E6F9FA] dark:bg-[#00C2D6]/15 rounded-2xl border border-[#00C2D6]/20 px-6"
+            >
+              <Quote className="w-8 h-8 text-[#00C2D6]/40 mx-auto mb-4" />
+              <p className="text-lg sm:text-xl font-serif italic text-gray-800 dark:text-gray-200 leading-relaxed max-w-3xl mx-auto">
+                What began as one mother's reminder became a product designed to
+                stay within reach — and gently remind you to take a sip.
+              </p>
+              <div className="mt-5 w-16 h-1 bg-[#00C2D6] rounded-full mx-auto" />
+              <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-gray-600 dark:text-gray-400">
+                Because sometimes, care can be something you carry.
+              </p>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -387,7 +471,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ===== FOUNDER'S JOURNEY (was timeline) ===== */}
+      {/* ===== FOUNDER'S JOURNEY ===== */}
       <section className="py-20 bg-gray-50/50 dark:bg-gray-950/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -441,7 +525,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ===== PRODUCT HIGHLIGHTS (was team) ===== */}
+      {/* ===== PRODUCT HIGHLIGHTS ===== */}
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div

@@ -43,7 +43,7 @@ const LifestyleSection = () => {
   // ─── Use banner data if available ──────────────────────
   const heading = banner?.title || "Made for your every moment";
   const subtitle = banner?.subtitle || "From sunrise coffee to late‑night focus, our tumblers keep every sip at the perfect temperature.";
-  const imageSrc = banner?.image || "https://res.cloudinary.com/dbkpwluh0/image/upload/v1783754440/ChatGPT_Image_Jul_11_2026_12_50_07_PM_byqnmq.png";
+  const imageSrc = banner?.image || "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303674/Pastel_SmoothSip_Summer_Essentials.png";
   const ctaLink = banner?.link || "/allproducts";
   const ctaText = banner?.ctaText || "Shop Lifestyle";
   const features = banner?.content?.features || staticFeatures;

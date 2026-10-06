@@ -24,7 +24,7 @@ const staticSlides = [
   {
     id: 1,
     heading: 'Why Choose <span class="text-[#14C6D8]">Tumbler?</span>',
-    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1783755632/ChatGPT_Image_Jul_11_2026_01_10_16_PM_ilivvu.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791307112/SmoothSip_Tumbler_Cart_Studio_Shot.png",
     features: [
       { icon: "FiBox", title: "Top Quality", subtitle: "Materials" },
       { icon: "FiShield", title: "Stylish & Modern", subtitle: "Designs" },
@@ -35,7 +35,7 @@ const staticSlides = [
   {
     id: 2,
     heading: 'Premium <span class="text-[#14C6D8]">Performance</span>',
-    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1784353050/ChatGPT_Image_Jul_18_2026_11_07_14_AM_abspmv.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303133/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_12.jpg",
     features: [
       { icon: "FiClock", title: "24H Cold", subtitle: "12H Hot" },
       { icon: "FiDroplet", title: "Leak Proof", subtitle: "Design" },
@@ -46,7 +46,7 @@ const staticSlides = [
   {
     id: 3,
     heading: 'Designed <span class="text-[#14C6D8]">For You</span>',
-    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1783754440/ChatGPT_Image_Jul_11_2026_12_50_07_PM_byqnmq.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303134/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_11.jpg",
     features: [
       { icon: "FiHeart", title: "Health First", subtitle: "BPA-Free" },
       { icon: "FiSmile", title: "Modern Look", subtitle: "Sleek Design" },
@@ -57,7 +57,7 @@ const staticSlides = [
   {
     id: 4,
     heading: 'Sustainability <span class="text-[#14C6D8]">Matters</span>',
-    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1784353235/ChatGPT_Image_Jul_18_2026_11_10_17_AM_jwrokc.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303133/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_13.jpg",
     features: [
       { icon: "FaRecycle", title: "Reusable", subtitle: "Eco-Friendly" },
       { icon: "FiBox", title: "Recyclable", subtitle: "Materials" },

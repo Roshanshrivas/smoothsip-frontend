@@ -86,8 +86,7 @@ const Footer = () => {
               </div>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Premium insulated tumblers designed for your daily hydration. 
-              Customize your own and sip in style.
+              Love in Every Sip.
             </p>
             <div className="flex space-x-3 pt-2">
               {socialLinks.map((social, idx) => (
