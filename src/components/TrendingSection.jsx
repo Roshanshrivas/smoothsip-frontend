@@ -175,45 +175,57 @@ const TrendingSection = () => {
   };
 
   // ─── Pointer Drag System ─────────────────────────
-  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
+const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
+const DRAG_THRESHOLD = 6;
 
-  const onPointerDown = (e) => {
-    if (e.pointerType !== "mouse" || e.button !== 0) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    drag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft, moved: false, id: e.pointerId };
+const onPointerDown = (e) => {
+  if (e.pointerType !== "mouse" || e.button !== 0) return;
+  const el = scrollRef.current;
+  if (!el) return;
+  drag.current = {
+    active: true,
+    startX: e.clientX,
+    startLeft: el.scrollLeft,
+    moved: false,
+    id: e.pointerId,
+  };
+  // Do NOT capture pointer yet — allows clicks to pass through
+  pauseAuto();
+};
+
+const onPointerMove = (e) => {
+  const d = drag.current;
+  if (!d.active) return;
+  const el = scrollRef.current;
+  if (!el) return;
+  const dx = e.clientX - d.startX;
+
+  if (!d.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
+
+  if (!d.moved) {
+    d.moved = true;
     el.style.cursor = "grabbing";
     el.style.userSelect = "none";
-    try {
-      el.setPointerCapture(e.pointerId);
-    } catch {}
-    pauseAuto();
-  };
+    try { el.setPointerCapture(e.pointerId); } catch {}
+  }
 
-  const onPointerMove = (e) => {
-    const d = drag.current;
-    if (!d.active) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
-    el.scrollLeft = d.startLeft - dx;
-  };
+  el.scrollLeft = d.startLeft - dx;
+};
 
-  const endDrag = () => {
-    const d = drag.current;
-    if (!d.active) return;
-    const el = scrollRef.current;
-    if (el) {
-      el.style.cursor = "";
-      el.style.userSelect = "";
-      try {
-        el.releasePointerCapture(d.id);
-      } catch {}
+const endDrag = () => {
+  const d = drag.current;
+  if (!d.active) return;
+  const el = scrollRef.current;
+  if (el) {
+    el.style.cursor = "";
+    el.style.userSelect = "";
+    if (d.moved) {
+      try { el.releasePointerCapture(d.id); } catch {}
     }
-    d.active = false;
-    scheduleResume();
-  };
+  }
+  d.active = false;
+  scheduleResume();
+};
 
   const onClickCapture = (e) => {
     if (drag.current.moved) {

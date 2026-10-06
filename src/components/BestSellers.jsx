@@ -165,41 +165,60 @@ const BestSellers = () => {
   };
 
   // ─── Desktop mouse drag only (touch handled natively) ───
-  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
+const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
+const DRAG_THRESHOLD = 6; // px — must move this far before it's a drag
 
-  const onPointerDown = (e) => {
-    if (e.pointerType !== "mouse" || e.button !== 0) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    drag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft, moved: false, id: e.pointerId };
+const onPointerDown = (e) => {
+  if (e.pointerType !== "mouse" || e.button !== 0) return;
+  const el = scrollRef.current;
+  if (!el) return;
+  drag.current = {
+    active: true,
+    startX: e.clientX,
+    startLeft: el.scrollLeft,
+    moved: false,
+    id: e.pointerId,
+  };
+  // ⚠️ DO NOT setPointerCapture — it blocks child clicks
+  // ⚠️ DO NOT set cursor here — wait until drag actually starts
+  pauseAuto();
+};
+
+const onPointerMove = (e) => {
+  const d = drag.current;
+  if (!d.active) return;
+  const el = scrollRef.current;
+  if (!el) return;
+  const dx = e.clientX - d.startX;
+
+  // Only start dragging after the threshold
+  if (!d.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
+
+  if (!d.moved) {
+    // First time crossing threshold → activate drag visuals
+    d.moved = true;
     el.style.cursor = "grabbing";
     el.style.userSelect = "none";
     try { el.setPointerCapture(e.pointerId); } catch {}
-    pauseAuto();
-  };
+  }
 
-  const onPointerMove = (e) => {
-    const d = drag.current;
-    if (!d.active) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
-    el.scrollLeft = d.startLeft - dx;
-  };
+  el.scrollLeft = d.startLeft - dx;
+};
 
-  const endDrag = () => {
-    const d = drag.current;
-    if (!d.active) return;
-    const el = scrollRef.current;
-    if (el) {
-      el.style.cursor = "";
-      el.style.userSelect = "";
+const endDrag = () => {
+  const d = drag.current;
+  if (!d.active) return;
+  const el = scrollRef.current;
+  if (el) {
+    el.style.cursor = "";
+    el.style.userSelect = "";
+    if (d.moved) {
       try { el.releasePointerCapture(d.id); } catch {}
     }
-    d.active = false;
-    scheduleResume();
-  };
+  }
+  d.active = false;
+  scheduleResume();
+};
 
   const onClickCapture = (e) => {
     if (drag.current.moved) {
