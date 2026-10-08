@@ -6,6 +6,7 @@ import { MdOutlineVerifiedUser, MdOutlineWaterDrop } from "react-icons/md";
 import { BsShieldCheck } from "react-icons/bs";
 import { FaStar } from "react-icons/fa";
 import herovideo from "../assets/herovdos.mp4"; 
+import { Link } from "react-router-dom";
 
 // ========== FEATURES DATA ==========
 const features = [
@@ -109,12 +110,12 @@ const DesktopHero = () => {
 
             {/* CTA Buttons */}
             <motion.div variants={itemVariants} className="flex flex-wrap gap-5 mt-10">
-              <button className="h-[62px] px-9 rounded-2xl bg-[#14C6D8] hover:bg-[#09B0BE] text-white font-semibold text-[17px] flex items-center gap-3 transition-all duration-300 shadow-[0_15px_35px_rgba(20,198,216,0.28)] hover:scale-[1.02] active:scale-100">
+              <Link to="/allproducts" className="h-[62px] px-9 rounded-2xl bg-[#14C6D8] hover:bg-[#09B0BE] text-white font-semibold text-[17px] flex items-center gap-3 transition-all duration-300 shadow-[0_15px_35px_rgba(20,198,216,0.28)] hover:scale-[1.02] active:scale-100">
                 Shop Now <FiArrowRight className="text-xl" />
-              </button>
-              <button className="h-[62px] px-9 rounded-2xl border border-[#14C6D8] bg-white/90 backdrop-blur-md hover:bg-white hover:border-[#09B0BE] text-[#222] font-semibold text-[17px] flex items-center gap-3 transition-all duration-300 shadow-sm">
-                <FiEdit3 className="text-[18px]" /> Customize Now
-              </button>
+              </Link>
+              <Link to="/customize" className="h-[62px] px-9 rounded-2xl border border-[#14C6D8] bg-white/90 backdrop-blur-md hover:bg-white hover:border-[#09B0BE] text-[#222] font-semibold text-[17px] flex items-center gap-3 transition-all duration-300 shadow-sm">
+                <FiEdit3 className="text-[18px]" /> Personalize It
+              </Link>
             </motion.div>
 
             {/* Features Grid */}
@@ -269,12 +270,12 @@ const MobileHero = () => {
           </motion.div>
 
           <motion.div variants={itemVariants} className="flex flex-col gap-4 mt-6">
-            <button className="w-full py-4 rounded-xl bg-[#ff6b00] hover:bg-[#eb6200] text-white font-semibold text-[16px] flex items-center justify-center gap-2 transition shadow-md">
+            <Link to="/allproducts" className="w-full py-4 rounded-xl bg-[#ff6b00] hover:bg-[#eb6200] text-white font-semibold text-[16px] flex items-center justify-center gap-2 transition shadow-md">
               Shop Now <FiArrowRight />
-            </button>
-            <button className="w-full py-4 rounded-xl border border-[#cfcfcf] bg-white/90 backdrop-blur hover:bg-white text-[#222] font-semibold text-[16px] flex items-center justify-center gap-2 transition">
-              <FiEdit3 /> Customize Now
-            </button>
+            </Link>
+            <Link to="/customize" className="w-full py-4 rounded-xl border border-[#cfcfcf] bg-white/90 backdrop-blur hover:bg-white text-[#222] font-semibold text-[16px] flex items-center justify-center gap-2 transition">
+              <FiEdit3 /> Personalize It
+            </Link>
           </motion.div>
 
           <motion.div

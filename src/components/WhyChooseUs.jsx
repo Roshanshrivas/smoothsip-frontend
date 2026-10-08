@@ -37,7 +37,7 @@ const staticSlides = [
     heading: 'Premium <span class="text-[#14C6D8]">Performance</span>',
     image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303133/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_12.jpg",
     features: [
-      { icon: "FiClock", title: "24H Cold", subtitle: "12H Hot" },
+      { icon: "FiClock", title: "12H Cold", subtitle: "8H Hot" },
       { icon: "FiDroplet", title: "Leak Proof", subtitle: "Design" },
       { icon: "FiAward", title: "Premium", subtitle: "SS304 Steel" },
       { icon: "FaRecycle", title: "Eco-Friendly", subtitle: "BPA Free" },
@@ -52,17 +52,6 @@ const staticSlides = [
       { icon: "FiSmile", title: "Modern Look", subtitle: "Sleek Design" },
       { icon: "FiZap", title: "Versatile", subtitle: "Every Occasion" },
       { icon: "FiTrendingUp", title: "Value", subtitle: "Long Lasting" },
-    ],
-  },
-  {
-    id: 4,
-    heading: 'Sustainability <span class="text-[#14C6D8]">Matters</span>',
-    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303133/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_13.jpg",
-    features: [
-      { icon: "FaRecycle", title: "Reusable", subtitle: "Eco-Friendly" },
-      { icon: "FiBox", title: "Recyclable", subtitle: "Materials" },
-      { icon: "FiShield", title: "Ethical", subtitle: "Production" },
-      { icon: "FiAward", title: "Long Life", subtitle: "Durable" },
     ],
   },
 ];

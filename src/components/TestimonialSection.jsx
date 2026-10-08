@@ -49,7 +49,7 @@ const stats = [
 ];
 
 const bottomBadges = [
-  { icon: <Snowflake size={18} />, title: "24H Cold", desc: "Long-lasting insulation" },
+  { icon: <Snowflake size={18} />, title: "12H Cold", desc: "Long-lasting insulation" },
   { icon: <Leaf size={18} />, title: "BPA Free", desc: "Safe & Non-toxic" },
   { icon: <Droplets size={18} />, title: "Leak Proof", desc: "100% Reliable" },
 ];

@@ -30,11 +30,11 @@ const Home = () => {
            {/* Hero section */}
            <HeroSection/>
          </div>
-         <div className='hidden md:block'>
+         <div className='hidden'>
           {/* FeaturesBanner */}
           <FeaturesBanner/>
          </div>
-         <div className='hidden md:block'>
+         <div className='hidden'>
            {/* Categories section */}
            <CategoriesSection/>
          </div>

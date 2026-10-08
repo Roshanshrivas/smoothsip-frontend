@@ -116,7 +116,7 @@ const BulkOrders = () => {
               className="mt-5 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed"
             >
               Make Every Gift Remarkable. Whether it's corporate gifting, bulk
-              orders, influencer campaigns, or creative brand partnerships — bring
+              orders, influencer campaigns — bring
               us your idea, and we'll build something valuable together.
             </motion.p>
 
@@ -127,7 +127,7 @@ const BulkOrders = () => {
               transition={{ delay: 0.2 }}
               className="mt-8 flex flex-wrap justify-center gap-3"
             >
-              {['Bulk', 'Corporate', 'Gifting', 'Collaborations'].map((tag) => (
+              {['Bulk', 'Corporate', 'Gifting'].map((tag) => (
                 <span
                   key={tag}
                   className="px-4 py-1.5 bg-white border border-[#00C2D6]/30 text-[#00C2D6] text-sm font-semibold rounded-full shadow-sm"
@@ -140,7 +140,7 @@ const BulkOrders = () => {
         </section>
 
         {/* USE CASES */}
-        <section className="py-12 sm:py-16 bg-white">
+        <section className="hidden py-12 sm:py-16 bg-white">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {useCases.map((item, idx) => {
