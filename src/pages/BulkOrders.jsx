@@ -72,7 +72,6 @@ const BulkOrders = () => {
     { value: 'bulk', label: 'Bulk Order', icon: FiPackage },
     { value: 'corporate', label: 'Corporate', icon: FiBriefcase },
     { value: 'gifting', label: 'Gifting', icon: FiGift },
-    { value: 'collaboration', label: 'Collaboration', icon: FiUsers },
   ];
 
   const useCases = [
