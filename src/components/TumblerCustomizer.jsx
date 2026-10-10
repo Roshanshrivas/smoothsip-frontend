@@ -459,24 +459,33 @@ const TumblerCustomizer = ({
   // ---------- Add to Cart ----------
     const addToCart = async () => {
     const canvas = fabricCanvas.current;
-    if (!canvas) return;
+    if (!canvas) {
+      toast.error('Canvas not ready');
+      return;
+    }
+
+    console.log('=== ADD TO CART STARTED ===');
+    console.log('Product:', selectedTumbler._id, selectedTumbler.name);
 
     // 1. Capture composite canvas as JPEG base64 (temporary)
     const base64Image = canvas.toDataURL({
       format: 'jpeg',
       quality: 0.85,
     });
+    console.log('Base64 size:', base64Image.length, 'chars');
 
     // 2. Convert base64 → Blob → File
     const blob = await (await fetch(base64Image)).blob();
     const file = new File([blob], `design-${Date.now()}.jpg`, {
       type: 'image/jpeg',
     });
+    console.log('File size:', file.size, 'bytes');
 
    // 3. Upload to Cloudinary
     let designImage;
     try {
       const result = await customProductService.uploadDesignImage(file);
+      console.log('Upload result:', result);
       designImage = result.url;   // ✅ now a Cloudinary URL, NOT base64
       if (!designImage) throw new Error('No URL returned');
     } catch (err) {
@@ -513,6 +522,8 @@ const TumblerCustomizer = ({
       pattern: activeDesignObject ? "pattern" : null,
     };
 
+    console.log('Dispatching to cart:', customizationData);
+
     dispatch(
       addCustomItemToCart({
         productId: selectedTumbler._id,
@@ -521,7 +532,13 @@ const TumblerCustomizer = ({
         quantity: 1,
         customization: customizationData,   // 👈 design image inside here
       })
-    );
+    ).then((result) => {
+      if (result.meta.requestStatus === 'fulfilled') {
+        console.log('✅ CART UPDATED:', result.payload);
+      } else {
+        console.error('❌ CART FAILED:', result.payload);
+      }
+    });
   };
 
   // ---------- UI helpers ----------
