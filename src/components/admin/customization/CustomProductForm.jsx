@@ -442,7 +442,7 @@ const CustomProductForm = () => {
           </div>
 
           {/* ─── Customization Options ─── */}
-          <div className="border-t pt-4">
+          {/* <div className="border-t pt-4 ">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
               Customisation Options
             </h3>
@@ -475,10 +475,10 @@ const CustomProductForm = () => {
                 </label>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* ─── Allowed Fonts (checkbox grid) ─── */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium mb-2">
               Allowed Fonts
               {formData.customization.font && (
@@ -514,7 +514,7 @@ const CustomProductForm = () => {
                 );
               })}
             </div>
-          </div>
+          </div> */}
 
           {/* ─── Placement Areas ─── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
