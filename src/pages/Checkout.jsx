@@ -170,7 +170,7 @@ const Checkout = () => {
       if (result) {
         toast.success("Order placed successfully!");
         dispatch(clearCart());
-        navigate(`/order-success/${result._id || result.id}`);
+        window.location.href = `/order-success/${result._id || result.id}`;
       }
     } catch (error) {
       toast.error(error || "Failed to place order. Please try again.");
@@ -256,7 +256,7 @@ const Checkout = () => {
             if (verifyResponse.success) {
               toast.success("Payment successful!");
               dispatch(clearCart());
-              navigate(`/order-success/${targetOrderId}`);
+              window.location.href = `/order-success/${targetOrderId}`;
             } else {
               toast.error("Payment verification failed.");
             }
