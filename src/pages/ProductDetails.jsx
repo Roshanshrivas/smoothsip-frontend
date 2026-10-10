@@ -900,7 +900,10 @@ const ProductDetailsPage = () => {
                       >
                         <FiShoppingCart size={16} /> Add to Cart
                       </motion.button>
-                      <Link to="/customize" className="flex-1 hidden sm:block">
+                      {product.customizeProductId && (
+                      <Link 
+                         to={`/customize/${product.customizeProductId}`} 
+                         className="flex-1 hidden sm:block">
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -909,13 +912,18 @@ const ProductDetailsPage = () => {
                           Customize Now
                         </motion.button>
                       </Link>
+                      )}
                     </div>
                   </div>
-                  <Link to="/customize" className="w-full hidden pt-1">
+                  {product.customizeProductId && (
+                  <Link 
+                     to={`/customize/${product.customizeProductId}`} 
+                     className="w-full hidden pt-1">
                     <button className="w-full border-2 border-gray-900 text-gray-900 font-bold py-3 rounded-xl transition-all hover:bg-gray-900 hover:text-white bg-white">
                       Customize Now
                     </button>
                   </Link>
+                  )}
                 </>
               )}
             </motion.div>

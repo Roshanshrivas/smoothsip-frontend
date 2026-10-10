@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import { productService } from "../../../services/productService";
 import { categoryService } from "../../../services/categoryService";
 import apiClient from "../../../api/client";
+import { customProductService } from "../../../services/customProductService";
+
 
 // ─── Helpers ────────────────────────────────────────
 const formatDimensionsForForm = (dim) => {
@@ -41,6 +43,8 @@ const ProductForm = () => {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [customProducts, setCustomProducts] = useState([]);
+  const [customProductsLoading, setCustomProductsLoading] = useState(true);
 
   const [newFeature, setNewFeature] = useState("");
   const [newSpecLabel, setNewSpecLabel] = useState("");
@@ -67,6 +71,7 @@ const ProductForm = () => {
     images: [],
     mainImage: "",
     tags: [],
+    customizeProductId: "",
   });
 
   // ─── Fetch categories ────────────────────────────
@@ -81,6 +86,17 @@ const ProductForm = () => {
         setCategoriesLoading(false);
       }
     })();
+
+     (async () => {
+    try {
+      const res = await customProductService.fetchActiveProducts();
+      setCustomProducts(res || []);
+    } catch (err) {
+      console.error("Failed to load custom products:", err);
+    } finally {
+      setCustomProductsLoading(false);
+    }
+  })();
   }, []);
 
   // ─── Load product if editing ─────────────────────
@@ -115,6 +131,7 @@ const ProductForm = () => {
           images: ensureArray(product.images),
           mainImage: product.mainImage || product.images?.[0] || "",
           tags: ensureArray(product.tags),
+          customizeProductId: product.customizeProductId || "",
         });
       } catch (err) {
         console.error(err);
@@ -276,6 +293,7 @@ const ProductForm = () => {
         images: formData.images,      // ← Cloudinary URLs only
         mainImage: formData.mainImage || formData.images[0] || "",
         tags: formData.tags,
+        customizeProductId: formData.customizeProductId || null,
       };
 
       if (isEditing) {
@@ -306,7 +324,10 @@ const ProductForm = () => {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link to="/admin/products" className="hover:text-orange-600 flex items-center gap-1">
+        <Link
+          to="/admin/products"
+          className="hover:text-orange-600 flex items-center gap-1"
+        >
           <ArrowLeft size={16} /> Products
         </Link>
         <span>/</span>
@@ -393,7 +414,9 @@ const ProductForm = () => {
                 placeholder="e.g., 1499"
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-900"
               />
-              <p className="text-xs text-gray-400 mt-1">Shown as strikethrough</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Shown as strikethrough
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -475,6 +498,63 @@ const ProductForm = () => {
             </div>
           </div>
 
+          {/* ── Customize Product Link ── */}
+          <div className="bg-[#FFF9F5] border border-orange-200 rounded-xl p-4">
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <label className="block text-sm font-bold text-gray-800">
+                  🔗 Link Customize Template
+                </label>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Choose which CustomProduct opens when a customer clicks
+                  &quot;Customize Now&quot; on this product.
+                </p>
+              </div>
+              <Link
+                to="/admin/custom-products/add"
+                target="_blank"
+                className="text-xs font-semibold text-orange-600 hover:underline whitespace-nowrap"
+              >
+                + New Template
+              </Link>
+            </div>
+
+            {customProductsLoading ? (
+              <div className="w-full h-10 bg-gray-100 rounded-lg animate-pulse" />
+            ) : customProducts.length === 0 ? (
+              <div className="text-xs text-gray-500 bg-white border border-gray-200 rounded-lg p-3">
+                No custom templates yet.{" "}
+                <Link
+                  to="/admin/custom-products/add"
+                  className="text-orange-600 font-semibold hover:underline"
+                >
+                  Create one first →
+                </Link>
+              </div>
+            ) : (
+              <select
+                name="customizeProductId"
+                value={formData.customizeProductId || ""}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-900 text-sm"
+              >
+                <option value="">— None (not customizable) —</option>
+                {customProducts.map((cp) => (
+                  <option key={cp._id} value={cp._id}>
+                    {cp.name} — ₹{cp.basePrice}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {formData.customizeProductId && (
+              <p className="text-xs text-green-700 mt-2 flex items-center gap-1">
+                ✓ Customer clicking &quot;Customize Now&quot; will see this
+                template
+              </p>
+            )}
+          </div>
+
           {/* ── Weight + Dimensions ── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
@@ -506,7 +586,8 @@ const ProductForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                <Ruler size={14} className="inline mr-1" /> Dimensions (L × W × H cm)
+                <Ruler size={14} className="inline mr-1" /> Dimensions (L × W ×
+                H cm)
               </label>
               <input
                 type="text"
@@ -545,7 +626,9 @@ const ProductForm = () => {
                 <div key={idx} className="relative group">
                   <div
                     className={`w-20 h-20 rounded-lg border-2 overflow-hidden bg-gray-50 ${
-                      formData.mainImage === img ? "border-orange-500" : "border-gray-200"
+                      formData.mainImage === img
+                        ? "border-orange-500"
+                        : "border-gray-200"
                     }`}
                   >
                     <img
@@ -589,7 +672,10 @@ const ProductForm = () => {
               >
                 {uploading ? (
                   <div className="flex flex-col items-center">
-                    <Loader size={18} className="text-orange-500 animate-spin" />
+                    <Loader
+                      size={18}
+                      className="text-orange-500 animate-spin"
+                    />
                     <span className="text-[9px] text-orange-500 font-bold mt-1">
                       {uploadProgress}%
                     </span>
@@ -610,7 +696,8 @@ const ProductForm = () => {
               </label>
             </div>
             <p className="text-xs text-gray-500">
-              First image is the main product image. Click "Set Main" to change it. Max 5MB per image.
+              First image is the main product image. Click "Set Main" to change
+              it. Max 5MB per image.
             </p>
           </div>
 
@@ -626,7 +713,9 @@ const ProductForm = () => {
                 onChange={(e) => setNewFeature(e.target.value)}
                 placeholder="e.g., Anti-slip Base"
                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-900"
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addFeature())}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), addFeature())
+                }
               />
               <button
                 type="button"
@@ -778,7 +867,11 @@ const ProductForm = () => {
               className="px-6 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white rounded-lg shadow-sm transition flex items-center gap-2"
             >
               <Save size={16} />
-              {isSaving ? "Saving..." : isEditing ? "Update Product" : "Create Product"}
+              {isSaving
+                ? "Saving..."
+                : isEditing
+                  ? "Update Product"
+                  : "Create Product"}
             </button>
           </div>
         </form>

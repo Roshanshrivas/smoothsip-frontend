@@ -5,40 +5,67 @@ import { FiGrid, FiChevronRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { customProductService } from '../services/customProductService';
 import TumblerCustomizer from '../components/TumblerCustomizer';
-import PersonalizedOrderPolicy from '../components/PersonalizedOrderPolicy';
 
 const CustomizePage = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const [customProducts, setCustomProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Load all custom products once
   useEffect(() => {
-    const fetchProducts = async () => {
+    (async () => {
       try {
         const data = await customProductService.fetchActiveProducts();
-        setProducts(data || []);
+        setCustomProducts(data || []);
       } catch (err) {
-        toast.error('Failed to load products');
+        toast.error('Failed to load custom products');
         console.error(err);
       } finally {
         setLoading(false);
       }
-    };
-    fetchProducts();
+    })();
   }, []);
 
-  // When visiting /customize/:productId directly on refresh
-  if (productId) {
+  // ─── Case 1: /customize/:id → productId is a CustomProduct ID ───
+  if (productId && !loading) {
+    const match = customProducts.find(
+      (cp) => String(cp._id) === String(productId)
+    );
+
+    if (match) {
+      return (
+        <TumblerCustomizer
+          products={customProducts}
+          loadingProducts={false}
+          activeProductId={match._id}
+        />
+      );
+    }
+
+    // Not found → show friendly error
     return (
-      <TumblerCustomizer 
-        products={products} 
-        loadingProducts={loading} 
-        activeProductId={productId} 
-      />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+        <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md text-center border border-gray-100">
+          <FiGrid size={48} className="mx-auto text-gray-300 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800">
+            Customize Template Not Found
+          </h2>
+          <p className="text-gray-500 mt-2">
+            This product doesn't have a customization template available.
+          </p>
+          <Link
+            to="/allproducts"
+            className="mt-6 inline-block px-6 py-2 bg-[#00C2D6] text-white rounded-lg hover:bg-[#00A0B0] transition"
+          >
+            Browse Products
+          </Link>
+        </div>
+      </div>
     );
   }
 
+  // ─── Loading ───
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -47,14 +74,22 @@ const CustomizePage = () => {
     );
   }
 
-  if (products.length === 0) {
+  // ─── Case 2: /customize → grid of all custom templates ───
+  if (customProducts.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md text-center border border-gray-100">
           <FiGrid size={48} className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800">No Products Available</h2>
-          <p className="text-gray-500 mt-2">There are no customisable tumblers right now.</p>
-          <Link to="/" className="mt-6 inline-block px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
+          <h2 className="text-2xl font-bold text-gray-800">
+            No Custom Templates Yet
+          </h2>
+          <p className="text-gray-500 mt-2">
+            There are no customizable tumblers right now.
+          </p>
+          <Link
+            to="/"
+            className="mt-6 inline-block px-6 py-2 bg-[#00C2D6] text-white rounded-lg hover:bg-[#00A0B0] transition"
+          >
             Go Home
           </Link>
         </div>
@@ -63,43 +98,55 @@ const CustomizePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
-            Choose Your <span className="text-Primary">Custom Tumbler</span>
-          </h1>
-          <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
-            Select a base design and personalise it with your own text, logo, and colours.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
+              Choose Your <span className="text-[#00C2D6]">Custom Tumbler</span>
+            </h1>
+            <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
+              Select a base design and personalise it with your own text, logo, and fonts.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              onClick={() => navigate(`/customize/${product._id}`)}
-              className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer border border-gray-100 hover:border-orange-500/30"
-            >
-              <div className="relative h-56 bg-gray-100 flex items-center justify-center p-4">
-                <img
-                  src={product.mainImage || 'https://placehold.co/400x400/FFF4E6/78350F?text=No+Image'}
-                  alt={product.name}
-                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-gray-800 truncate">{product.name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-2xl font-bold text-orange-500">₹{product.basePrice}</span>
-                  <span className="text-sm text-gray-400 flex items-center gap-1">
-                    Customise <FiChevronRight size={14} className="group-hover:translate-x-1 transition" />
-                  </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {customProducts.map((product) => (
+              <div
+                key={product._id}
+                onClick={() => navigate(`/customize/${product._id}`)}
+                className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer border border-gray-100 hover:border-[#00C2D6]/30"
+              >
+                <div className="relative h-56 bg-gray-100 flex items-center justify-center p-4">
+                  <img
+                    src={
+                      product.mainImage ||
+                      'https://placehold.co/400x400/FFF4E6/78350F?text=No+Image'
+                    }
+                    alt={product.name}
+                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
-                
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-800 truncate">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-2xl font-bold text-[#00C2D6]">
+                      ₹{product.basePrice}
+                    </span>
+                    <span className="text-sm text-gray-400 flex items-center gap-1">
+                      Customise{' '}
+                      <FiChevronRight
+                        size={14}
+                        className="group-hover:translate-x-1 transition"
+                      />
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
