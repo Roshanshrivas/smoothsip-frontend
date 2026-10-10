@@ -4,7 +4,7 @@ import apiClient from '../api/client';
 export const customProductService = {
   // ─── Public endpoints ──────────────────────────────
   fetchActiveProducts: async () => {
-    const response = await apiClient.get('/custom-products');
+    const response = await apiClient.get("/custom-products");
     return response.data.products;
   },
 
@@ -13,9 +13,21 @@ export const customProductService = {
     return response.data.product;
   },
 
+  // ─── Upload customer design (any logged-in user) ───
+  uploadDesignImage: async (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await apiClient.post(
+    '/admin/cloudinary/upload-design',     // same base path as your other routes
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return response.data; // { success, url, publicId }
+  },
+
   // ─── Admin endpoints ───────────────────────────────
   fetchCustomProducts: async () => {
-    const response = await apiClient.get('/admin/custom-products');
+    const response = await apiClient.get("/admin/custom-products");
     return response.data.products;
   },
 
@@ -25,7 +37,7 @@ export const customProductService = {
   },
 
   createCustomProduct: async (data) => {
-    const response = await apiClient.post('/admin/custom-products', data);
+    const response = await apiClient.post("/admin/custom-products", data);
     return response.data.product;
   },
 
@@ -39,27 +51,35 @@ export const customProductService = {
   },
 
   deleteCloudinaryImage: async (publicId) => {
-    await apiClient.post('/admin/cloudinary/delete-image', { publicId });
+    await apiClient.post("/admin/cloudinary/delete-image", { publicId });
   },
 
   // ─── NEW: Upload image to Cloudinary ──────────────
   uploadProductImage: async (file) => {
     const formData = new FormData();
-    formData.append('image', file);
-    const response = await apiClient.post('/admin/cloudinary/upload-product-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    formData.append("image", file);
+    const response = await apiClient.post(
+      "/admin/cloudinary/upload-product-image",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
     return response.data; // { url, publicId }
   },
 
   uploadProductImages: async (files) => {
     const formData = new FormData();
     for (const file of files) {
-      formData.append('images', file);
+      formData.append("images", file);
     }
-    const response = await apiClient.post('/admin/cloudinary/upload-product-images', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await apiClient.post(
+      "/admin/cloudinary/upload-product-images",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
     return response.data; // { urls: [], publicIds: [] }
   },
 };

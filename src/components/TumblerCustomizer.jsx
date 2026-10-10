@@ -12,6 +12,9 @@ import {
 import { CiUndo, CiRedo } from 'react-icons/ci';
 import { addCustomItemToCart } from '../store/slices/cartSlice';
 import { PersonalizedOrderPolicyCompact } from './PersonalizedOrderPolicy';
+import { customProductService } from '../services/customProductService';
+
+
 
 // ─── Available fonts (14 total) ───
 const AVAILABLE_FONTS = [
@@ -453,21 +456,35 @@ const TumblerCustomizer = ({
     toast.success(`Applied ${patternType} pattern`);
   };
 
-    // ---------- Add to Cart ----------
-    const addToCart = () => {
+  // ---------- Add to Cart ----------
+    const addToCart = async () => {
     const canvas = fabricCanvas.current;
     if (!canvas) return;
 
-    // 1. Full rendered composite image (tumbler + text + logo + patterns)
-    //    This is EXACTLY what the customer sees — same image goes everywhere.
-    const designImage = 
-      canvas.toDataURL({ 
-        format: "jpeg", 
-        quality: 0.85, 
-        multiplier: 1, 
-      });
+    // 1. Capture composite canvas as JPEG base64 (temporary)
+    const base64Image = canvas.toDataURL({
+      format: 'jpeg',
+      quality: 0.85,
+    });
 
-    // 2. Extract every text object so admin has structured data too
+    // 2. Convert base64 → Blob → File
+    const blob = await (await fetch(base64Image)).blob();
+    const file = new File([blob], `design-${Date.now()}.jpg`, {
+      type: 'image/jpeg',
+    });
+
+   // 3. Upload to Cloudinary
+    let designImage;
+    try {
+      const result = await customProductService.uploadDesignImage(file);
+      designImage = result.url;   // ✅ now a Cloudinary URL, NOT base64
+      if (!designImage) throw new Error('No URL returned');
+    } catch (err) {
+      toast.error('Failed to upload design. Please try again.');
+      return;
+    }
+
+    // 4. Extract text objects for admin
     const allTexts = canvas
       .getObjects()
       .filter((o) => o instanceof fabric.Textbox)
@@ -483,9 +500,9 @@ const TumblerCustomizer = ({
         width: Math.round((t.width || 0) * (t.scaleX || 1)),
       }));
 
-    // 3. Everything lives inside customization — backend already stores it
+    // 5. Send URL (not base64) to the cart
     const customizationData = {
-      designImage,                        // 👈 THE composite image
+      designImage,
       text: allTexts[0]?.text || userText,
       allTexts,
       font: allTexts[0]?.fontFamily || selectedFont,

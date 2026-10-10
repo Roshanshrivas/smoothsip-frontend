@@ -128,15 +128,17 @@ const CartDrawer = ({ isOpen, onClose }) => {
             </div>
           ) : (
             cartItems.map((item) => {
+              const isCustom = item.customization?.isCustom;
                const product = item.product || {};
                const cartItemId = item._id;
                if (!cartItemId) return null;
                const image = 
-               item.customization?.designImage || 
+               item.customization?.designImage ||
+               item.customization?.image || 
                product.mainImage || 
                (product.images && product.images[0]) || '';
-               const title = product.name || 'Product';
-               const price = product.price || 0;
+               const title = isCustom ? item.customization.name : (product.name || 'Product');
+               const price = isCustom ? item.customization.price : (product.price || 0);
                const quantity = item.quantity || 1;
 
                let color = item.customization?.color || null;

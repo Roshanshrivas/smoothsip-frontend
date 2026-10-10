@@ -193,7 +193,10 @@ const CartPage = () => {
   // ─── Calculations ──────────────────────────
   const itemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const rawSubtotal = cartItems.reduce((sum, item) => {
-    const price = item.product?.price || 0;
+    const isCustom = item.customization?.isCustom;
+    const price = isCustom
+    ? (item.customization?.price || 0)
+    : (item.product?.price || 0);
     return sum + price * item.quantity;
   }, 0);
 
@@ -361,6 +364,7 @@ const CartPage = () => {
               <div className="divide-y divide-gray-100">
                 <AnimatePresence>
                   {cartItems.map((item) => {
+                    const isCustom = item.customization?.isCustom;
                     const product = item.product || {};
                     const cartItemId = item._id;
                     const image =
@@ -368,8 +372,8 @@ const CartPage = () => {
                       product.mainImage ||
                       (product.images && product.images[0]) ||
                       "";
-                    const title = product.name || "Product";
-                    const price = product.price || 0;
+                    const title = isCustom ? item.customization.name : (product.name || "Product");
+                    const price = isCustom ? item.customization.price : (product.price || 0);
                     const quantity = item.quantity || 1;
                     const color = item.customization?.color || product.color;
                     const isInStock = product.stock > 0;
