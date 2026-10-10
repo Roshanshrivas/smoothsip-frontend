@@ -1,13 +1,52 @@
+// src/components/admin/customization/CustomProductForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Save, Package, Upload, X, Image as ImageIcon, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft, Save, Package, Upload, X,
+  Image as ImageIcon, Plus, Type, FileType,
+  LayoutGrid,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { customProductService } from "../../../services/customProductService";
+
+// ⚠️ MUST match AVAILABLE_FONTS in TumblerCustomizer.jsx
+const AVAILABLE_FONTS = [
+  "Poppins", "Playfair Display", "Oswald", "Dancing Script", "Pacifico",
+  "Bebas Neue", "Allura", "Bungee", "Cedarville Cursive", "Courgette",
+  "Permanent Marker", "Satisfy", "Great Vibes", "Luckiest Guy",
+];
+
+const DEFAULT_TEXT_AREA = { left: 50, top: 200, width: 400, height: 200 };
+const DEFAULT_LOGO_AREA = { left: 150, top: 50, width: 200, height: 150 };
 
 const extractPublicId = (url) => {
   if (!url) return null;
   const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(\.[^.]+)?$/);
-  return match ? match[1].replace(/\.[^.]+$/, '') : null;
+  return match ? match[1].replace(/\.[^.]+$/, "") : null;
+};
+
+// Normalize any legacy product shape → the flat shape TumblerCustomizer expects
+const normalizeProduct = (p) => {
+  const cust = p.customization || {};
+  return {
+    ...p,
+    description: p.description || "",
+    status: p.status || "Draft",
+    customization: {
+      text:    cust.text?.enabled    ?? cust.text    ?? true,
+      font:    cust.font?.enabled    ?? cust.font    ?? true,
+      logo:    cust.logo?.enabled    ?? cust.logo    ?? true,
+      pattern: cust.pattern?.enabled ?? cust.pattern ?? true,
+    },
+    allowedFonts: p.allowedFonts?.length
+      ? p.allowedFonts
+      : p.customization?.font?.options?.length
+        ? p.customization.font.options
+        : ["Poppins", "Playfair Display", "Dancing Script"],
+    textArea: p.textArea || DEFAULT_TEXT_AREA,
+    logoArea: p.logoArea || DEFAULT_LOGO_AREA,
+    images: p.images || [],
+  };
 };
 
 const CustomProductForm = () => {
@@ -26,42 +65,35 @@ const CustomProductForm = () => {
     mainImage: "",
     images: [],
     status: "Draft",
-    tumblerColor: "#1a1a1a",
     customization: {
       text: true,
-      color: true,
       font: true,
       logo: true,
       pattern: true,
     },
-    allowedColors: ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff", "#ff8c00"],
-    allowedFonts: ["Poppins", "Arial", "Georgia"],
-    textArea: { left: 50, top: 200, width: 400, height: 200 },
-    logoArea: { left: 150, top: 50, width: 200, height: 150 },
+    allowedFonts: ["Poppins", "Playfair Display", "Dancing Script"],
+    textArea: DEFAULT_TEXT_AREA,
+    logoArea: DEFAULT_LOGO_AREA,
   });
 
   // ─── Load product if editing ────────────────────────
   useEffect(() => {
-    if (isEditing) {
-      const loadProduct = async () => {
-        try {
-          const product = await customProductService.getCustomProductById(id);
-          setFormData({
-            ...product,
-            customization: product.customization || { text: true, color: true, font: true, logo: true, pattern: true },
-          });
-        } catch (error) {
-          toast.error("Failed to load product");
-          navigate("/admin/custom-products");
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadProduct();
-    }
+    if (!isEditing) return;
+    const loadProduct = async () => {
+      try {
+        const product = await customProductService.getCustomProductById(id);
+        setFormData(normalizeProduct(product));
+      } catch (error) {
+        toast.error("Failed to load product");
+        navigate("/admin/custom-products");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProduct();
   }, [id, isEditing, navigate]);
 
-  // ─── Handle single image upload (mainImage) ──────
+  // ─── Upload main image ──────────────────────────────
   const handleMainImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -73,28 +105,26 @@ const CustomProductForm = () => {
       toast.error("Image size must be less than 5MB.");
       return;
     }
-
-    // Upload to Cloudinary
     setUploading(true);
     try {
       const result = await customProductService.uploadProductImage(file);
-      if (!result.url) throw new Error('Upload failed');
-      setFormData(prev => ({ ...prev, mainImage: result.url }));
-      toast.success('Image uploaded to Cloudinary');
+      const url = result?.url || result;
+      if (!url) throw new Error("Upload failed");
+      setFormData((prev) => ({ ...prev, mainImage: url }));
+      toast.success("Image uploaded");
     } catch (error) {
-      toast.error(error.message || 'Failed to upload image');
+      toast.error(error.message || "Failed to upload image");
     } finally {
       setUploading(false);
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
-  // ─── Handle multiple images upload ────────────────
+  // ─── Upload additional images ───────────────────────
   const handleImagesChange = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
 
-    // Validate each file
     for (const file of files) {
       if (!["image/png", "image/jpeg", "image/webp", "image/svg+xml"].includes(file.type)) {
         toast.error(`"${file.name}" is not a supported image type.`);
@@ -109,45 +139,44 @@ const CustomProductForm = () => {
     setUploading(true);
     try {
       const result = await customProductService.uploadProductImages(files);
-      if (!result.urls || result.urls.length === 0) throw new Error('Upload failed');
-      // Append to existing images
-      setFormData(prev => ({
+      const urls = result?.urls || result;
+      if (!urls || !urls.length) throw new Error("Upload failed");
+      setFormData((prev) => ({
         ...prev,
-        images: [...prev.images, ...result.urls],
-        // If no mainImage set, set first uploaded as main
-        mainImage: prev.mainImage || result.urls[0],
+        images: [...prev.images, ...urls],
+        mainImage: prev.mainImage || urls[0],
       }));
-      toast.success(`${result.urls.length} images uploaded`);
+      toast.success(`${urls.length} image(s) uploaded`);
     } catch (error) {
-      toast.error(error.message || 'Failed to upload images');
+      toast.error(error.message || "Failed to upload images");
     } finally {
       setUploading(false);
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
-  // ─── Remove image ──────────────────────────────────
+  // ─── Remove additional image ────────────────────────
   const removeImage = async (index, url) => {
-    // If it's a Cloudinary URL, delete from Cloudinary
     const publicId = extractPublicId(url);
     if (publicId) {
       try {
         await customProductService.deleteCloudinaryImage(publicId);
       } catch (err) {
-        console.warn('Could not delete from Cloudinary:', err);
+        console.warn("Could not delete from Cloudinary:", err);
       }
     }
-    const updatedImages = [...formData.images];
-    updatedImages.splice(index, 1);
-    setFormData(prev => ({
-      ...prev,
-      images: updatedImages,
-      // If mainImage was removed, set new mainImage to first remaining
-      mainImage: prev.mainImage === url ? (updatedImages[0] || '') : prev.mainImage,
-    }));
+    setFormData((prev) => {
+      const updatedImages = [...prev.images];
+      updatedImages.splice(index, 1);
+      return {
+        ...prev,
+        images: updatedImages,
+        mainImage: prev.mainImage === url ? updatedImages[0] || "" : prev.mainImage,
+      };
+    });
   };
 
-  // ─── Remove main image ─────────────────────────────
+  // ─── Remove main image ──────────────────────────────
   const removeMainImage = async () => {
     const url = formData.mainImage;
     const publicId = extractPublicId(url);
@@ -155,58 +184,78 @@ const CustomProductForm = () => {
       try {
         await customProductService.deleteCloudinaryImage(publicId);
       } catch (err) {
-        console.warn('Could not delete from Cloudinary:', err);
+        console.warn("Could not delete from Cloudinary:", err);
       }
     }
-    setFormData(prev => ({
-      ...prev,
-      mainImage: prev.images[0] || '',
-    }));
+    setFormData((prev) => ({ ...prev, mainImage: prev.images[0] || "" }));
   };
 
-  // ─── Form field handlers ────────────────────────────
+  // ─── Field handlers ─────────────────────────────────
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCustomToggle = (key) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      customization: { ...prev.customization, [key]: !prev.customization[key] }
+      customization: { ...prev.customization, [key]: !prev.customization[key] },
     }));
+  };
+
+  const handleFontToggle = (font) => {
+    setFormData((prev) => {
+      const current = prev.allowedFonts || [];
+      const updated = current.includes(font)
+        ? current.filter((f) => f !== font)
+        : [...current, font];
+      return { ...prev, allowedFonts: updated };
+    });
   };
 
   const handleAreaChange = (area, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [area]: { ...prev[area], [field]: parseInt(value) || 0 }
+      [area]: { ...prev[area], [field]: parseInt(value) || 0 },
     }));
   };
 
-  const handleAllowedColorsChange = (e) => {
-    const colors = e.target.value.split(',').map(s => s.trim());
-    setFormData(prev => ({ ...prev, allowedColors: colors }));
-  };
-
-  const handleAllowedFontsChange = (e) => {
-    const fonts = e.target.value.split(',').map(s => s.trim());
-    setFormData(prev => ({ ...prev, allowedFonts: fonts }));
-  };
-
-  // ─── Submit ──────────────────────────────────────────
+  // ─── Submit ─────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return toast.error("Product name is required");
     if (formData.basePrice <= 0) return toast.error("Base price must be greater than 0");
     if (!formData.mainImage) return toast.error("Please upload a main image");
+    if (formData.customization.font && formData.allowedFonts.length === 0) {
+      return toast.error("Select at least one font");
+    }
+
+    // Build a clean payload — no tumblerColor, no allowedColors, no nested objects
+    const payload = {
+      name: formData.name.trim(),
+      description: formData.description || "",
+      basePrice: Number(formData.basePrice),
+      mainImage: formData.mainImage,
+      images: formData.images,
+      status: formData.status,
+      customization: {
+        text:    !!formData.customization.text,
+        font:    !!formData.customization.font,
+        logo:    !!formData.customization.logo,
+        pattern: !!formData.customization.pattern,
+      },
+      allowedFonts: formData.allowedFonts,
+      textArea: formData.textArea,
+      logoArea: formData.logoArea,
+    };
+
     setIsSaving(true);
     try {
       if (isEditing) {
-        await customProductService.updateCustomProduct(id, formData);
+        await customProductService.updateCustomProduct(id, payload);
         toast.success("Product updated");
       } else {
-        await customProductService.createCustomProduct(formData);
+        await customProductService.createCustomProduct(payload);
         toast.success("Product created");
       }
       navigate("/admin/custom-products");
@@ -227,6 +276,7 @@ const CustomProductForm = () => {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
         <Link to="/admin/custom-products" className="hover:text-orange-600 flex items-center gap-1">
           <ArrowLeft size={16} /> Custom Products
@@ -246,7 +296,7 @@ const CustomProductForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Basic Info */}
+          {/* ─── Basic Info ─── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium">Product Name *</label>
@@ -274,26 +324,8 @@ const CustomProductForm = () => {
             </div>
           </div>
 
+          {/* ─── Status ─── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium">Tumbler Color</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  name="tumblerColor"
-                  value={formData.tumblerColor}
-                  onChange={handleChange}
-                  className="w-12 h-12 rounded-lg border cursor-pointer"
-                />
-                <input
-                  type="text"
-                  name="tumblerColor"
-                  value={formData.tumblerColor}
-                  onChange={handleChange}
-                  className="flex-1 px-4 py-2 border rounded-lg"
-                />
-              </div>
-            </div>
             <div>
               <label className="block text-sm font-medium">Status</label>
               <select
@@ -306,10 +338,13 @@ const CustomProductForm = () => {
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Only <b>Active</b> products appear on the Customize page.
+              </p>
             </div>
           </div>
 
-          {/* Main Image Upload */}
+          {/* ─── Main Image ─── */}
           <div>
             <label className="block text-sm font-medium mb-2">Main Image *</label>
             <div className="flex items-center gap-4">
@@ -329,7 +364,7 @@ const CustomProductForm = () => {
                 onChange={handleMainImageChange}
                 className="hidden"
               />
-              {formData.mainImage && (
+              {formData.mainImage ? (
                 <div className="relative w-20 h-20 rounded-lg overflow-hidden border">
                   <img src={formData.mainImage} alt="Main" className="w-full h-full object-cover" />
                   <button
@@ -340,8 +375,7 @@ const CustomProductForm = () => {
                     <X size={14} />
                   </button>
                 </div>
-              )}
-              {!formData.mainImage && (
+              ) : (
                 <div className="w-20 h-20 rounded-lg border flex items-center justify-center text-gray-400">
                   <ImageIcon size={24} />
                 </div>
@@ -350,13 +384,13 @@ const CustomProductForm = () => {
             </div>
           </div>
 
-          {/* Multiple Images Upload */}
+          {/* ─── Additional Images ─── */}
           <div>
             <label className="block text-sm font-medium mb-2">Additional Images</label>
             <div className="flex items-center gap-4 flex-wrap">
               <button
                 type="button"
-                onClick={() => document.getElementById('multiImageInput')?.click()}
+                onClick={() => document.getElementById("multiImageInput")?.click()}
                 disabled={uploading}
                 className="flex items-center gap-2 px-4 py-2 border-2 border-dashed rounded-lg hover:border-orange-500"
               >
@@ -374,7 +408,7 @@ const CustomProductForm = () => {
               <div className="flex flex-wrap gap-2">
                 {formData.images.map((url, index) => (
                   <div key={index} className="relative w-16 h-16 rounded-lg overflow-hidden border">
-                    <img src={url} alt={`Image ${index+1}`} className="w-full h-full object-cover" />
+                    <img src={url} alt={`Image ${index + 1}`} className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removeImage(index, url)}
@@ -383,7 +417,9 @@ const CustomProductForm = () => {
                       <X size={12} />
                     </button>
                     {url === formData.mainImage && (
-                      <span className="absolute bottom-0 left-0 right-0 bg-orange-500 text-white text-[8px] text-center py-0.5">MAIN</span>
+                      <span className="absolute bottom-0 left-0 right-0 bg-orange-500 text-white text-[8px] text-center py-0.5">
+                        MAIN
+                      </span>
                     )}
                   </div>
                 ))}
@@ -392,7 +428,7 @@ const CustomProductForm = () => {
             <p className="text-xs text-gray-500 mt-1">Upload up to 10 additional images</p>
           </div>
 
-          {/* Description */}
+          {/* ─── Description ─── */}
           <div>
             <label className="block text-sm font-medium">Description</label>
             <textarea
@@ -405,72 +441,169 @@ const CustomProductForm = () => {
             />
           </div>
 
-          {/* Customisation Controls */}
+          {/* ─── Customization Options ─── */}
           <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Customisation Options</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-3">
-              {['text', 'color', 'font', 'logo', 'pattern'].map((key) => (
-                <label key={key} className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+              Customisation Options
+            </h3>
+            <p className="text-xs text-gray-500 mb-3">
+              These toggles control which sections appear in the customer customizer.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+              {[
+                { key: "text",    label: "Text",    icon: Type },
+                { key: "font",    label: "Font",    icon: FileType },
+                { key: "logo",    label: "Logo",    icon: ImageIcon },
+                { key: "pattern", label: "Pattern", icon: LayoutGrid },
+              ].map(({ key, label, icon: Icon }) => (
+                <label
+                  key={key}
+                  className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition ${
+                    formData.customization[key]
+                      ? "border-orange-300 bg-orange-50"
+                      : "border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
                   <input
                     type="checkbox"
-                    checked={formData.customization[key]}
+                    checked={!!formData.customization[key]}
                     onChange={() => handleCustomToggle(key)}
                     className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
                   />
-                  <span className="capitalize">{key}</span>
+                  <Icon size={16} className="text-orange-500" />
+                  <span className="capitalize text-sm">{label}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          {/* Allowed Colors & Fonts */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium">Allowed Colors (hex, comma)</label>
-              <input
-                type="text"
-                value={formData.allowedColors.join(', ')}
-                onChange={handleAllowedColorsChange}
-                className="w-full border rounded p-2 text-sm mt-1"
-                placeholder="#000000, #ffffff, #ff0000"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Allowed Fonts (comma)</label>
-              <input
-                type="text"
-                value={formData.allowedFonts.join(', ')}
-                onChange={handleAllowedFontsChange}
-                className="w-full border rounded p-2 text-sm mt-1"
-                placeholder="Poppins, Arial, Georgia"
-              />
-            </div>
-          </div>
-
-          {/* Placement Areas */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium">Text Area (L, T, W, H)</label>
-              <div className="flex gap-1">
-                <input type="number" value={formData.textArea.left} onChange={e => handleAreaChange('textArea', 'left', e.target.value)} className="w-1/4 border rounded p-1" placeholder="L" />
-                <input type="number" value={formData.textArea.top} onChange={e => handleAreaChange('textArea', 'top', e.target.value)} className="w-1/4 border rounded p-1" placeholder="T" />
-                <input type="number" value={formData.textArea.width} onChange={e => handleAreaChange('textArea', 'width', e.target.value)} className="w-1/4 border rounded p-1" placeholder="W" />
-                <input type="number" value={formData.textArea.height} onChange={e => handleAreaChange('textArea', 'height', e.target.value)} className="w-1/4 border rounded p-1" placeholder="H" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Logo Area (L, T, W, H)</label>
-              <div className="flex gap-1">
-                <input type="number" value={formData.logoArea.left} onChange={e => handleAreaChange('logoArea', 'left', e.target.value)} className="w-1/4 border rounded p-1" placeholder="L" />
-                <input type="number" value={formData.logoArea.top} onChange={e => handleAreaChange('logoArea', 'top', e.target.value)} className="w-1/4 border rounded p-1" placeholder="T" />
-                <input type="number" value={formData.logoArea.width} onChange={e => handleAreaChange('logoArea', 'width', e.target.value)} className="w-1/4 border rounded p-1" placeholder="W" />
-                <input type="number" value={formData.logoArea.height} onChange={e => handleAreaChange('logoArea', 'height', e.target.value)} className="w-1/4 border rounded p-1" placeholder="H" />
-              </div>
+          {/* ─── Allowed Fonts (checkbox grid) ─── */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Allowed Fonts
+              {formData.customization.font && (
+                <span className="text-xs text-gray-500 ml-2">
+                  ({formData.allowedFonts.length} selected — customers see these in the dropdown)
+                </span>
+              )}
+            </label>
+            <div
+              className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-64 overflow-y-auto border rounded-lg p-3 ${
+                formData.customization.font ? "" : "opacity-50 pointer-events-none"
+              }`}
+            >
+              {AVAILABLE_FONTS.map((font) => {
+                const checked = formData.allowedFonts.includes(font);
+                return (
+                  <label
+                    key={font}
+                    className={`flex items-center gap-2 text-sm p-2 rounded-lg transition cursor-pointer border ${
+                      checked
+                        ? "border-orange-300 bg-orange-50"
+                        : "border-transparent hover:bg-gray-50"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => handleFontToggle(font)}
+                      className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                    />
+                    <span style={{ fontFamily: font }}>{font}</span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
+          {/* ─── Placement Areas ─── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Text Area (L, T, W, H) — canvas is 500×700
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={formData.textArea.left}
+                  onChange={(e) => handleAreaChange("textArea", "left", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="L"
+                />
+                <input
+                  type="number"
+                  value={formData.textArea.top}
+                  onChange={(e) => handleAreaChange("textArea", "top", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="T"
+                />
+                <input
+                  type="number"
+                  value={formData.textArea.width}
+                  onChange={(e) => handleAreaChange("textArea", "width", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="W"
+                />
+                <input
+                  type="number"
+                  value={formData.textArea.height}
+                  onChange={(e) => handleAreaChange("textArea", "height", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="H"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Where the customer's text is constrained on the canvas.
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Logo Area (L, T, W, H)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={formData.logoArea.left}
+                  onChange={(e) => handleAreaChange("logoArea", "left", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="L"
+                />
+                <input
+                  type="number"
+                  value={formData.logoArea.top}
+                  onChange={(e) => handleAreaChange("logoArea", "top", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="T"
+                />
+                <input
+                  type="number"
+                  value={formData.logoArea.width}
+                  onChange={(e) => handleAreaChange("logoArea", "width", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="W"
+                />
+                <input
+                  type="number"
+                  value={formData.logoArea.height}
+                  onChange={(e) => handleAreaChange("logoArea", "height", e.target.value)}
+                  className="w-1/4 border rounded p-1.5 text-sm"
+                  placeholder="H"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Where the customer's logo is constrained on the canvas.
+              </p>
+            </div>
+          </div>
+
+          {/* ─── Actions ─── */}
           <div className="flex justify-end gap-3 pt-4 border-t">
-            <Link to="/admin/custom-products" className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</Link>
+            <Link
+              to="/admin/custom-products"
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            >
+              Cancel
+            </Link>
             <button
               type="submit"
               disabled={isSaving}
