@@ -512,6 +512,8 @@ const TumblerCustomizer = ({
     // 5. Send URL (not base64) to the cart
     const customizationData = {
       designImage,
+      productId: selectedTumbler._id,          // 👈 ADD THIS LINE
+      productName: selectedTumbler.name,
       text: allTexts[0]?.text || userText,
       allTexts,
       font: allTexts[0]?.fontFamily || selectedFont,
