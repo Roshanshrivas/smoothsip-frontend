@@ -86,7 +86,13 @@ const Checkout = () => {
   }, [addresses, selectedAddressId]);
 
   const cleanInvalidCartItems = () => {
-    const invalidItems = cartItems.filter((item) => !item.product);
+    const invalidItems = cartItems.filter((item) => {
+    // Custom items have product: null after populate() but are still valid
+    if (item.customization?.isCustom) return false;
+    // Regular items without a populated product are truly invalid
+    return !item.product;
+    });
+
     if (invalidItems.length > 0) {
       invalidItems.forEach((item) => {
         const itemId = item._id || item.id;
@@ -456,31 +462,45 @@ const Checkout = () => {
               </h2>
               <div className="space-y-4 max-h-60 overflow-y-auto mb-4">
                 {cartItems.map((item) => {
+                  const isCustom = item.customization?.isCustom;
                   const product = item.product || {};
+
+                  // Read from customization for custom items, from product for regular
+                  const image = isCustom
+                    ? item.customization?.designImage
+                    : product.image || product.mainImage;
+                  const title = isCustom
+                    ? item.customization?.name
+                    : product.title || product.name || "SmoothSip Item";
+                  const price = isCustom
+                    ? item.customization?.price || 0
+                    : product.price || 0;
+
                   return (
                     <div
                       key={item._id || item.id}
                       className="flex items-center gap-3 text-sm"
                     >
                       <img
-                        src={
-                          product.image ||
-                          product.mainImage ||
-                          "https://placehold.co/48x48"
-                        }
+                        src={image || "https://placehold.co/48x48"}
                         alt=""
                         className="w-12 h-12 object-cover rounded-lg bg-gray-50"
                       />
                       <div className="flex-grow min-w-0">
                         <p className="font-medium text-gray-800 truncate">
-                          {product.title || product.name || "SmoothSip Item"}
+                          {title}
+                          {isCustom && (
+                         <span className="ml-1.5 text-[10px] font-bold text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded">
+                           CUSTOM
+                         </span>
+                        )}
                         </p>
                         <p className="text-gray-500">
-                          ₹{product.price || 0} × {item.quantity}
+                          ₹{price} × {item.quantity}
                         </p>
                       </div>
                       <span className="font-semibold text-gray-800">
-                        ₹{(product.price || 0) * (item.quantity || 1)}
+                        ₹{price * (item.quantity || 1)}
                       </span>
                     </div>
                   );
