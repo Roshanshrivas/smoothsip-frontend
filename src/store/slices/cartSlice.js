@@ -38,19 +38,16 @@ export const addToCart = createAsyncThunk(
 // ─── NEW: Add custom item (designImage + customization) ───
 export const addCustomItemToCart = createAsyncThunk(
   'cart/addCustomItem',
-  async ({ productId, name, price, quantity, designImage, customization }, { rejectWithValue }) => {
+  async ({ productId, quantity, customization }, { rejectWithValue }) => {
     try {
-      // Use apiClient directly (or you can add a method to cartService)
+      // Backend stores `customization` as-is (Mixed type) — designImage already inside
       const response = await apiClient.post('/cart/add', {
         productId,
-        name,
-        price,
         quantity,
-        designImage,
         customization,
       });
       toast.success('Added to cart! 🎉');
-      return response.data; // expects { cart: { items, totalItems, subtotal, shipping } }
+      return response.data;
     } catch (error) {
       const msg = error.response?.data?.message || 'Failed to add custom item';
       toast.error(msg);

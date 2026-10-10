@@ -131,7 +131,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
                const product = item.product || {};
                const cartItemId = item._id;
                if (!cartItemId) return null;
-               const image = product.mainImage || (product.images && product.images[0]) || '';
+               const image = 
+               item.customization?.designImage || 
+               product.mainImage || 
+               (product.images && product.images[0]) || '';
                const title = product.name || 'Product';
                const price = product.price || 0;
                const quantity = item.quantity || 1;

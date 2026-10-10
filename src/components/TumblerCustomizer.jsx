@@ -453,30 +453,56 @@ const TumblerCustomizer = ({
     toast.success(`Applied ${patternType} pattern`);
   };
 
-  // ---------- Add to Cart ----------
-  const addToCart = () => {
+    // ---------- Add to Cart ----------
+    const addToCart = () => {
     const canvas = fabricCanvas.current;
     if (!canvas) return;
-    const designImage = canvas.toDataURL({ format: 'png', quality: 1 });
+
+    // 1. Full rendered composite image (tumbler + text + logo + patterns)
+    //    This is EXACTLY what the customer sees — same image goes everywhere.
+    const designImage = 
+      canvas.toDataURL({ 
+        format: "jpeg", 
+        quality: 0.85, 
+        multiplier: 1, 
+      });
+
+    // 2. Extract every text object so admin has structured data too
+    const allTexts = canvas
+      .getObjects()
+      .filter((o) => o instanceof fabric.Textbox)
+      .map((t) => ({
+        text: t.text || "",
+        fontFamily: t.fontFamily || "Poppins",
+        fontSize: Math.round(t.fontSize || 34),
+        fontWeight: String(t.fontWeight || "700"),
+        fontStyle: t.fontStyle || "normal",
+        fill: t.fill || "#111111",
+        left: Math.round(t.left || 0),
+        top: Math.round(t.top || 0),
+        width: Math.round((t.width || 0) * (t.scaleX || 1)),
+      }));
+
+    // 3. Everything lives inside customization — backend already stores it
     const customizationData = {
-      productId: selectedTumbler._id,
-      productName: selectedTumbler.name,
-      text: userText,
-      font: selectedFont,
-      fontSize,
-      fontWeight,
-      fontStyle,
+      designImage,                        // 👈 THE composite image
+      text: allTexts[0]?.text || userText,
+      allTexts,
+      font: allTexts[0]?.fontFamily || selectedFont,
+      fontSize: allTexts[0]?.fontSize || fontSize,
+      fontWeight: allTexts[0]?.fontWeight || fontWeight,
+      fontStyle: allTexts[0]?.fontStyle || fontStyle,
       hasDesign: !!activeDesignObject,
-      pattern: activeDesignObject ? 'pattern' : null,
+      pattern: activeDesignObject ? "pattern" : null,
     };
+
     dispatch(
       addCustomItemToCart({
         productId: selectedTumbler._id,
         name: selectedTumbler.name,
         price: selectedTumbler.basePrice,
         quantity: 1,
-        designImage,
-        customization: customizationData,
+        customization: customizationData,   // 👈 design image inside here
       })
     );
   };

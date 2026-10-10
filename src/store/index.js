@@ -9,6 +9,7 @@ import uiReducer from './slices/uiSlice';
 import addressesReducer from './slices/addressSlice';
 import couponReducer from './slices/couponSlice';
 import notificationReducer from './slices/notificationSlice';
+import customProductsReducer from "./slices/customProductsSlice";
 
 
 export const store = configureStore({
@@ -22,6 +23,7 @@ export const store = configureStore({
     addresses: addressesReducer,
     coupons: couponReducer,
     notifications: notificationReducer,
+    customProducts: customProductsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

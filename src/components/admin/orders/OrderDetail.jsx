@@ -363,6 +363,69 @@ const OrderDetail = () => {
                 </tbody>
               </table>
             </div>
+             {/* ═══════════════════════════════════════════
+    CUSTOMER DESIGNS — for production
+    ═══════════════════════════════════════════ */}
+{order.items?.some((i) => i.customization?.designImage) && (
+  <div className="border-t border-gray-200 dark:border-gray-800 bg-orange-50/40 dark:bg-orange-950/10 p-5">
+    <h4 className="font-semibold text-sm text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+      <Package size={16} className="text-orange-500" />
+      Customer Designs — Send to Production
+    </h4>
+
+    <div className="space-y-4">
+      {order.items.map((item, idx) => {
+        if (!item.customization?.designImage) return null;
+        return (
+          <div
+            key={idx}
+            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4"
+          >
+            <div className="flex justify-between items-start mb-3 gap-3">
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white text-sm">
+                  {item.name}
+                  <span className="text-gray-400 font-normal"> · Qty {item.quantity}</span>
+                </p>
+                {/* Text metadata */}
+                {item.customization?.allTexts?.length > 0 && (
+                  <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                    {item.customization.allTexts.map((t, i) => (
+                      <div key={i}>
+                        <span style={{ fontFamily: t.fontFamily }} className="font-medium text-gray-700">
+                          "{t.text}"
+                        </span>
+                        <span className="text-gray-400 ml-2">
+                          {t.fontFamily} · {t.fontSize}px · {t.fontWeight}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <a
+                href={item.customization.designImage}
+                download={`design-${item.sku || item.name}-${idx}.jpg`}
+                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+              >
+                <Download size={12} /> Download
+              </a>
+            </div>
+
+            <div className="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 p-3 flex justify-center">
+              <img
+                src={item.customization.designImage}
+                alt="Customer design"
+                className="max-h-72 object-contain"
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
           </div>
         </div>
       </div>

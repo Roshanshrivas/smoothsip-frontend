@@ -1,33 +1,27 @@
 // src/pages/CustomizePage.jsx
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { FiGrid, FiChevronRight } from 'react-icons/fi';
-import toast from 'react-hot-toast';
-import { customProductService } from '../services/customProductService';
-import TumblerCustomizer from '../components/TumblerCustomizer';
+import React, { useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { FiGrid, FiChevronRight } from "react-icons/fi";
+import TumblerCustomizer from "../components/TumblerCustomizer";
+import { fetchCustomProducts } from "../store/slices/customProductsSlice";
 
 const CustomizePage = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const [customProducts, setCustomProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
-  // Load all custom products once
+  // Pull from Redux — no local state, no direct API
+  const { items: customProducts, status } = useSelector((s) => s.customProducts);
+
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await customProductService.fetchActiveProducts();
-        setCustomProducts(data || []);
-      } catch (err) {
-        toast.error('Failed to load custom products');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    // Thunk skips the request automatically if cached < 1 hour
+    dispatch(fetchCustomProducts());
+  }, [dispatch]);
 
-  // ─── Case 1: /customize/:id → productId is a CustomProduct ID ───
+  const loading = status === "idle" || status === "loading";
+
+  // ─── Single product view ───
   if (productId && !loading) {
     const match = customProducts.find(
       (cp) => String(cp._id) === String(productId)
@@ -43,7 +37,6 @@ const CustomizePage = () => {
       );
     }
 
-    // Not found → show friendly error
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md text-center border border-gray-100">
@@ -65,7 +58,6 @@ const CustomizePage = () => {
     );
   }
 
-  // ─── Loading ───
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -74,15 +66,13 @@ const CustomizePage = () => {
     );
   }
 
-  // ─── Case 2: /customize → grid of all custom templates ───
+  // ─── Grid view ───
   if (customProducts.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md text-center border border-gray-100">
           <FiGrid size={48} className="mx-auto text-gray-300 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800">
-            No Custom Templates Yet
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-800">No Custom Templates Yet</h2>
           <p className="text-gray-500 mt-2">
             There are no customizable tumblers right now.
           </p>
@@ -119,10 +109,7 @@ const CustomizePage = () => {
               >
                 <div className="relative h-56 bg-gray-100 flex items-center justify-center p-4">
                   <img
-                    src={
-                      product.mainImage ||
-                      'https://placehold.co/400x400/FFF4E6/78350F?text=No+Image'
-                    }
+                    src={product.mainImage || "https://placehold.co/400x400/FFF4E6/78350F?text=No+Image"}
                     alt={product.name}
                     className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                   />
@@ -136,7 +123,7 @@ const CustomizePage = () => {
                       ₹{product.basePrice}
                     </span>
                     <span className="text-sm text-gray-400 flex items-center gap-1">
-                      Customise{' '}
+                      Customise{" "}
                       <FiChevronRight
                         size={14}
                         className="group-hover:translate-x-1 transition"

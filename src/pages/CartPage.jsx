@@ -364,6 +364,7 @@ const CartPage = () => {
                     const product = item.product || {};
                     const cartItemId = item._id;
                     const image =
+                      item.customization?.designImage ||
                       product.mainImage ||
                       (product.images && product.images[0]) ||
                       "";
