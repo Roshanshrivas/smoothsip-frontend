@@ -20,6 +20,7 @@ import {
   selectCartSubtotal,
   clearCart,
   removeFromCart,
+  fetchCart,
 } from "../store/slices/cartSlice";
 import {
   selectAllAddresses,
@@ -73,6 +74,7 @@ const Checkout = () => {
   const [showAddressModal, setShowAddressModal] = useState(false);
 
   useEffect(() => {
+    dispatch(fetchCart());
     if (isAuthenticated) dispatch(fetchAddresses());
   }, [dispatch, isAuthenticated]);
 
