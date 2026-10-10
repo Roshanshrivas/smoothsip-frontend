@@ -1,16 +1,21 @@
-// src/data/policies.js
+// src/utils/policies.js
 // All policy content in one place — update here, updates everywhere.
-// Replace placeholders (support@smoothsip.in, smoothsip.in) with real values.
 
 const CONTACT = {
-  brand: 'Smooth Sip',
-  email: 'support@smoothsip.in',
+  brand: 'SmoothSip',
+  email: 'connectsmoothsip@gmail.com',
   website: 'smoothsip.in',
   gst: '24AXLPG7588B1ZC',
   instagram: '@smoothsip',
+  phone: '+91 9109575185',
+  addressBhopal: '28/1 Shirdipuram, Mandakini Society, Kolar Road, Bhopal, Madhya Pradesh – 462042',
+  addressMumbai: 'Building No. RB II/27, Quarter No. 4, near Parel Railway Station, Mumbai, Maharashtra – 400012',
 };
 
 export const policies = {
+  /* ═══════════════════════════════════════════════
+     PRIVACY POLICY
+  ═══════════════════════════════════════════════ */
   'privacy-policy': {
     slug: 'privacy-policy',
     title: 'Privacy Policy',
@@ -19,298 +24,296 @@ export const policies = {
       {
         heading: 'Introduction',
         body: [
-          `At ${CONTACT.brand}, we respect your privacy and are committed to keeping your personal information safe. This Privacy Policy explains what information we collect, why we collect it, and how we use it when you visit our website, place an order, contact us, or use our services.`,
+          `At ${CONTACT.brand}, we respect your privacy and are committed to keeping your personal information safe.`,
+          'When you visit our website or place an order, we may collect information such as your name, phone number, email address, delivery address, payment details, and order information.',
         ],
       },
       {
-        heading: '1. Information We Collect',
-        body: [`When you use our website or place an order, we may collect information such as:`],
+        heading: 'How We Use Your Information',
+        body: ['We use your information to:'],
         list: [
-          'Name, email address and phone number',
-          'Billing and shipping address',
-          'Order and payment-related information',
-          'Personalization details you provide for customized products',
-          'Information you provide when contacting our customer support',
-          'Basic website usage information such as device, browser, and interaction with our website',
+          'Process and deliver your orders.',
+          'Contact you regarding your order or delivery.',
+          'Provide customer support.',
+          'Process payments and refunds.',
+          'Improve our website, products, and customer experience.',
+          'Send promotional offers or updates, if you have agreed to receive them.',
         ],
-        after: ['We only collect information that is reasonably required to provide our products and services.'],
+        after: ['We do not sell or rent your personal information to other companies.'],
       },
       {
-        heading: '2. How We Use Your Information',
-        body: ['We may use your information to:'],
-        list: [
-          'Process and deliver your orders',
-          'Process payments and provide order confirmations',
-          'Provide customer support and respond to your queries',
-          'Manage personalized/customized orders',
-          'Improve our website, products, and customer experience',
-          'Prevent fraud, misuse, or unauthorized activity',
-          'Send promotional communication where permitted and applicable',
-        ],
-        after: ['We do not sell your personal information to third parties.'],
-      },
-      {
-        heading: '3. Payments & Shipping',
+        heading: 'Payment Information',
         body: [
-          'Payments are processed through trusted payment service providers. We do not store your complete card, UPI, or banking credentials on our website.',
-          'To deliver your order, necessary information such as your name, phone number, and delivery address may be shared with our shipping and logistics partners.',
+          `${CONTACT.brand} does not store your complete card, UPI, or banking details on its own servers. Payments are processed through secure payment partners.`,
         ],
       },
       {
-        heading: '4. Cookies',
+        heading: 'Cookies',
         body: [
-          'Our website may use cookies and similar technologies to remember preferences, understand website usage, and improve your shopping experience.',
-          'You can manage or disable cookies through your browser settings. Some website features may not work properly if cookies are disabled.',
+          'Our website may use cookies and similar technologies to improve website performance, understand customer behaviour, and provide a better shopping experience.',
         ],
       },
       {
-        heading: '5. Third-Party Services',
+        heading: 'Third-Party Services',
         body: [
-          'We may use trusted third-party service providers for payment processing, shipping, website hosting, analytics, customer support, and other services required to operate our business.',
-          'These providers may process information only as necessary to provide their services and may have their own privacy policies.',
+          'We may work with trusted third-party service providers such as payment gateways, shipping partners, and technology providers to complete your order and provide our services.',
         ],
       },
       {
-        heading: '6. Data Security',
+        heading: 'Your Privacy',
         body: [
-          'We take reasonable steps to protect your personal information from unauthorized access, misuse, loss, or disclosure. However, no online system can guarantee complete security.',
-          'Please avoid sharing sensitive information through unsecured communication channels.',
-        ],
-      },
-      {
-        heading: '7. How Long We Keep Your Information',
-        body: [
-          'We retain personal information only for as long as reasonably necessary to provide our services, complete transactions, meet legal or accounting requirements, resolve disputes, and protect our business.',
-          'When information is no longer required, we may securely delete or anonymize it, subject to applicable legal requirements.',
-        ],
-      },
-      {
-        heading: '8. Your Privacy Rights',
-        body: [
-          'Depending on applicable law, you may have rights regarding your personal information, including requesting access, correction, or deletion, or withdrawing consent where processing is based on consent.',
-          'To make a privacy-related request, please contact us using the details below. We may need to verify your identity before processing your request.',
-        ],
-      },
-      {
-        heading: "9. Children's Privacy",
-        body: [
-          'Our website is not intended for children to independently place orders or provide personal information. If you believe a child has provided personal information to us, please contact us so that we can take appropriate action.',
-        ],
-      },
-      {
-        heading: '10. Changes to This Policy',
-        body: [
-          'We may update this Privacy Policy when our practices, services, or legal requirements change. Any updated version will be published on this page with a revised "Last Updated" date.',
-        ],
-      },
-      {
-        heading: '11. Contact Us',
-        body: [
-          'If you have any questions about this Privacy Policy or how we handle your personal information, please contact us:',
-        ],
-        contact: true,
-      },
-    ],
-  },
-
-  'refund-policy': {
-    slug: 'refund-policy',
-    title: 'Returns & Refunds',
-    lastUpdated: 'October 2026',
-    sections: [
-      {
-        heading: 'Overview',
-        body: [
-          'We want you to love your Smooth Sip purchase. Please check your order as soon as it arrives.',
-        ],
-      },
-      {
-        heading: 'Returns',
-        body: [
-          'Return requests are accepted within 7 days of delivery for eligible products. Items must be unused, undamaged, and in their original packaging with all accessories.',
-          'To request a return, please contact us with your order number and details of the issue.',
-        ],
-      },
-      {
-        heading: 'Damaged or Incorrect Products',
-        body: [
-          'Please contact us within 48 hours of delivery with clear photos or videos of the product and packaging. After verification, we will arrange a replacement or refund.',
-        ],
-      },
-      {
-        heading: 'Personalised Products',
-        body: [
-          'Personalised tumblers are made especially for you and cannot be returned unless they arrive damaged or incorrect.',
-        ],
-      },
-      {
-        heading: 'Exchanges',
-        body: [
-          'Exchanges are available for eligible damaged, defective, or incorrect products.',
-        ],
-      },
-      {
-        heading: 'Refunds',
-        body: [
-          'Once we receive and inspect your return, we will notify you about your refund. Approved refunds will be processed to your original payment method within 7–10 business days. Processing times may vary by payment provider.',
-        ],
-      },
-      {
-        heading: 'Need Help?',
-        body: [
-          `For any questions, please get in touch with us through our Contact Us page or at ${CONTACT.email}.`,
+          'By using our website, you agree to this Privacy Policy. If you have any questions about how your information is used, please contact SmoothSip through our Contact Us page.',
+          `${CONTACT.brand} may update this Privacy Policy from time to time. Any changes will be posted on this page.`,
         ],
       },
     ],
   },
 
+  /* ═══════════════════════════════════════════════
+     SHIPPING POLICY
+  ═══════════════════════════════════════════════ */
   'shipping-policy': {
     slug: 'shipping-policy',
-    title: 'Shipping, Returns & Refund Policy',
+    title: 'Shipping Policy',
     lastUpdated: 'October 2026',
     sections: [
       {
         heading: 'Overview',
         body: [
-          'At Smooth Sip, we believe your shopping experience should be as smooth as your sip. Here\'s everything you need to know about your order.',
+          `At ${CONTACT.brand}, we carefully pack every order so that your tumbler reaches you safely.`,
         ],
       },
       {
-        heading: '🚚 Shipping',
+        heading: 'Shipping Across India',
+        body: [`We currently ship ${CONTACT.brand} products across India.`],
+      },
+      {
+        heading: 'Order Processing',
         body: [
-          'We offer FREE SHIPPING across India.',
-          'Orders are usually delivered within 7–12 business days after confirmation.',
-          'Delivery may take a little longer during weekends, public holidays, extreme weather, or unexpected courier delays.',
-          "Once your order leaves our warehouse, you'll receive a shipping confirmation with tracking details.",
-          'Tracking may take up to 48 hours to start showing updates.',
+          'Orders are generally processed after successful order confirmation and payment.',
+          'For customised tumblers, please allow additional processing time as the product needs to be personalised before dispatch.',
         ],
       },
       {
-        heading: "📦 Where's My Order?",
+        heading: 'Delivery Time',
         body: [
-          'Use the tracking details shared with you to follow your shipment.',
-          "If your order hasn't arrived within 20 days of receiving the shipping confirmation, simply reach out to us with your order number, and our team will help you check the status.",
+          'Estimated delivery time is generally 7–12 business days, depending on your location and the courier service.',
+          'Delivery may take slightly longer during:',
+        ],
+        list: [
+          'Festivals and holidays',
+          'Sale periods',
+          'Unexpected courier delays',
+          'Weather or other circumstances beyond our control',
         ],
       },
       {
-        heading: '↩️ Returns',
+        heading: 'Tracking',
         body: [
-          'Changed your mind? No worries.',
-          'Return requests can be made within 7 days of delivery.',
-          'The tumbler must be unused, undamaged, and in its original packaging.',
-          'Products that have been used, damaged after delivery, or returned without their original packaging may not be eligible for return.',
-          "Once we receive and inspect the product, we'll confirm whether it qualifies for a refund or replacement.",
-          'Personalised tumblers will not be replaced or refunded.',
-          'Applicable return shipping charges may be deducted from the refund.',
+          'Once your order is dispatched, tracking details may be shared with you through your registered contact details.',
         ],
       },
       {
-        heading: '💔 Damaged, Defective, or Wrong Product?',
+        heading: 'Incorrect Address',
         body: [
-          "We've got you.",
-          'If your order arrives damaged, defective, or incorrect, contact us as soon as possible with your order number and clear photos/videos of the product and packaging.',
-          "After reviewing the issue, we'll work with you on the appropriate solution, which may include a replacement or refund.",
+          'Please make sure your shipping address, phone number, and other delivery details are correct before placing your order.',
+          `${CONTACT.brand} is not responsible for delays or failed delivery caused by incorrect or incomplete information provided by the customer.`,
         ],
       },
       {
-        heading: '💰 Refunds',
+        heading: 'Damaged Package',
         body: [
-          'For approved refunds, the eligible amount will be processed after the returned product has been received and inspected. The time taken for the amount to reflect in your account may depend on your payment method or bank.',
-        ],
-      },
-      {
-        heading: '💬 Need Help?',
-        body: [
-          'Still have a question? We\'re happy to help.',
-          `Reach out to the ${CONTACT.brand} Support Team through our Contact Us page with your order details, and we'll get back to you as soon as possible.`,
+          'If your package arrives damaged, please contact us as soon as possible with clear photos/videos of the package and product so that we can review the issue.',
+          'For any shipping-related questions, please contact our customer support team.',
         ],
       },
     ],
   },
 
+  /* ═══════════════════════════════════════════════
+     CANCELLATION POLICY
+  ═══════════════════════════════════════════════ */
   'cancellation-policy': {
     slug: 'cancellation-policy',
     title: 'Cancellation Policy',
     lastUpdated: 'October 2026',
     sections: [
       {
-        heading: 'Cancellations',
-        body: ['At Smooth Sip, we keep cancellations simple:'],
-        list: [
-          "Orders can be cancelled within 24 hours of placing the order, provided they haven't been processed or shipped.",
-          'Personalised orders cannot be cancelled once placed.',
-          'Once an order is shipped, cancellation is not possible.',
-          'For eligible cancellations, refunds will be processed after confirmation and may take a few business days to reflect.',
+        heading: 'Overview',
+        body: [
+          'We understand that sometimes you may need to cancel an order.',
         ],
       },
       {
-        heading: 'Need Help?',
+        heading: 'Cancellation Window',
         body: [
-          `For cancellation assistance, please contact us through our Contact Us page with your order number.`,
+          'You can request cancellation of your order within 12 hours of placing the order.',
+          'After 12 hours, the order cannot be cancelled, as it may already have entered our processing or shipping process.',
+        ],
+      },
+      {
+        heading: 'Customised Products',
+        body: [
+          'Customised products require additional preparation and personalisation. Therefore, once the cancellation window of 12 hours has passed, the order cannot be cancelled.',
+        ],
+      },
+      {
+        heading: 'How to Request Cancellation',
+        body: [
+          'To request a cancellation, contact SmoothSip through our Contact Us page with your order details as soon as possible.',
+          'Cancellation requests received after 12 hours will not be accepted.',
+          'If an eligible cancellation is approved, the applicable refund will be processed according to our Refund Policy.',
         ],
       },
     ],
   },
 
+  /* ═══════════════════════════════════════════════
+     REFUND & RETURN POLICY
+  ═══════════════════════════════════════════════ */
+  'refund-policy': {
+    slug: 'refund-policy',
+    title: 'Refund & Return Policy',
+    lastUpdated: 'October 2026',
+    sections: [
+      {
+        heading: 'Overview',
+        body: [
+          `We want you to be happy with your ${CONTACT.brand} purchase. If there is a genuine issue with your product, we are here to help.`,
+        ],
+      },
+      {
+        heading: '7-Day Return Policy',
+        body: [
+          'Eligible products can be returned within 7 days of delivery.',
+          'The product must be unused, undamaged, and in its original condition with the original packaging and accessories.',
+        ],
+      },
+      {
+        heading: 'Customised Products',
+        body: [
+          'Customised/personalised products cannot be returned, replaced, or exchanged.',
+          "This includes products personalised with a customer's name or other approved personalisation.",
+          'Please carefully check your personalisation details before placing your order.',
+        ],
+      },
+      {
+        heading: 'Damaged or Defective Product',
+        body: [
+          'If you receive a damaged, defective, or incorrect product, please contact us as soon as possible after delivery.',
+          'We may ask you to provide photographs or videos of the product and packaging so that we can verify the issue.',
+          `If the issue is approved, ${CONTACT.brand} may offer a replacement or another appropriate resolution.`,
+        ],
+      },
+      {
+        heading: 'Return Conditions',
+        body: ['A return may not be accepted if:'],
+        list: [
+          'The product has been used or damaged by the customer.',
+          'The product is returned without its original packaging or accessories.',
+          'The issue is caused by normal wear and tear.',
+          'The product has been customised/personalised.',
+          'The return request is made after the 7-day return period.',
+        ],
+      },
+      {
+        heading: 'Refund',
+        body: [
+          'Once an approved return is received and inspected, we will process the applicable refund.',
+          'The refund amount and method may depend on the original payment method and the reason for the return.',
+          'Shipping charges, if applicable, may not be refundable.',
+          `${CONTACT.brand} reserves the right to reject returns that do not meet the conditions mentioned above.`,
+        ],
+      },
+    ],
+  },
+
+  /* ═══════════════════════════════════════════════
+     TERMS OF SERVICE
+  ═══════════════════════════════════════════════ */
   'terms-of-service': {
     slug: 'terms-of-service',
     title: 'Terms of Service',
     lastUpdated: 'October 2026',
     sections: [
       {
-        heading: 'Welcome',
+        heading: '1. Website Content',
         body: [
-          `Welcome to ${CONTACT.brand}. By visiting our website or purchasing our products, you agree to use our website and services responsibly and in accordance with these terms.`,
+          'We put effort into making our website informative, useful, and visually accurate.',
+          `All text, photographs, graphics, videos, product visuals, designs, icons, logos, and other content displayed on the ${CONTACT.brand} website are created for the ${CONTACT.brand} brand or used with appropriate permission.`,
+          'The content is provided for personal shopping and informational purposes.',
         ],
       },
       {
-        heading: '1. Using Our Website',
+        heading: '2. Ownership of Brand Content',
         body: [
-          'Our website is intended for personal and genuine shopping purposes. Please provide accurate information while creating an order, including your name, contact details, shipping address, and payment information.',
-          'We may restrict or cancel orders that appear to contain incorrect information, suspicious activity, or misuse of our services.',
+          `The ${CONTACT.brand} name, logo, branding, product presentation, website design, original content, photographs, graphics, videos, and other creative materials belong to ${CONTACT.brand} or their respective authorised owners.`,
+          `No part of the website may be copied, reproduced, republished, modified, distributed, or commercially used without prior written permission from ${CONTACT.brand}.`,
         ],
       },
       {
-        heading: '2. Products & Information',
+        heading: '3. Product Use',
         body: [
-          'We make every effort to display our products, colours, specifications, images, and prices as accurately as possible. However, slight differences in colour or appearance may occur depending on your screen or device.',
-          'Product availability can change without prior notice. If a product becomes unavailable after you place an order, we will contact you and provide an appropriate resolution.',
+          `${CONTACT.brand} products are designed for their intended everyday use.`,
+          'Customers should use, clean, store, and maintain products according to the care instructions provided with the product or on the website.',
+          `${CONTACT.brand} products should not be intentionally misused, modified, or used for purposes for which they are not designed.`,
         ],
       },
       {
-        heading: '3. Pricing & Payments',
+        heading: '4. Personalisation Details',
         body: [
-          'All prices shown on our website are displayed in Indian Rupees (₹) unless stated otherwise. We reserve the right to update product prices, offers, or promotions when required.',
-          'Orders are confirmed only after successful payment or confirmation of the applicable payment method.',
+          'Where personalisation is available, the customer is responsible for providing the correct name or information they want to be added to the product.',
+          'Customers should carefully review their entered details before confirming an order.',
+          `${CONTACT.brand} will not be responsible for mistakes that result from incorrect information submitted by the customer.`,
         ],
       },
       {
-        heading: '4. Orders & Delivery',
+        heading: '5. Customer Accounts',
         body: [
-          'Once an order is placed, you are responsible for ensuring that the information provided is correct. Delivery timelines are estimates and may be affected by courier delays, holidays, weather, or circumstances outside our control.',
-          'Please refer to our Shipping Policy and Cancellation Policy for further details.',
+          'Certain features of the website may require customers to provide account or contact information.',
+          'Customers are responsible for maintaining the confidentiality of their account credentials and for activities carried out through their account.',
+          `If you believe your account has been accessed without your permission, you should inform ${CONTACT.brand} promptly.`,
         ],
       },
       {
-        heading: '5. Returns & Refunds',
+        heading: '6. Promotions & Offers',
         body: [
-          'Returns, replacements, and refunds are handled according to our Shipping, Returns & Refund Policy. Please review that policy before making a purchase.',
+          `From time to time, ${CONTACT.brand} may introduce promotional campaigns, discount codes, rewards, contests, or other special offers.`,
+          'Individual promotions may have specific conditions, eligibility requirements, usage limits, or validity periods. These conditions will apply to the relevant promotion.',
+          `${CONTACT.brand} may change or discontinue a promotional campaign when reasonably required.`,
         ],
       },
       {
-        heading: '6. Website Content',
+        heading: '7. Website Availability',
         body: [
-          `All ${CONTACT.brand} branding, logos, product photographs, graphics, text, and other original website content belong to ${CONTACT.brand} or its respective owners. They may not be copied, reproduced, modified, or used commercially without permission.`,
+          `We aim to keep the ${CONTACT.brand} website accessible and functioning properly.`,
+          'However, certain features may occasionally be unavailable because of maintenance, updates, technical problems, internet-related issues, or other circumstances outside our reasonable control.',
+          'Temporary unavailability does not affect your right to contact us regarding an existing order or customer query.',
         ],
       },
       {
-        heading: '7. Changes to These Terms',
-        body: [
-          'We may update these terms whenever necessary. Any revised version will be published on this page, and continued use of our website means you accept the updated terms.',
+        heading: '8. Prohibited Activities',
+        body: [`While using the ${CONTACT.brand} website, you must not:`],
+        list: [
+          'Use the website for unlawful purposes.',
+          'Attempt to gain unauthorised access to any part of the website.',
+          'Introduce harmful code, viruses, or other malicious technology.',
+          "Interfere with the website's operation or security.",
+          'Use automated systems to copy or collect website content without permission.',
+          'Impersonate another person or provide misleading information.',
+          `Use ${CONTACT.brand}'s brand or content for unauthorised commercial purposes.`,
         ],
       },
       {
-        heading: '8. Contact Us',
+        heading: '9. Changes to the Website',
+        body: [
+          `${CONTACT.brand} may add, remove, modify, or improve website features, product categories, content, tools, or other website elements as the brand grows.`,
+          'We may also update these Terms of Service when necessary.',
+          'The version published on the website will be considered the current version of these terms.',
+        ],
+      },
+      {
+        heading: 'Contact Us',
         body: [
           'For questions and queries related to our terms of service, please reach out to us using the details below.',
         ],

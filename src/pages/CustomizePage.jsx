@@ -96,20 +96,7 @@ const CustomizePage = () => {
                     Customise <FiChevronRight size={14} className="group-hover:translate-x-1 transition" />
                   </span>
                 </div>
-                {product.allowedColors && (
-                  <div className="flex gap-1 mt-3">
-                    {product.allowedColors.slice(0, 4).map((color, idx) => (
-                      <span
-                        key={idx}
-                        className="w-5 h-5 rounded-full border border-gray-200 shadow-sm"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                    {product.allowedColors.length > 4 && (
-                      <span className="text-xs text-gray-400 ml-1">+{product.allowedColors.length - 4}</span>
-                    )}
-                  </div>
-                )}
+                
               </div>
             </div>
           ))}

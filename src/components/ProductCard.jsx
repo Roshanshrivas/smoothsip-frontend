@@ -155,6 +155,7 @@ const ProductCard = ({ product, displayTag = null }) => {
           {product.title}
         </h3>
         {/* RATING */}
+        {product.rating > 0 && product.reviews > 0 && (
         <div className="flex items-center gap-1 mb-1">
           <div className="flex text-[20px]">
             {renderStars(product.rating)}
@@ -163,8 +164,9 @@ const ProductCard = ({ product, displayTag = null }) => {
             ({product.reviews})
           </span>
         </div>
+        )}
         {/* PRICE */}
-        <div className="flex items-center gap-2 mb-2 sm:mb-4">
+        <div className="flex items-center mt-4 gap-2 mb-2 sm:mb-4">
           <span className="text-[19px] sm:text-xl md:text-2xl font-bold text-[#21BFC8]">
             ₹{product.price}
           </span>

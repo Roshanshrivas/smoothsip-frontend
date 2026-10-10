@@ -13,28 +13,7 @@ import {
 } from "react-icons/fi";
 import { bannerService } from "../services/bannerService";
 
-const fallbackVideos = [
-  {
-    url: "https://res.cloudinary.com/dbkpwluh0/video/upload/v1789737213/a5da4176c7c04131abb796b8d37edfea.HD-720p-1.6Mbps-87464406_zoe04n.mp4",
-    caption: "Kiki's morning hydration ritual 🐕 #MyTumblerStyle",
-  },
-  {
-    url: "https://res.cloudinary.com/dbkpwluh0/video/upload/v1789737227/94f8f04997014e67aa8038d524083983.HD-1080p-7.2Mbps-65495277_e5v7jz.mp4",
-    caption: "Cold brew, warm vibes ☕ Custom engraved tumbler",
-  },
-  {
-    url: "https://res.cloudinary.com/dbkpwluh0/video/upload/v1789737221/39214cc84ee84d409c1c4504b391a171.HD-720p-1.6Mbps-89573504_hh3fsv.mp4",
-    caption: "Safari-ready hydration 🌿 24oz Matte Black",
-  },
-  {
-    url: "https://res.cloudinary.com/dbkpwluh0/video/upload/v1789737211/aa68f15259d64d62a6682ac0bcec8b67.HD-1080p-2.5Mbps-37924130_gmtudk.mp4",
-    caption: "Gym day essentials 💪 Stay cold for 24 hours",
-  },
-  {
-    url: "https://res.cloudinary.com/demo/video/upload/cld-sample-video.mp4",
-    caption: "Personalized for Priya 💕 Rose Gold Edition",
-  },
-];
+const fallbackVideos = [];
 
 // ─── Helper: Detect and construct embed URL with autoplay parameters ──
 const getEmbedUrl = (url) => {
@@ -344,16 +323,7 @@ const UGCReels = () => {
 
   // ─── Empty State ─────────────────────────────────────────
   if (videos.length === 0) {
-    return (
-      <section ref={sectionRef} className="w-full py-16 bg-gradient-to-b from-[#EAF9FB]/40 via-white to-[#f0f8fa]">
-        <div className="text-center text-gray-500 max-w-md mx-auto px-4">
-          <p className="text-base font-medium">No UGC videos yet. Be the first to share your custom tumbler!</p>
-          <p className="text-sm mt-2">
-            Tag us on social media with <span className="font-semibold text-[#14C6D8]">#MyTumblerStyle</span>
-          </p>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   return (

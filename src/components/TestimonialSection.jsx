@@ -231,7 +231,7 @@ const TestimonialSection = () => {
           </div>
 
           {/* BOTTOM – Trust banner */}
-          <div className="hidden sm:flex bg-[#00C2D6] text-white p-5 sm:px-8 flex-col lg:flex-row items-center justify-between gap-6">
+          <div className="hidden bg-[#00C2D6] text-white p-5 sm:px-8 flex-col lg:flex-row items-center justify-between gap-6">
             {/* Left message */}
             <div className="flex items-center gap-3 text-center sm:text-left">
               <div className="w-11 h-11 rounded-full bg-white text-[#00C2D6] flex items-center justify-center shadow-xs flex-shrink-0">

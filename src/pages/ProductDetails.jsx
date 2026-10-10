@@ -55,6 +55,47 @@ const formatWeight = (grams) => {
     }
   };
 
+  // ─── Reusable dropdown box ───
+const DropdownBox = ({ title, children, defaultOpen = false }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+      >
+        <span className="font-bold text-gray-900 text-xs sm:text-sm tracking-wide">
+          {title}
+        </span>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="inline-flex text-gray-500"
+        >
+          <FiChevronDown className="text-base" />
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 py-3 text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 // ─── Description truncation config ───────────────────
 const DESCRIPTION_LIMIT = 150;
 
@@ -157,6 +198,9 @@ const InfoCard = ({ icon, title, text, index }) => {
     </motion.div>
   );
 };
+
+// Only show stars + analytics when a product has enough real reviews
+const MIN_REVIEWS_TO_SHOW_RATING = 45;
 
 // ========== MAIN COMPONENT ==========
 const ProductDetailsPage = () => {
@@ -279,6 +323,48 @@ const ProductDetailsPage = () => {
               <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-normal">
                 {product.description}
               </p>
+
+              {/* ─── Dropdown Boxes (What's in the box + Instructions) ─── */}
+        <div className="space-y-3 pt-1">
+          <DropdownBox title="What's in the box?" defaultOpen={true}>
+            <ul className="space-y-1.5 list-none">
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>SmoothSip 1200ml tumbler</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>Straw set (a pair of straw, cleaning brush)</span>
+              </li>
+            </ul>
+          </DropdownBox>
+
+          <DropdownBox title="Instructions" defaultOpen={false}>
+            <ul className="space-y-2 list-none">
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>Hand wash only; avoid scrubbing.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>Color and print may vary slightly due to lighting effects.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>The personalised items will not be returned or exchanged.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>Text will be personalized using laser engraving.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#ff6b35] shrink-0" />
+                <span>Orders cannot be cancelled once placed, after 12 hours.</span>
+              </li>
+            </ul>
+          </DropdownBox>
+        </div>
+        
               {/* ─── Key Features ─── */}
               {product.features && product.features.length > 0 && (
                 <div className="pt-2 border-t border-gray-100">
@@ -682,12 +768,14 @@ const ProductDetailsPage = () => {
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mt-2.5">
                       {product.title}
                     </h1>
+                    {product.rating > 0 && product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && (
                     <div className="flex items-center gap-3 mt-3.5 flex-wrap">
                       {renderStars(product.rating)}
                       <span className="text-gray-500 font-semibold text-xs sm:text-sm">
                         ({product.reviews} Verified Customer Reviews)
                       </span>
                     </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 border-b border-gray-100 pb-5 flex-wrap">
@@ -703,39 +791,11 @@ const ProductDetailsPage = () => {
                     </span>
                   </div>
 
-                  {/* ─── Description with Read More ─── */}
-                  <div className="space-y-2">
-                    <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-normal">
-                      {showFullDescription
-                        ? product.description
-                        : getTruncatedDescription(product.description)}
-                    </p>
-                    {product.description &&
-                      product.description.length > DESCRIPTION_LIMIT && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowFullDescription((prev) => !prev)
-                          }
-                          className="text-xs sm:text-sm font-bold text-[#ff6b35] hover:text-[#e05621] transition-colors inline-flex items-center gap-1 group"
-                        >
-                          {showFullDescription ? "Show Less" : "Read More"}
-                          <motion.span
-                            animate={{ rotate: showFullDescription ? 180 : 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="inline-flex"
-                          >
-                            <FiChevronDown className="text-base" />
-                          </motion.span>
-                        </button>
-                      )}
-                  </div>
-
                   <div className="hidden sm:grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <FeatureCard icon={<BsSnow />} title="Cold 24H" index={0} />
+                    <FeatureCard icon={<BsSnow />} title="Cold 12H" index={0} />
                     <FeatureCard
                       icon={<BsCupHot />}
-                      title="Hot 12H"
+                      title="Hot 8H"
                       index={1}
                     />
                     <FeatureCard
@@ -862,9 +922,19 @@ const ProductDetailsPage = () => {
           </div>
 
           {/* ─── TABS & REVIEWS (Desktop: Tabs | Mobile: Accordion) ─── */}
-          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 mt-12 sm:mt-16 md:mt-20">
+          <div className={`grid gap-6 lg:gap-8 mt-12 sm:mt-16 md:mt-20 ${
+            loading || 
+             (product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && product.rating > 0)
+              ? "lg:grid-cols-3"
+              : "lg:grid-cols-1"
+              }`} >
             {/* Left column: Tabs (desktop) + Accordion (mobile) */}
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ${
+               loading ||
+               (product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && product.rating > 0)
+                 ? "lg:col-span-2"
+                 : "lg:col-span-1"
+                 }`}>
               {/* ─── Desktop Tabs ─────────────────────────────── */}
               <div className="hidden md:block border-b border-gray-100 px-6 md:px-8 pt-4">
                 <div className="flex gap-6 md:gap-8 overflow-x-auto scrollbar-none">
@@ -976,7 +1046,7 @@ const ProductDetailsPage = () => {
                 <SkeletonText width="w-full" height="h-20" className="mt-4" />
                 <SkeletonText width="w-full" height="h-10" className="mt-6" />
               </div>
-            ) : (
+            ) : product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && product.rating > 0 ? (
               <motion.div
                 variants={fadeUp}
                 className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm flex flex-col justify-between h-fit lg:sticky lg:top-6"
@@ -987,7 +1057,7 @@ const ProductDetailsPage = () => {
                   </h3>
                   <div className="flex items-baseline gap-2 mt-3 sm:mt-4">
                     <span className="text-3xl sm:text-4xl font-bold text-gray-900">
-                      {product.rating}
+                      {product.rating.toFixed(1)}
                     </span>
                     <span className="text-gray-400 font-semibold text-sm">
                       / 5.0
@@ -1000,43 +1070,38 @@ const ProductDetailsPage = () => {
                     )}
                   </div>
                   <div className="space-y-2 sm:space-y-2.5 mt-4 sm:mt-6 border-t border-gray-50 pt-4 sm:pt-5">
-                    {[
-                      { stars: 5, percentage: "82%" },
-                      { stars: 4, percentage: "12%" },
-                      { stars: 3, percentage: "4%" },
-                      { stars: 2, percentage: "1%" },
-                      { stars: 1, percentage: "1%" },
-                    ].map((row, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center text-[10px] sm:text-xs text-gray-600 font-medium gap-2 sm:gap-3"
-                      >
-                        <span className="w-3 text-right font-bold">
-                          {row.stars}★
-                        </span>
-                        <div className="flex-1 h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#ffb800] rounded-full"
-                            style={{ width: row.percentage }}
-                          />
+                    {[5, 4, 3, 2, 1].map((star) => {
+                      const count = product.ratingsBreakdown?.[star] || 0;
+                      const pct = product.reviews > 0 ? Math.round((count / product.reviews) * 100) : 0;
+                      return (
+                        <div key={star} className="flex items-center text-[10px] sm:text-xs text-gray-600 font-medium gap-2 sm:gap-3">
+                          <span className="w-3 text-right font-bold">{star}★</span>
+                          <div className="flex-1 h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#ffb800] rounded-full transition-all duration-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="w-6 sm:w-8 text-right text-gray-400 font-bold">
+                            {pct}%
+                          </span>
                         </div>
-                        <span className="w-6 sm:w-8 text-right text-gray-400 font-bold">
-                          {row.percentage}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                      })}
                   </div>
+                  <p className="text-[11px] text-gray-400 mt-3 text-center">
+                    Based on {product.reviews} verified reviews
+                  </p>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full mt-6 sm:mt-8 border-2 border-gray-900 text-gray-900 font-bold py-2.5 sm:py-3 rounded-xl text-sm transition-all hover:bg-gray-900 hover:text-white bg-white"
-                >
+                  className="w-full mt-6 sm:mt-8 border-2 border-gray-900 text-gray-900 font-bold py-2.5 sm:py-3 rounded-xl text-sm transition-all hover:bg-gray-900 hover:text-white bg-white">
                   Write a Review
                 </motion.button>
               </motion.div>
-            )}
-          </div>
+            ) : null }
+            </div>
 
           {/* Logistics Info Cards */}
           <motion.div
@@ -1048,7 +1113,7 @@ const ProductDetailsPage = () => {
             <InfoCard
               icon={<FiTruck />}
               title="Free Shipping Protection"
-              text="Automatically active on all configurations crossing ₹999 total bounds."
+              text="Automatically active on all configurations."
               index={0}
             />
             <InfoCard
@@ -1199,7 +1264,7 @@ const ProductDetailsPage = () => {
       </motion.div>
     </>
   );
-};;
+};
 
 // Skeleton Card for related products
 const SkeletonCard = () => (

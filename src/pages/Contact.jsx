@@ -160,27 +160,22 @@ const Contact = () => {
     {
       id: 1,
       question: "What are your business hours?",
-      answer: "We are open Monday through Saturday from 10:00 AM to 7:00 PM. We are closed on Sundays and major public holidays.",
+      answer: "Our customer support team is available Monday to Saturday, from 10:00 AM to 6:00 PM IST. You can contact us during these hours, and we'll be happy to assist you.",
     },
     {
       id: 2,
       question: "How long does shipping take?",
-      answer: "Standard shipping typically takes 3-5 business days. Express shipping is available for 1-2 business days. You'll receive a tracking number once your order ships.",
+      answer: "Orders are typically delivered within 7-12 business days across India. Delivery times may vary depending on your location, order processing time,festivals,sales or natural phenomenon . You will receive tracking details once your order is shipped.",
     },
     {
       id: 3,
       question: "Can I customize my tumbler?",
-      answer: "Yes! We offer custom text engraving, logo printing, and color customization. Visit our Customize page to design your perfect tumbler.",
+      answer: "Yes! SmoothSip offers personalization options on tumblers. You can explore our Personalize It section to customize your tumbler and create something uniquely yours.",
     },
     {
       id: 4,
       question: "What is your return policy?",
-      answer: "We offer a 30-day hassle-free return policy on all unused products in original packaging. For customized items, returns are handled on a case-by-case basis.",
-    },
-    {
-      id: 5,
-      question: "Do you ship internationally?",
-      answer: "Yes, we ship to over 30 countries worldwide. Shipping costs and delivery times vary by destination. Contact us for a specific quote.",
+      answer: "We want you to be happy with your SmoothSip purchase. If you receive a damaged, defective, or incorrect product, please contact our customer support team with your order details and photos of the product. Returns and exchanges are subject to our return policy.",
     },
   ];
 
@@ -198,19 +193,25 @@ const Contact = () => {
     {
       icon: Phone,
       label: "Phone",
-      value: "+91",
-      sub: "Mon–Sat, 10 AM – 7 PM",
+      value: "+91 9109575185",
+      sub: "Mon–Sat, 10 AM – 6 PM",
     },
     {
       icon: MapPin,
-      label: "Address",
+      label: "Bhopal Office",
       value: "28/1 Shirdipuram, Mandakini society, Kolar Road, Bhopal (M.P.), 462042",
-      sub: "Uttar Pradesh, India - 201301",
+      sub: "Madhya Pradesh",
+    },
+    {
+      icon: MapPin,
+      label: "Mumbai Office",
+      value: "Building No. RB II/27, Quarter No. 4, near Parel Railway Station, Mumbai, Maharashtra, 400012",
+      sub: "Maharashtra",
     },
     {
       icon: Clock,
       label: "Business Hours",
-      value: "Mon–Sat: 10 AM – 7 PM",
+      value: "Mon–Sat: 10:00 AM – 6:00 PM",
       sub: "Sunday: Closed",
     },
   ];
@@ -218,8 +219,6 @@ const Contact = () => {
   const socialLinks = [
     { icon: FaInstagramSquare, label: "Instagram", href: "https://www.instagram.com/smoothsip.co"},
     { icon: FaFacebook, label: "Facebook", href: "#" },
-    { icon: FaTwitterSquare, label: "Twitter", href: "#" },
-    { icon: FaYoutube, label: "YouTube", href: "#" },
   ];
 
   return (
@@ -244,8 +243,8 @@ const Contact = () => {
               We'd Love to <span className="text-[#00C2D6]">Hear From You</span>
             </h1>
             <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Have questions, feedback, or want to collaborate? Reach out to us – we're
-              here to help and would love to connect.
+              Have questions, feedback, or want to collaborate? Reach out to us
+              – we're here to help and would love to connect.
             </p>
           </motion.div>
         </div>
@@ -267,7 +266,8 @@ const Contact = () => {
                 Send Us a Message
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                Fill in the details below and we'll get back to you as soon as possible.
+                Fill in the details below and we'll get back to you as soon as
+                possible.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -277,14 +277,19 @@ const Contact = () => {
                       Full Name <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <User
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={18}
+                      />
                       <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-4 py-2.5 border ${
-                          formErrors.name ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                          formErrors.name
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
                         } rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00C2D6] focus:border-transparent outline-none transition-all`}
                         placeholder="John Doe"
                       />
@@ -301,14 +306,19 @@ const Contact = () => {
                       Email Address <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <Mail
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={18}
+                      />
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-4 py-2.5 border ${
-                          formErrors.email ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                          formErrors.email
+                            ? "border-red-500"
+                            : "border-gray-200 dark:border-gray-700"
                         } rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00C2D6] focus:border-transparent outline-none transition-all`}
                         placeholder="john@example.com"
                       />
@@ -326,14 +336,19 @@ const Contact = () => {
                     Subject <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Building
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
                     <input
                       type="text"
                       name="subject"
                       value={formData.subject}
                       onChange={handleChange}
                       className={`w-full pl-10 pr-4 py-2.5 border ${
-                        formErrors.subject ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                        formErrors.subject
+                          ? "border-red-500"
+                          : "border-gray-200 dark:border-gray-700"
                       } rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00C2D6] focus:border-transparent outline-none transition-all`}
                       placeholder="How can we help you?"
                     />
@@ -355,7 +370,9 @@ const Contact = () => {
                     onChange={handleChange}
                     rows="5"
                     className={`w-full px-4 py-2.5 border ${
-                      formErrors.message ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                      formErrors.message
+                        ? "border-red-500"
+                        : "border-gray-200 dark:border-gray-700"
                     } rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00C2D6] focus:border-transparent outline-none transition-all resize-none`}
                     placeholder="Write your message here..."
                   />
@@ -397,7 +414,8 @@ const Contact = () => {
                     className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl text-green-700 dark:text-green-300 text-sm flex items-center gap-2"
                   >
                     <CheckCircle size={16} />
-                    Your message was sent successfully! We'll get back to you soon.
+                    Your message was sent successfully! We'll get back to you
+                    soon.
                   </motion.div>
                 )}
               </form>
@@ -468,43 +486,103 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* ===== MAP / LOCATION SECTION ===== */}
+      {/* ===== MAPS / LOCATION SECTION (Bhopal + Mumbai) ===== */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
+            className="text-center max-w-2xl mx-auto mb-10"
           >
-            <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Find Us Here
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Visit our store or reach out to us at our headquarters.
-              </p>
-            </div>
-            <div className="relative h-64 md:h-80 bg-gray-200 dark:bg-gray-800">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2201.9333578133965!2d77.41778721829023!3d23.18463357745719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c43007d942bc7%3A0x1fe81e50e9599373!2sMandakini%20Colony%2C%20Kolar%20Road!5e0!3m2!1sen!2sus!4v1791278400234!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Tumbler Studio Location"
-                className="w-full h-full"
-              />
-              <div className="absolute bottom-4 left-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg px-4 py-2 border border-gray-200 dark:border-gray-700">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  📍 28/1 Shirdipuram, Mandakini society, Kolar Road, Bhopal (M.P.), 462042
-                </p>
-              </div>
-            </div>
+            <SectionBadge text="Our Locations" />
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+              Find Us Here
+            </h2>
+            <p className="mt-4 text-gray-500 dark:text-gray-400">
+              Visit us at either of our offices — we'd love to meet you.
+            </p>
           </motion.div>
+
+          {/* Two Maps Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* ─── Bhopal Map ─── */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
+            >
+              <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#E6F9FA] dark:bg-[#00C2D6]/20 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-[#00C2D6]" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                    Bhopal Office
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
+                    28/1 Shirdipuram, Mandakini Society, Kolar Road, Bhopal,
+                    Madhya Pradesh – 462042
+                  </p>
+                </div>
+              </div>
+              <div className="relative h-64 md:h-80 bg-gray-200 dark:bg-gray-800">
+                <iframe
+                  src="https://www.google.com/maps?q=Mandakini+Colony,+Kolar+Road,+Bhopal,+Madhya+Pradesh+462042&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Smooth Sip Bhopal Office"
+                  className="w-full h-full"
+                />
+              </div>
+            </motion.div>
+
+            {/* ─── Mumbai Map ─── */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              transition={{ delay: 0.1 }}
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden"
+            >
+              <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#E6F9FA] dark:bg-[#00C2D6]/20 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-[#00C2D6]" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                    Mumbai Office
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
+                    Building No. RB II/27, Quarter No. 4, near Parel Railway
+                    Station, Mumbai, Maharashtra – 400012
+                  </p>
+                </div>
+              </div>
+              <div className="relative h-64 md:h-80 bg-gray-200 dark:bg-gray-800">
+                <iframe
+                  src="https://www.google.com/maps?q=Parel+Railway+Station,+Mumbai,+Maharashtra+400012&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Smooth Sip Mumbai Office"
+                  className="w-full h-full"
+                />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -523,7 +601,8 @@ const Contact = () => {
               Frequently Asked Questions
             </h2>
             <p className="mt-4 text-gray-500 dark:text-gray-400">
-              Find quick answers to common questions about our products and services.
+              Find quick answers to common questions about our products and
+              services.
             </p>
           </motion.div>
 
@@ -555,7 +634,7 @@ const Contact = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Still have questions?{" "}
               <a
-                href="mailto:support@tumblerstudio.com"
+                href="mailto:connectsmoothsip@gmail.com"
                 className="text-[#00C2D6] hover:text-[#00A0B0] font-medium transition"
               >
                 Contact our support team
@@ -579,8 +658,8 @@ const Contact = () => {
               Let's Create Something Amazing Together
             </h2>
             <p className="text-[#D6F5F8] text-lg max-w-2xl mx-auto mb-8">
-              Whether you have a question, a collaboration idea, or just want to say hi
-              – we're always excited to hear from you.
+              Whether you have a question, a collaboration idea, or just want to
+              say hi – we're always excited to hear from you.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
@@ -588,12 +667,6 @@ const Contact = () => {
                 className="px-8 py-3 bg-white text-[#00C2D6] hover:bg-[#E6F9FA] rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
               >
                 <Mail size={18} /> Email Us
-              </a>
-              <a
-                href="#"
-                className="px-8 py-3 border-2 border-white text-white hover:bg-white/10 rounded-xl font-semibold transition-all flex items-center gap-2"
-              >
-                <MessageCircle size={18} /> Live Chat
               </a>
             </div>
           </motion.div>

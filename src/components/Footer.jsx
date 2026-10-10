@@ -38,8 +38,6 @@ const Footer = () => {
   const socialLinks = [
     { icon: <FiInstagram />, url: "https://www.instagram.com/smoothsip.co?stkn=YW0xMDB4Nzk1bjBj", label: "Instagram", color: "#E4405F" },
     { icon: <FiFacebook />, url: "https://facebook.com", label: "Facebook", color: "#1877F2" },
-    { icon: <FiTwitter />, url: "https://twitter.com", label: "Twitter", color: "#1DA1F2" },
-    { icon: <FiYoutube />, url: "https://youtube.com", label: "YouTube", color: "#FF0000" },
   ];
 
   const paymentMethods = [
@@ -81,7 +79,7 @@ const Footer = () => {
             <Link to="/" className="inline-block">
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-bold text-white tracking-tight">
-                  Smooth<span className="text-[#14C6D8]"> Sip</span>
+                  Smooth<span className="text-[#14C6D8]">Sip</span>
                 </span>
               </div>
             </Link>
@@ -142,45 +140,29 @@ const Footer = () => {
 
           {/* Contact & Newsletter */}
           <motion.div variants={itemVariants}>
-            <h3 className="text-white font-semibold text-lg mb-4">Get in Touch</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">Our locations</h3>
             <ul className="space-y-3 mb-6">
               <li className="flex items-start gap-3 text-sm text-gray-400">
                 <FiMapPin className="mt-0.5 flex-shrink-0 text-[#14C6D8]" />
                 <span>28/1 Shirdipuram, Mandakini society, Kolar Road, Bhopal, 462042</span>
               </li>
+              <li className="flex items-start gap-3 text-sm text-gray-400">
+                <FiMapPin className="mt-0.5 flex-shrink-0 text-[#14C6D8]" />
+                <span>Building No. RB II/27, Quarter No. 4, near Parel Railway Station, Mumbai, Maharashtra, 400012</span>
+              </li>
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <FiMail className="flex-shrink-0 text-[#14C6D8]" />
-                <a href="mailto:hello@tumblerco.com" className="hover:text-[#14C6D8] transition">
+                <a href="mailto:connectsmoothsip@gmail.com" className="hover:text-[#14C6D8] transition">
                   connectsmoothsip@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <FiPhone className="flex-shrink-0 text-[#14C6D8]" />
-                <a href="tel:+911234567890" className="hover:text-[#14C6D8] transition">
-                  +91 9999999998
+                <a href="tel:+919109575185" className="hover:text-[#14C6D8] transition">
+                  +91 9109575185
                 </a>
               </li>
             </ul>
-
-            {/* Newsletter */}
-            <div className="mt-4">
-              <p className="text-sm text-gray-400 mb-2">Subscribe for offers</p>
-              <form className="flex" onSubmit={(e) => e.preventDefault()}>
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-l-md text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#09AFC0] transition"
-                />
-                <motion.button
-                  type="submit"
-                  className="px-3 py-2 bg-[#14C6D8] text-white rounded-r-md hover:bg-[#09AFC0] transition"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FiArrowRight size={18} />
-                </motion.button>
-              </form>
-            </div>
           </motion.div>
         </motion.div>
 

@@ -55,7 +55,6 @@ const Home = () => {
          {/* News Letter section */}
          {/* <Newsletter/> */}
        </div>
-
       </div>
     </>
   )

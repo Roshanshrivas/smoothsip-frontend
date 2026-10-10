@@ -44,7 +44,7 @@ export default function BrandPanel() {
             </svg>
           </div>
           <div>
-            <span className="text-xl font-black tracking-[0.2em] text-white block leading-none drop-shadow-md">TUMBLRÉ</span>
+            <span className="text-xl font-black text-white block leading-none drop-shadow-md">SmoothSip</span>
             <span className="text-[10px] text-white/90 font-medium tracking-wider drop-shadow">Sip • Style • Repeat</span>
           </div>
         </div>
@@ -62,16 +62,16 @@ export default function BrandPanel() {
 
           {/* Feature grid */}
           <div className="grid grid-cols-2 gap-3 max-w-md mt-8">
-            <FeatureBadge icon={<Snowflake className="w-3 h-3" />} title="24H Cold" desc="Keeps drinks cold for 24h" />
-            <FeatureBadge icon={<Flame className="w-3 h-3" />} title="12H Hot" desc="Keeps drinks hot for 12h" />
-            <FeatureBadge icon={<ShieldCheck size={14} />} title="Premium SS304" desc="Food grade steel" />
+            <FeatureBadge icon={<Snowflake className="w-3 h-3" />} title="12H Cold" desc="Keeps drinks cold for 12h" />
+            <FeatureBadge icon={<Flame className="w-3 h-3" />} title="8H Hot" desc="Keeps drinks hot for 8h" />
+            <FeatureBadge icon={<ShieldCheck size={14} />} title="Premium" desc="Food grade steel" />
             <FeatureBadge icon={<Leaf size={14} />} title="BPA Free" desc="Non‑toxic & safe" />
           </div>
         </div>
 
         {/* Trust ribbon */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white/10 backdrop-blur-lg p-3 rounded-xl border border-white/30 shadow-lg">
-          <TrustItem icon={<Truck size={14} />} title="Free Delivery" desc="Orders above ₹499" />
+          <TrustItem icon={<Truck size={14} />} title="Free Delivery" desc="Orders" />
           <TrustItem icon={<ShieldCheck size={14} />} title="Secure Payment" desc="100% encrypted" />
           <TrustItem icon={<RefreshCw size={12} />} title="Easy Returns" desc="Hassle free" />
           <TrustItem icon={<Headphones size={14} />} title="Support" desc="24/7 care" />

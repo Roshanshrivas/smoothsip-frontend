@@ -487,9 +487,6 @@ const CartPage = () => {
                     <h4 className="text-sm font-bold text-gray-900">
                       Secure Checkout
                     </h4>
-                    <p className="text-sm text-gray-400 font-medium">
-                      100% safe & secure payments
-                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-gray-100 pt-3 sm:pt-0 sm:pl-6">
@@ -500,9 +497,7 @@ const CartPage = () => {
                     <h4 className="text-sm font-bold text-gray-900">
                       Free Shipping
                     </h4>
-                    <p className="text-sm text-gray-400 font-medium">
-                      On orders above ₹499
-                    </p>
+                    
                   </div>
                 </div>
               </div>
@@ -675,7 +670,7 @@ const CartPage = () => {
 
                 {/* Tax line - always show */}
                 <div className="flex justify-between text-gray-600">
-                  <span>Tax (12%)</span>
+                  <span>GST</span>
                   <span className="font-bold text-gray-900">₹{tax}</span>
                 </div>
 
@@ -687,7 +682,7 @@ const CartPage = () => {
                     {shippingCost === 0 ? "Free" : `₹${shippingCost}`}
                   </span>
                 </div>
-                
+
                 <div className="border-t border-gray-100 pt-4 flex justify-between text-base font-extrabold text-gray-900">
                   <span>Total</span>
                   <span className="text-2xl font-black text-[#00C2D6]">
@@ -712,7 +707,7 @@ const CartPage = () => {
                     Have a coupon?
                   </span>
                 </div>
-                <div className="flex gap-2 mt-2">
+                <div className="flex flex-col sm:flex-row gap-2 mt-3">
                   <input
                     type="text"
                     placeholder="Enter coupon code"
@@ -720,26 +715,39 @@ const CartPage = () => {
                     onChange={(e) =>
                       setCouponCode(e.target.value.toUpperCase())
                     }
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#14C6D8] focus:border-transparent outline-none"
+                    className="w-full sm:flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#14C6D8] focus:border-transparent outline-none bg-white"
                   />
                   <button
                     onClick={handleApplyCoupon}
                     disabled={couponLoading || !couponCode.trim()}
-                    className="px-4 py-2 bg-[#14C6D8] hover:bg-[#0FB2C3] text-white font-semibold rounded-lg text-sm transition disabled:opacity-50"
+                    className="w-full sm:w-auto px-4 py-2.5 bg-[#14C6D8] hover:bg-[#0FB2C3] text-white font-semibold rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
                   >
-                    Apply
+                    {couponLoading ? "Applying..." : "Apply"}
                   </button>
                 </div>
+                {/* Error */}
                 {couponError && (
-                  <p className="text-xs text-red-500 mt-1">{couponError}</p>
+                  <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-red-500 shrink-0" />
+                    {couponError}
+                  </p>
                 )}
+                {/* Applied coupon chip */}
                 {appliedCoupon && (
-                  <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
-                    <LucideCheckCircle size={14} /> Coupon "{appliedCoupon.code}
-                    " applied! -₹{appliedCoupon.discountAmount}
+                  <div className="mt-3 flex items-start sm:items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-emerald-700 font-semibold min-w-0">
+                      <LucideCheckCircle
+                        size={14}
+                        className="shrink-0 text-emerald-600"
+                      />
+                      <span className="truncate">
+                        "{appliedCoupon.code}" applied · -₹
+                        {appliedCoupon.discountAmount}
+                      </span>
+                    </div>
                     <button
                       onClick={handleRemoveCoupon}
-                      className="text-red-500 hover:text-red-700 text-xs font-medium"
+                      className="text-red-500 hover:text-red-700 text-xs font-bold shrink-0 underline sm:no-underline sm:hover:underline"
                     >
                       Remove
                     </button>
@@ -815,7 +823,7 @@ const CartPage = () => {
             },
             {
               icon: Snowflake,
-              label: "24H Cold • 12H Hot",
+              label: "12H Cold • 8H Hot",
               desc: "Advanced insulation",
             },
             { icon: Droplets, label: "Leak Proof", desc: "100% reliable" },

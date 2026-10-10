@@ -103,7 +103,6 @@ const PublicLayout = () => (
   <>
     <ScrollToTop />
     <PageTracker />
-    <TopBar />
     <Navbar />
     <Outlet />
     <Footer />

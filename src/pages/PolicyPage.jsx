@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiChevronRight, FiMail, FiGlobe, FiInstagram } from 'react-icons/fi';
 import { policies, CONTACT_INFO } from '../utils/policies';
 import SEO from '../components/SEO';
+import { BsPhone } from 'react-icons/bs';
 
 const PolicyPage = ({ slug: slugProp }) => {
    const { slug: slugParam } = useParams();
@@ -97,6 +98,11 @@ const PolicyPage = ({ slug: slugProp }) => {
                       <FiInstagram size={14} className="text-[#00C2D6]" />
                       <span>{CONTACT_INFO.instagram}</span>
                     </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <BsPhone size={14} className="text-[#00C2D6]" />
+                      <span>{CONTACT_INFO.phone}</span>
+                    </div>
+                     
                   </div>
                 )}
               </section>

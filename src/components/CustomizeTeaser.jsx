@@ -225,44 +225,6 @@ const CustomizeTeaser = () => {
           </motion.p>
         </div>
 
-        {/* ─── Features Grid (Horizontally Scrollable on Mobile) ── */}
-        <div className="relative">
-          {/* Gradient fade on mobile */}
-          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none sm:hidden" />
-          <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none sm:hidden" />
-
-          <motion.div
-            className="flex sm:grid sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 max-w-5xl mx-auto px-1 sm:px-0 scroll-smooth"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            {features.map((feat, idx) => (
-              <motion.div
-                key={idx}
-                variants={itemVariants}
-                whileHover={{ y: -6, transition: { duration: 0.15 } }}
-                className="flex-shrink-0 w-[140px] sm:w-full flex flex-col items-center text-center p-3 sm:p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group cursor-default"
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#E6F9FA] text-[#00C2D6] flex items-center justify-center text-2xl sm:text-3xl group-hover:bg-[#00C2D6] group-hover:text-white transition-all duration-300 mb-2 sm:mb-2.5">
-                  {feat.icon}
-                </div>
-                <p className="text-xs sm:text-sm font-bold text-gray-800 group-hover:text-[#00C2D6] transition-colors leading-tight">
-                  {feat.text}
-                </p>
-                <p className="text-[9px] sm:text-[10px] text-gray-400 font-medium mt-0.5">
-                  {feat.desc}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
         {/* ─── Call to Action ────────────────────────────── */}
         <motion.div
           className="text-center space-y-4 pt-2"

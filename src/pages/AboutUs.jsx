@@ -123,7 +123,7 @@ const AboutUs = () => {
     {
       icon: Sparkles,
       title: "Thoughtfully Yours",
-      description: "Personalization options make every Smooth Sip uniquely yours.",
+      description: "Personalization options make every SmoothSip uniquely yours.",
     },
   ];
 
@@ -146,7 +146,7 @@ const AboutUs = () => {
     },
     {
       year: "The Answer",
-      title: "Smooth Sip Is Born",
+      title: "SmoothSip Is Born",
       description: "A product designed to stay within reach — and gently remind you to take a sip.",
     },
   ];
@@ -297,7 +297,7 @@ const AboutUs = () => {
             <motion.div variants={fadeInUp} className="text-center py-6">
               <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 And that question became{" "}
-                <span className="text-[#00C2D6]">Smooth Sip.</span>
+                <span className="text-[#00C2D6]">SmoothSip.</span>
               </p>
             </motion.div>
 
@@ -312,7 +312,7 @@ const AboutUs = () => {
                 </div>
                 <div>
                   <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                    Born from a mother's care, <strong>Smooth Sip</strong> creates
+                    Born from a mother's care, <strong>SmoothSip</strong> creates
                     premium everyday drinkware designed to make hydration easier,
                     more enjoyable and more personal.
                   </p>
@@ -347,7 +347,7 @@ const AboutUs = () => {
                     And because something you carry every day should feel like{" "}
                     <strong className="text-[#00C2D6]">yours</strong>, our
                     tumblers are available in beautiful colours with name
-                    personalization — making every Smooth Sip a little more
+                    personalization — making every SmoothSip a little more
                     personal.
                   </p>
                 </div>
@@ -412,7 +412,7 @@ const AboutUs = () => {
                 Our Promise
               </h3>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Every Smooth Sip carries the same care a mother puts into every
+                Every SmoothSip carries the same care a mother puts into every
                 reminder — because sometimes, care can be something you carry.
               </p>
             </motion.div>
@@ -481,7 +481,7 @@ const AboutUs = () => {
             variants={fadeInUp}
             className="text-center max-w-2xl mx-auto mb-14"
           >
-            <SectionBadge text="The Story Behind Smooth Sip" />
+            <SectionBadge text="The Story Behind SmoothSip" />
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
               From Reminder to Reality
             </h2>

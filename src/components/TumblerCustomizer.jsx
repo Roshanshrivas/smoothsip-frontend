@@ -5,14 +5,33 @@ import { useDispatch } from 'react-redux';
 import { fabric } from 'fabric';
 import toast from 'react-hot-toast';
 import {
-  FiType, FiDroplet, FiUpload, FiShoppingCart,
+  FiType, FiUpload, FiShoppingCart,
   FiTrash2, FiPlus, FiChevronDown, FiChevronUp,
-  FiHeart, FiStar, FiSun, FiMoon, FiXCircle, FiX, FiGrid
+  FiXCircle, FiX, FiGrid,
 } from 'react-icons/fi';
 import { CiUndo, CiRedo } from 'react-icons/ci';
 import { addCustomItemToCart } from '../store/slices/cartSlice';
 import { PersonalizedOrderPolicyCompact } from './PersonalizedOrderPolicy';
 
+// ─── Available fonts (14 total) ───
+const AVAILABLE_FONTS = [
+  // Original set
+  'Poppins',
+  'Playfair Display',
+  'Oswald',
+  'Dancing Script',
+  'Pacifico',
+  'Bebas Neue',
+  // Client additions
+  'Allura',
+  'Bungee',
+  'Cedarville Cursive',
+  'Courgette',
+  'Permanent Marker',
+  'Satisfy',
+  'Great Vibes',
+  'Luckiest Guy',
+];
 
 // ---------- Built‑in patterns ----------
 const createPattern = (type, color = '#ff6b00') => {
@@ -57,7 +76,11 @@ const createPattern = (type, color = '#ff6b00') => {
       ctx.fill();
       for (let a = 0; a < 4; a++) {
         ctx.beginPath();
-        ctx.ellipse(20 + 12 * Math.cos(a * Math.PI / 2), 20 + 12 * Math.sin(a * Math.PI / 2), 4, 8, 0, 0, 2 * Math.PI);
+        ctx.ellipse(
+          20 + 12 * Math.cos((a * Math.PI) / 2),
+          20 + 12 * Math.sin((a * Math.PI) / 2),
+          4, 8, 0, 0, 2 * Math.PI
+        );
         ctx.fill();
       }
       break;
@@ -67,19 +90,29 @@ const createPattern = (type, color = '#ff6b00') => {
   return new fabric.Pattern({ source: canvas, repeat: 'repeat' });
 };
 
-const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProductId = null }) => {
+const TumblerCustomizer = ({
+  products = [],
+  loadingProducts = false,
+  activeProductId = null,
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const canvasRef = useRef(null);
   const fabricCanvas = useRef(null);
 
-  // Find the active product from the products list
-  const initialProduct = products.find(p => p._id === activeProductId) || products[0] || null;
-  
+  // Match by string to be safe (id vs _id)
+  const initialProduct =
+    products.find((p) => String(p._id) === String(activeProductId)) ||
+    products[0] ||
+    null;
+
   const [selectedTumbler, setSelectedTumbler] = useState(initialProduct);
   const [userText, setUserText] = useState('');
-  const [selectedFont, setSelectedFont] = useState(initialProduct?.allowedFonts?.[0] || 'Poppins');
-  const [selectedColor, setSelectedColor] = useState(initialProduct?.allowedColors?.[0] || '#000000');
+  const [selectedFont, setSelectedFont] = useState(
+    initialProduct?.allowedFonts?.[0] || AVAILABLE_FONTS[0]
+  );
+  // Fixed engraving color — dark, no user selection
+  const [textColor] = useState('#111111');
   const [fontSize, setFontSize] = useState(34);
   const [fontWeight, setFontWeight] = useState('700');
   const [fontStyle, setFontStyle] = useState('normal');
@@ -88,36 +121,32 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
   const [activeDesignObject, setActiveDesignObject] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Derived sections from the selected product's customization toggles
   const customization = selectedTumbler?.customization || {};
   const [openSections, setOpenSections] = useState({
     tumbler: true,
     text: customization.text !== false,
-    color: customization.color !== false,
     font: customization.font !== false,
     logo: customization.logo !== false,
     pattern: customization.pattern !== false,
     actions: true,
   });
 
-  // ---------- Update selected product when props change ----------
+  // ---------- Sync when activeProductId changes ----------
   useEffect(() => {
-    if (activeProductId) {
-      const product = products.find(p => p._id === activeProductId);
-      if (product) {
-        setSelectedTumbler(product);
-        setSelectedFont(product.allowedFonts?.[0] || 'Poppins');
-        setSelectedColor(product.allowedColors?.[0] || '#000000');
-        // Update open sections based on new product's toggles
-        setOpenSections(prev => ({
-          ...prev,
-          text: product.customization?.text !== false,
-          color: product.customization?.color !== false,
-          font: product.customization?.font !== false,
-          logo: product.customization?.logo !== false,
-          pattern: product.customization?.pattern !== false,
-        }));
-      }
+    if (!activeProductId) return;
+    const product = products.find(
+      (p) => String(p._id) === String(activeProductId)
+    );
+    if (product) {
+      setSelectedTumbler(product);
+      setSelectedFont(product.allowedFonts?.[0] || AVAILABLE_FONTS[0]);
+      setOpenSections((prev) => ({
+        ...prev,
+        text: product.customization?.text !== false,
+        font: product.customization?.font !== false,
+        logo: product.customization?.logo !== false,
+        pattern: product.customization?.pattern !== false,
+      }));
     }
   }, [activeProductId, products]);
 
@@ -135,12 +164,15 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
       setHistoryIndex(newIndex);
-      fabricCanvas.current.loadFromJSON(JSON.parse(history[newIndex]), () => {
-        fabricCanvas.current.renderAll();
-        const objects = fabricCanvas.current.getObjects();
-        const designObj = objects.find(obj => obj.pattern && obj.fill?.source);
-        setActiveDesignObject(designObj || null);
-      });
+      fabricCanvas.current.loadFromJSON(
+        JSON.parse(history[newIndex]),
+        () => {
+          fabricCanvas.current.renderAll();
+          const objects = fabricCanvas.current.getObjects();
+          const designObj = objects.find((obj) => obj.pattern && obj.fill?.source);
+          setActiveDesignObject(designObj || null);
+        }
+      );
       toast.success('Undo');
     } else {
       toast.error('Nothing to undo');
@@ -151,12 +183,15 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
       setHistoryIndex(newIndex);
-      fabricCanvas.current.loadFromJSON(JSON.parse(history[newIndex]), () => {
-        fabricCanvas.current.renderAll();
-        const objects = fabricCanvas.current.getObjects();
-        const designObj = objects.find(obj => obj.pattern && obj.fill?.source);
-        setActiveDesignObject(designObj || null);
-      });
+      fabricCanvas.current.loadFromJSON(
+        JSON.parse(history[newIndex]),
+        () => {
+          fabricCanvas.current.renderAll();
+          const objects = fabricCanvas.current.getObjects();
+          const designObj = objects.find((obj) => obj.pattern && obj.fill?.source);
+          setActiveDesignObject(designObj || null);
+        }
+      );
       toast.success('Redo');
     } else {
       toast.error('Nothing to redo');
@@ -179,7 +214,7 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     return () => canvas.dispose();
   }, []);
 
-  // ---------- Load tumbler background when selectedTumbler changes ----------
+  // ---------- Load tumbler background ----------
   useEffect(() => {
     if (!fabricCanvas.current || !selectedTumbler) return;
     loadTumbler();
@@ -189,7 +224,10 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     const canvas = fabricCanvas.current;
     canvas.clear();
 
-    const imageUrl = selectedTumbler.mainImage || 'https://placehold.co/500x700/FFF4E6/78350F?text=No+Image';
+    const imageUrl =
+      selectedTumbler.mainImage ||
+      'https://placehold.co/500x700/FFF4E6/78350F?text=No+Image';
+
     fabric.Image.fromURL(
       imageUrl,
       (img) => {
@@ -232,8 +270,12 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
 
   const addGuideAreas = () => {
     const canvas = fabricCanvas.current;
-    const textArea = selectedTumbler.textArea || { left: 50, top: 200, width: 400, height: 200 };
-    const logoArea = selectedTumbler.logoArea || { left: 150, top: 50, width: 200, height: 150 };
+    const textArea = selectedTumbler.textArea || {
+      left: 50, top: 200, width: 400, height: 200,
+    };
+    const logoArea = selectedTumbler.logoArea || {
+      left: 150, top: 50, width: 200, height: 150,
+    };
 
     const textGuide = new fabric.Rect({
       left: textArea.left,
@@ -282,14 +324,16 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
 
   const addText = (initialText) => {
     const canvas = fabricCanvas.current;
-    const area = selectedTumbler.textArea || { left: 50, top: 200, width: 400, height: 200 };
+    const area = selectedTumbler.textArea || {
+      left: 50, top: 200, width: 400, height: 200,
+    };
     const textToAdd = initialText || userText || 'Your Text';
     const textbox = new fabric.Textbox(textToAdd, {
       left: area.left + 20,
       top: area.top + 40,
       width: area.width - 40,
       fontSize,
-      fill: selectedColor,
+      fill: textColor,
       fontFamily: selectedFont,
       fontWeight,
       fontStyle,
@@ -330,7 +374,9 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
       fabricCanvas.current.renderAll();
       saveState();
     } else {
-      const textObjects = fabricCanvas.current.getObjects().filter(obj => obj instanceof fabric.Textbox);
+      const textObjects = fabricCanvas.current
+        .getObjects()
+        .filter((obj) => obj instanceof fabric.Textbox);
       if (textObjects.length) {
         textObjects[0].set(props);
         fabricCanvas.current.renderAll();
@@ -343,7 +389,6 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     if (userText) updateActiveText({ text: userText });
   }, [userText]);
   useEffect(() => updateActiveText({ fontFamily: selectedFont }), [selectedFont]);
-  useEffect(() => updateActiveText({ fill: selectedColor }), [selectedColor]);
   useEffect(() => updateActiveText({ fontSize }), [fontSize]);
   useEffect(() => updateActiveText({ fontWeight }), [fontWeight]);
   useEffect(() => updateActiveText({ fontStyle }), [fontStyle]);
@@ -359,7 +404,9 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     const reader = new FileReader();
     reader.onload = () => {
       fabric.Image.fromURL(reader.result, (img) => {
-        const area = selectedTumbler.logoArea || { left: 150, top: 50, width: 200, height: 150 };
+        const area = selectedTumbler.logoArea || {
+          left: 150, top: 50, width: 200, height: 150,
+        };
         let scale = 1;
         if (img.width > area.width) scale = area.width / img.width;
         if (img.height * scale > area.height) scale = area.height / img.height;
@@ -383,8 +430,10 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
 
   const applyDesign = (patternType) => {
     if (activeDesignObject) fabricCanvas.current.remove(activeDesignObject);
-    const area = selectedTumbler.logoArea || { left: 150, top: 50, width: 200, height: 150 };
-    const pattern = createPattern(patternType, selectedColor === '#ffffff' ? '#ff6b00' : selectedColor);
+    const area = selectedTumbler.logoArea || {
+      left: 150, top: 50, width: 200, height: 150,
+    };
+    const pattern = createPattern(patternType, '#ff6b00');
     if (!pattern) return;
     const rect = new fabric.Rect({
       left: area.left,
@@ -404,48 +453,37 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     toast.success(`Applied ${patternType} pattern`);
   };
 
-  const clearDesign = () => {
-    if (activeDesignObject) {
-      fabricCanvas.current.remove(activeDesignObject);
-      fabricCanvas.current.renderAll();
-      setActiveDesignObject(null);
-      saveState();
-      toast.success('Design cleared');
-    } else {
-      toast.error('No design to clear');
-    }
-  };
-
-  // ---------- Add to Cart (Redux) ----------
+  // ---------- Add to Cart ----------
   const addToCart = () => {
     const canvas = fabricCanvas.current;
     if (!canvas) return;
     const designImage = canvas.toDataURL({ format: 'png', quality: 1 });
-    const customization = {
+    const customizationData = {
       productId: selectedTumbler._id,
       productName: selectedTumbler.name,
       text: userText,
       font: selectedFont,
-      textColor: selectedColor,
       fontSize,
       fontWeight,
       fontStyle,
       hasDesign: !!activeDesignObject,
       pattern: activeDesignObject ? 'pattern' : null,
     };
-    dispatch(addCustomItemToCart({
-      productId: selectedTumbler._id,
-      name: selectedTumbler.name,
-      price: selectedTumbler.basePrice,
-      quantity: 1,
-      designImage,
-      customization,
-    }));
+    dispatch(
+      addCustomItemToCart({
+        productId: selectedTumbler._id,
+        name: selectedTumbler.name,
+        price: selectedTumbler.basePrice,
+        quantity: 1,
+        designImage,
+        customization: customizationData,
+      })
+    );
   };
 
   // ---------- UI helpers ----------
   const toggleSection = (section) => {
-    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   const SectionHeader = ({ title, icon, section, enabled }) => {
@@ -455,8 +493,15 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
         onClick={() => toggleSection(section)}
         className="flex items-center justify-between w-full py-3 text-left font-semibold text-gray-700 border-b border-gray-100 hover:text-orange-500 transition"
       >
-        <div className="flex items-center gap-2">{icon}<span>{title}</span></div>
-        {openSections[section] ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
+        <div className="flex items-center gap-2">
+          {icon}
+          <span>{title}</span>
+        </div>
+        {openSections[section] ? (
+          <FiChevronUp size={18} />
+        ) : (
+          <FiChevronDown size={18} />
+        )}
       </button>
     );
   };
@@ -465,24 +510,9 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-        <p className="mt-4 text-sm font-medium text-gray-500">Loading product...</p>
-      </div>
-    );
-  }
-
-  if (!selectedTumbler) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md text-center border border-gray-200">
-          <FiXCircle size={48} className="mx-auto text-red-500 mb-4" />
-          <h2 className="text-xl font-bold text-gray-800">Product not found</h2>
-          <button
-            onClick={() => navigate('/customize')}
-            className="mt-6 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
-          >
-            Go Back
-          </button>
-        </div>
+        <p className="mt-4 text-sm font-medium text-gray-500">
+          Loading product...
+        </p>
       </div>
     );
   }
@@ -492,7 +522,10 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-row">
       {sidebarOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 z-50 bg-black/50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
       <aside
@@ -502,11 +535,15 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
         `}
       >
         <div className="p-5">
-          {/* ─── POLICY WARNING (always visible at top of sidebar) ─── */}
-  <PersonalizedOrderPolicyCompact />
+          {/* ─── POLICY WARNING (always at top) ─── */}
+          <PersonalizedOrderPolicyCompact />
+
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-xl font-bold">Tools</h2>
-            <button onClick={() => setSidebarOpen(false)} className="text-gray-500 hover:text-orange-500">
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="text-gray-500 hover:text-orange-500"
+            >
               <FiX size={24} />
             </button>
           </div>
@@ -514,13 +551,20 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
           {/* Product Info */}
           <div className="mb-4 p-3 bg-gray-50 rounded-xl">
             <h3 className="font-bold text-gray-800">{selectedTumbler.name}</h3>
-            <p className="text-sm text-gray-500">Base Price: ₹{selectedTumbler.basePrice}</p>
+            <p className="text-sm text-gray-500">
+              Base Price: ₹{selectedTumbler.basePrice}
+            </p>
           </div>
 
-          {/* Tumbler Selection (dynamic from real products) */}
+          {/* Tumbler Selection */}
           {products.length > 0 && (
             <div>
-              <SectionHeader title="Choose Tumbler" icon={<FiGrid size={18} />} section="tumbler" enabled={true} />
+              <SectionHeader
+                title="Choose Tumbler"
+                icon={<FiGrid size={18} />}
+                section="tumbler"
+                enabled={true}
+              />
               {openSections.tumbler && (
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   {products.map((product) => (
@@ -528,13 +572,12 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
                       key={product._id}
                       onClick={() => {
                         setSelectedTumbler(product);
-                        setSelectedFont(product.allowedFonts?.[0] || 'Poppins');
-                        setSelectedColor(product.allowedColors?.[0] || '#000000');
-                        // Update open sections
-                        setOpenSections(prev => ({
+                        setSelectedFont(
+                          product.allowedFonts?.[0] || AVAILABLE_FONTS[0]
+                        );
+                        setOpenSections((prev) => ({
                           ...prev,
                           text: product.customization?.text !== false,
-                          color: product.customization?.color !== false,
                           font: product.customization?.font !== false,
                           logo: product.customization?.logo !== false,
                           pattern: product.customization?.pattern !== false,
@@ -546,8 +589,14 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                       }`}
                     >
-                      <img src={product.mainImage} alt={product.name} className="h-12 object-contain mx-auto" />
-                      <p className="mt-1 text-xs font-medium truncate">{product.name}</p>
+                      <img
+                        src={product.mainImage}
+                        alt={product.name}
+                        className="h-12 object-contain mx-auto"
+                      />
+                      <p className="mt-1 text-xs font-medium truncate">
+                        {product.name}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -558,40 +607,76 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
           {/* Text Settings */}
           {cust.text !== false && (
             <div className="mt-4">
-              <SectionHeader title="Text Settings" icon={<FiType size={18} />} section="text" enabled />
+              <SectionHeader
+                title="Text Settings"
+                icon={<FiType size={18} />}
+                section="text"
+                enabled
+              />
               {openSections.text && (
                 <div className="space-y-3 mt-3">
                   <input
                     type="text"
                     value={userText}
                     onChange={(e) => setUserText(e.target.value)}
-                    className="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-500"
+                    className="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                     placeholder="Your text"
                   />
                   {cust.font !== false && (
                     <select
                       value={selectedFont}
                       onChange={(e) => setSelectedFont(e.target.value)}
-                      className="w-full border border-gray-300 rounded-xl p-2 text-sm"
+                      className="w-full border border-gray-300 rounded-xl p-2 text-sm outline-none"
+                      style={{ fontFamily: selectedFont }}
                     >
-                      {(selectedTumbler.allowedFonts || ['Poppins']).map(font => <option key={font}>{font}</option>)}
+                      {AVAILABLE_FONTS.map((font) => (
+                        <option
+                          key={font}
+                          value={font}
+                          style={{ fontFamily: font }}
+                        >
+                          {font}
+                        </option>
+                      ))}
                     </select>
                   )}
                   <div>
-                    <label className="text-xs text-gray-500">Size: {fontSize}px</label>
-                    <input type="range" min="20" max="80" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full" />
+                    <label className="text-xs text-gray-500">
+                      Size: {fontSize}px
+                    </label>
+                    <input
+                      type="range"
+                      min="20"
+                      max="80"
+                      value={fontSize}
+                      onChange={(e) => setFontSize(parseInt(e.target.value))}
+                      className="w-full"
+                    />
                   </div>
                   {cust.font !== false && (
                     <div className="grid grid-cols-2 gap-2">
-                      <select value={fontWeight} onChange={(e) => setFontWeight(e.target.value)} className="border border-gray-300 rounded-xl p-2 text-sm">
-                        <option value="400">Normal</option><option value="700">Bold</option>
+                      <select
+                        value={fontWeight}
+                        onChange={(e) => setFontWeight(e.target.value)}
+                        className="border border-gray-300 rounded-xl p-2 text-sm outline-none"
+                      >
+                        <option value="400">Normal</option>
+                        <option value="700">Bold</option>
                       </select>
-                      <select value={fontStyle} onChange={(e) => setFontStyle(e.target.value)} className="border border-gray-300 rounded-xl p-2 text-sm">
-                        <option value="normal">Normal</option><option value="italic">Italic</option>
+                      <select
+                        value={fontStyle}
+                        onChange={(e) => setFontStyle(e.target.value)}
+                        className="border border-gray-300 rounded-xl p-2 text-sm outline-none"
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="italic">Italic</option>
                       </select>
                     </div>
                   )}
-                  <button onClick={addNewText} className="w-full bg-black text-white py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-800 transition">
+                  <button
+                    onClick={addNewText}
+                    className="w-full bg-black text-white py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-800 transition"
+                  >
                     <FiPlus /> Add Text
                   </button>
                 </div>
@@ -599,58 +684,38 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
             </div>
           )}
 
-          {/* Color */}
-          {cust.color !== false && (
-            <div className="mt-4">
-              <SectionHeader title="Color" icon={<FiDroplet size={18} />} section="color" enabled />
-              {openSections.color && (
-                <div className="space-y-3 mt-3">
-                  <div className="flex gap-2 flex-wrap">
-                    {(selectedTumbler.allowedColors || ['#000000']).map(color => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`w-8 h-8 rounded-full border-2 shadow-sm transition ${
-                          selectedColor === color ? 'border-black scale-110' : 'border-white'
-                        }`}
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Logo Upload */}
-          {cust.logo !== false && (
-            <div className="mt-4">
-              <SectionHeader title="Logo Upload" icon={<FiUpload size={18} />} section="logo" enabled />
-              {openSections.logo && (
-                <div className="mt-3">
-                  <label className="bg-orange-500 text-white py-2 rounded-xl text-center text-sm cursor-pointer flex items-center justify-center gap-1 hover:bg-orange-600 transition">
-                    <FiUpload /> Upload Logo
-                    <input hidden type="file" accept="image/*" onChange={uploadLogo} />
-                  </label>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Actions (always visible) */}
+          {/* ═══════════════════════════════════════════════
+              COLOR SECTION — REMOVED
+              Product uses direct laser engraving (no color)
+             ═══════════════════════════════════════════════ */}
+          {/* Actions */}
           <div className="mt-4">
-            <SectionHeader title="Actions" icon={<FiTrash2 size={18} />} section="actions" enabled />
+            <SectionHeader
+              title="Actions"
+              icon={<FiTrash2 size={18} />}
+              section="actions"
+              enabled
+            />
             {openSections.actions && (
               <div className="space-y-2 mt-3">
                 <div className="flex gap-2">
-                  <button onClick={undo} className="flex-1 border border-gray-300 py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-50 transition">
+                  <button
+                    onClick={undo}
+                    className="flex-1 border border-gray-300 py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-50 transition"
+                  >
                     <CiUndo /> Undo
                   </button>
-                  <button onClick={redo} className="flex-1 border border-gray-300 py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-50 transition">
+                  <button
+                    onClick={redo}
+                    className="flex-1 border border-gray-300 py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-50 transition"
+                  >
                     <CiRedo /> Redo
                   </button>
                 </div>
-                <button onClick={deleteSelectedObject} className="w-full bg-red-500 text-white py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-red-600 transition">
+                <button
+                  onClick={deleteSelectedObject}
+                  className="w-full bg-red-500 text-white py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-red-600 transition"
+                >
                   <FiTrash2 /> Delete Selected
                 </button>
               </div>
@@ -658,7 +723,10 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
           </div>
 
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <button onClick={addToCart} className="w-full bg-orange-500 text-white py-2 rounded-xl flex items-center justify-center gap-1 font-semibold hover:bg-orange-600 transition shadow-sm">
+            <button
+              onClick={addToCart}
+              className="w-full bg-orange-500 text-white py-2 rounded-xl flex items-center justify-center gap-1 font-semibold hover:bg-orange-600 transition shadow-sm"
+            >
               <FiShoppingCart /> Add to Cart – ₹{selectedTumbler.basePrice}
             </button>
           </div>
@@ -667,14 +735,22 @@ const TumblerCustomizer = ({ products = [], loadingProducts = false, activeProdu
 
       <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-br from-gray-50 to-gray-100 overflow-auto">
         <div className="relative bg-white shadow-2xl rounded-2xl p-2 inline-block">
-          <canvas id="canvas" ref={canvasRef} className="rounded-xl shadow-inner max-w-full h-auto" style={{ maxHeight: '80vh', width: 'auto' }} />
+          <canvas
+            id="canvas"
+            ref={canvasRef}
+            className="rounded-xl shadow-inner max-w-full h-auto"
+            style={{ maxHeight: '80vh', width: 'auto' }}
+          />
         </div>
         <div className="mt-6 bg-white rounded-xl shadow-md p-3 max-w-md w-full">
           <div className="flex justify-between items-center text-sm">
             <div>
-              <span className="font-semibold">Design summary:</span> {selectedTumbler.name} | {userText || 'No text'} | {selectedFont}
+              <span className="font-semibold">Design summary:</span>{' '}
+              {selectedTumbler.name} | {userText || 'No text'} | {selectedFont}
             </div>
-            <div className="text-orange-600 font-bold">₹{selectedTumbler.basePrice}</div>
+            <div className="text-orange-600 font-bold">
+              ₹{selectedTumbler.basePrice}
+            </div>
           </div>
         </div>
       </main>
