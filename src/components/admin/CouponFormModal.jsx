@@ -82,6 +82,7 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
     const handleSubmit = (e) => {
     e.preventDefault();
 
+    // ─── Validation ───
     if (!formData.code.trim()) {
       toast.error("Coupon code is required");
       return;
@@ -93,7 +94,6 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
       return;
     }
 
-    // ✅ Only check percentage range for percentage type
     if (
       formData.discountType === "percentage" &&
       discountValue > 100

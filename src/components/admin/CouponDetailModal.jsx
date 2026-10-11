@@ -6,14 +6,14 @@ const CouponDetailModal = ({ isOpen, onClose, coupon, onEdit }) => {
 
   // ─── Compute status from active + dates ──────
   const getCouponStatus = (c) => {
-    if (!c.active) return "disabled";
-    const now = new Date();
-    const start = new Date(c.startDate);
-    const end = new Date(c.endDate);
-    if (now < start) return "scheduled";
-    if (now > end) return "expired";
-    return "active";
-  };
+  if (!c.active) return "disabled";
+  const now = new Date();
+  const start = new Date(c.startDate);
+  if (now < start) return "scheduled";
+  // ✅ Only check expiry if endDate exists
+  if (c.endDate && now > new Date(c.endDate)) return "expired";
+  return "active";
+};
 
   const status = getCouponStatus(coupon);
 

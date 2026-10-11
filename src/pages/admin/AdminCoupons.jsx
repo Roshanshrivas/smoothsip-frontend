@@ -50,15 +50,15 @@ const AdminCoupons = () => {
   const itemsPerPage = 10;
 
   // ─── Helper: compute status from coupon ──────
-  const getCouponStatus = (coupon) => {
-    if (!coupon.active) return "disabled";
-    const now = new Date();
-    const start = new Date(coupon.startDate);
-    const end = new Date(coupon.endDate);
-    if (now < start) return "scheduled";
-    if (now > end) return "expired";
-    return "active";
-  };
+  const getCouponStatus = (c) => {
+  if (!c.active) return "disabled";
+  const now = new Date();
+  const start = new Date(c.startDate);
+  if (now < start) return "scheduled";
+  // ✅ Only check expiry if endDate exists
+  if (c.endDate && now > new Date(c.endDate)) return "expired";
+  return "active";
+};
 
   // ─── Load coupons from API ─────────────────────
   const loadData = useCallback(async () => {
@@ -75,10 +75,8 @@ const AdminCoupons = () => {
       setTotalItems(res.total || 0);
       setTotalPages(res.totalPages || 1);
 
-      // Compute stats from fetched coupons (limited, but we'll also get total from res.total)
-      // For accurate stats, we'd need all coupons, but we'll use the total and compute from the page.
-      // In a real app, you'd have a separate stats endpoint. For now we'll approximate.
       const total = res.total || 0;
+      // Counts from the current page — approximate for tabs. Backend provides accurate total.
       const active = fetchedCoupons.filter(c => getCouponStatus(c) === "active").length;
       const scheduled = fetchedCoupons.filter(c => getCouponStatus(c) === "scheduled").length;
       const expired = fetchedCoupons.filter(c => getCouponStatus(c) === "expired").length;
@@ -109,52 +107,30 @@ const AdminCoupons = () => {
   }, [loadData]);
 
   // ─── Handlers ────────────────────────────────
-  const handleCreate = async (data) => {
-    try {
-      const payload = {
-        code: data.code,
-        description: data.description,
-        discountType: data.discountType,
-        discountValue: parseFloat(data.discountValue),
-        minimumOrder: parseFloat(data.minOrderAmount) || 0,
-        maxDiscount: data.maxDiscount ? parseFloat(data.maxDiscount) : null,
-        startDate: data.startDate,
-        endDate: data.expiryDate,
-        usageLimit: data.usageLimit ? parseInt(data.usageLimit) : null,
-        active: data.status === "active",
-      };
-      await couponService.createCoupon(payload);
-      toast.success("Coupon created");
-      setModalOpen(false);
-      loadData();
-    } catch (err) {
-      toast.error(err.message || "Failed to create coupon");
-    }
-  };
+  const handleCreate = async (payload) => {
+  try {
+    await couponService.createCoupon(payload);
+    toast.success("Coupon created");
+    setModalOpen(false);
+    setEditingCoupon(null);
+    loadData();
+  } catch (err) {
+    toast.error(err?.response?.data?.message || err.message || "Failed to create coupon");
+  }
+};
 
-  const handleUpdate = async (data) => {
-    try {
-      const payload = {
-        code: data.code,
-        description: data.description,
-        discountType: data.discountType,
-        discountValue: parseFloat(data.discountValue),
-        minimumOrder: parseFloat(data.minOrderAmount) || 0,
-        maxDiscount: data.maxDiscount ? parseFloat(data.maxDiscount) : null,
-        startDate: data.startDate,
-        endDate: data.expiryDate,
-        usageLimit: data.usageLimit ? parseInt(data.usageLimit) : null,
-        active: data.status === "active",
-      };
-      await couponService.updateCoupon(editingCoupon._id || editingCoupon.id, payload);
-      toast.success("Coupon updated");
-      setModalOpen(false);
-      setEditingCoupon(null);
-      loadData();
-    } catch (err) {
-      toast.error(err.message || "Failed to update coupon");
-    }
-  };
+  const handleUpdate = async (payload) => {
+  try {
+    const id = editingCoupon._id || editingCoupon.id;
+    await couponService.updateCoupon(id, payload);
+    toast.success("Coupon updated");
+    setModalOpen(false);
+    setEditingCoupon(null);
+    loadData();
+  } catch (err) {
+    toast.error(err?.response?.data?.message || err.message || "Failed to update coupon");
+  }
+};
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this coupon?")) {
