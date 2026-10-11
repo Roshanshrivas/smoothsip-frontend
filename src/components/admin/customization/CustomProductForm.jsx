@@ -316,8 +316,7 @@ const CustomProductForm = () => {
                 name="basePrice"
                 value={formData.basePrice}
                 onChange={handleChange}
-                min="0"
-                step="50"
+                min="1"
                 className="w-full px-4 py-2 border rounded-lg"
                 required
               />

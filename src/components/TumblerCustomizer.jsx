@@ -115,7 +115,7 @@ const TumblerCustomizer = ({
     initialProduct?.allowedFonts?.[0] || AVAILABLE_FONTS[0]
   );
   // Fixed engraving color — dark, no user selection
-  const [textColor] = useState('#111111');
+  const [textColor, setTextColor] = useState('#111111');
   const [fontSize, setFontSize] = useState(34);
   const [fontWeight, setFontWeight] = useState('700');
   const [fontStyle, setFontStyle] = useState('normal');
@@ -123,6 +123,7 @@ const TumblerCustomizer = ({
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [activeDesignObject, setActiveDesignObject] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const customization = selectedTumbler?.customization || {};
   const [openSections, setOpenSections] = useState({
@@ -340,6 +341,7 @@ const TumblerCustomizer = ({
       fontFamily: selectedFont,
       fontWeight,
       fontStyle,
+      fill: textColor,
       textAlign: 'center',
       editable: true,
       cornerColor: '#ff6b00',
@@ -395,6 +397,7 @@ const TumblerCustomizer = ({
   useEffect(() => updateActiveText({ fontSize }), [fontSize]);
   useEffect(() => updateActiveText({ fontWeight }), [fontWeight]);
   useEffect(() => updateActiveText({ fontStyle }), [fontStyle]);
+  useEffect(() => updateActiveText({ fill: textColor }), [textColor]);
 
   const addNewText = () => {
     addText(userText.trim() || 'Your Text');
@@ -458,15 +461,16 @@ const TumblerCustomizer = ({
 
   // ---------- Add to Cart ----------
     const addToCart = async () => {
+      if (isAddingToCart) return; // block double-clicks 
     const canvas = fabricCanvas.current;
     if (!canvas) {
       toast.error('Canvas not ready');
       return;
     }
-
+    setIsAddingToCart(true);
     console.log('=== ADD TO CART STARTED ===');
     console.log('Product:', selectedTumbler._id, selectedTumbler.name);
-
+    try {
     // 1. Capture composite canvas as JPEG base64 (temporary)
     const base64Image = canvas.toDataURL({
       format: 'jpeg',
@@ -512,7 +516,7 @@ const TumblerCustomizer = ({
     // 5. Send URL (not base64) to the cart
     const customizationData = {
       designImage,
-      productId: selectedTumbler._id,          // 👈 ADD THIS LINE
+      productId: selectedTumbler._id,
       productName: selectedTumbler.name,
       text: allTexts[0]?.text || userText,
       allTexts,
@@ -520,6 +524,7 @@ const TumblerCustomizer = ({
       fontSize: allTexts[0]?.fontSize || fontSize,
       fontWeight: allTexts[0]?.fontWeight || fontWeight,
       fontStyle: allTexts[0]?.fontStyle || fontStyle,
+      textColor,
       hasDesign: !!activeDesignObject,
       pattern: activeDesignObject ? "pattern" : null,
     };
@@ -532,16 +537,15 @@ const TumblerCustomizer = ({
         name: selectedTumbler.name,
         price: selectedTumbler.basePrice,
         quantity: 1,
-        customization: customizationData,   // 👈 design image inside here
+        customization: customizationData,
       })
-    ).then((result) => {
-      if (result.meta.requestStatus === 'fulfilled') {
-        console.log('✅ CART UPDATED:', result.payload);
-      } else {
-        console.error('❌ CART FAILED:', result.payload);
-      }
-    });
-  };
+    ).unwrap();
+  } catch(err){
+   // toast is already shown by the thunk
+    } finally {
+      setIsAddingToCart(false);
+    } 
+  }
 
   // ---------- UI helpers ----------
   const toggleSection = (section) => {
@@ -593,7 +597,7 @@ const TumblerCustomizer = ({
       <aside
         className={`
           fixed lg:relative top-0 left-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-40
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
         `}
       >
         <div className="p-5">
@@ -635,7 +639,7 @@ const TumblerCustomizer = ({
                       onClick={() => {
                         setSelectedTumbler(product);
                         setSelectedFont(
-                          product.allowedFonts?.[0] || AVAILABLE_FONTS[0]
+                          product.allowedFonts?.[0] || AVAILABLE_FONTS[0],
                         );
                         setOpenSections((prev) => ({
                           ...prev,
@@ -647,8 +651,8 @@ const TumblerCustomizer = ({
                       }}
                       className={`rounded-xl border p-2 transition ${
                         selectedTumbler._id === product._id
-                          ? 'border-orange-500 shadow-md bg-orange-50'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          ? "border-orange-500 shadow-md bg-orange-50"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
                       <img
@@ -735,6 +739,53 @@ const TumblerCustomizer = ({
                       </select>
                     </div>
                   )}
+                  {/* ─── Text Color ─── */}
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1.5">
+                      Text Color
+                    </label>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {/* Native color picker */}
+                      <input
+                        type="color"
+                        value={textColor}
+                        onChange={(e) => setTextColor(e.target.value)}
+                        className="w-9 h-9 rounded-full border-2 border-gray-200 cursor-pointer p-0.5 bg-white hover:border-orange-400 transition"
+                        title="Custom color"
+                      />
+
+                      {/* Preset swatches */}
+                      {[
+                        "#111111", // Black (default engraving)
+                        "#ffffff", // White
+                        "#ef4444", // Red
+                        "#3b82f6", // Blue
+                        "#22c55e", // Green
+                        "#eab308", // Yellow
+                        "#a855f7", // Purple
+                        "#f97316", // Orange
+                        "#ec4899", // Pink
+                        "#14b8a6", // Teal
+                      ].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setTextColor(c)}
+                          className={`w-7 h-7 rounded-full border-2 transition ${
+                            textColor === c
+                              ? "border-orange-500 ring-2 ring-orange-200 scale-110"
+                              : "border-gray-200 hover:border-gray-400"
+                          }`}
+                          style={{ backgroundColor: c }}
+                          title={c}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-1">
+                      Default is black — matches laser engraving. Pick any color
+                      for preview.
+                    </p>
+                  </div>
                   <button
                     onClick={addNewText}
                     className="w-full bg-black text-white py-2 rounded-xl flex items-center justify-center gap-1 text-sm hover:bg-gray-800 transition"
@@ -783,13 +834,46 @@ const TumblerCustomizer = ({
               </div>
             )}
           </div>
-
           <div className="mt-6 pt-4 border-t border-gray-200">
             <button
               onClick={addToCart}
-              className="w-full bg-orange-500 text-white py-2 rounded-xl flex items-center justify-center gap-1 font-semibold hover:bg-orange-600 transition shadow-sm"
+              disabled={isAddingToCart}
+              className={`w-full py-2 rounded-xl flex items-center justify-center gap-2 font-semibold transition shadow-sm
+              ${
+                isAddingToCart
+                  ? "bg-orange-400 cursor-not-allowed text-white/90"
+                  : "bg-orange-500 hover:bg-orange-600 text-white"
+              }`}
             >
-              <FiShoppingCart /> Add to Cart – ₹{selectedTumbler.basePrice}
+              {isAddingToCart ? (
+                <>
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-90"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Adding to cart…
+                </>
+              ) : (
+                <>
+                  <FiShoppingCart /> Add to Cart – ₹{selectedTumbler.basePrice}
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -801,14 +885,14 @@ const TumblerCustomizer = ({
             id="canvas"
             ref={canvasRef}
             className="rounded-xl shadow-inner max-w-full h-auto"
-            style={{ maxHeight: '80vh', width: 'auto' }}
+            style={{ maxHeight: "80vh", width: "auto" }}
           />
         </div>
         <div className="mt-6 bg-white rounded-xl shadow-md p-3 max-w-md w-full">
           <div className="flex justify-between items-center text-sm">
             <div>
-              <span className="font-semibold">Design summary:</span>{' '}
-              {selectedTumbler.name} | {userText || 'No text'} | {selectedFont}
+              <span className="font-semibold">Design summary:</span>{" "}
+              {selectedTumbler.name} | {userText || "No text"} | {selectedFont}
             </div>
             <div className="text-orange-600 font-bold">
               ₹{selectedTumbler.basePrice}
