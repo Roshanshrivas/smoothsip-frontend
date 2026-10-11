@@ -759,61 +759,7 @@ const CartPage = () => {
               {/* ─── Available Coupons (auto-loaded) ─── */}
               <AvailableCoupons subtotal={rawSubtotal} />
 
-              {/* Coupon Section – Cart Page */}
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Tag size={18} className="text-[#14C6D8]" />
-                  <span className="text-sm font-medium text-gray-700">
-                    Have a coupon?
-                  </span>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 mt-3">
-                  <input
-                    type="text"
-                    placeholder="Enter coupon code"
-                    value={couponCode}
-                    onChange={(e) =>
-                      setCouponCode(e.target.value.toUpperCase())
-                    }
-                    className="w-full sm:flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#14C6D8] focus:border-transparent outline-none bg-white"
-                  />
-                  <button
-                    onClick={handleApplyCoupon}
-                    disabled={couponLoading || !couponCode.trim()}
-                    className="w-full sm:w-auto px-4 py-2.5 bg-[#14C6D8] hover:bg-[#0FB2C3] text-white font-semibold rounded-lg text-sm transition disabled:opacity-50 whitespace-nowrap"
-                  >
-                    {couponLoading ? "Applying..." : "Apply"}
-                  </button>
-                </div>
-                {/* Error */}
-                {couponError && (
-                  <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                    <span className="w-1 h-1 rounded-full bg-red-500 shrink-0" />
-                    {couponError}
-                  </p>
-                )}
-                {/* Applied coupon chip */}
-                {appliedCoupon && (
-                  <div className="mt-3 flex items-start sm:items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                    <div className="flex items-center gap-2 text-xs sm:text-sm text-emerald-700 font-semibold min-w-0">
-                      <LucideCheckCircle
-                        size={14}
-                        className="shrink-0 text-emerald-600"
-                      />
-                      <span className="truncate">
-                        "{appliedCoupon.code}" applied · -₹
-                        {appliedCoupon.discountAmount}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleRemoveCoupon}
-                      className="text-red-500 hover:text-red-700 text-xs font-bold shrink-0 underline sm:no-underline sm:hover:underline"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-              </div>
+              
 
               <div className="space-y-2.5 pt-1">
                 <button
