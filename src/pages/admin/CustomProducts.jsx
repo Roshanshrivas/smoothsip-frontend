@@ -102,32 +102,40 @@ const CustomProducts = () => {
 
   const handleDuplicate = async (id) => {
     try {
-      const original = products.find((p) => p.id === id);
-      if (!original) return;
+      const original = products.find((p) => String(p._id) === String(id) || String(p.id) === String(id));
+      if (!original) {
+      toast.error("Product not found");
+      return;
+      }
+      const { _id, id, createdAt, updatedAt, __v, ...rest } = original;
       const newProduct = {
-        ...original,
-        id: undefined,
-        name: `${original.name} (Copy)`,
-        status: "Draft",
-      };
+      ...rest,
+      name: `${original.name} (Copy)`,
+      status: "Draft",
+      salesCount: 0,
+    };
       await customProductService.createCustomProduct(newProduct);
       toast.success("Product duplicated");
       loadData();
     } catch (error) {
+      console.error("Duplicate failed:", error);
       toast.error("Failed to duplicate");
     }
   };
 
   // ---------- Get Customization Icons ----------
   const getCustomizationIcons = (customization) => {
-    if (!customization) return [];
-    const icons = [];
-    if (customization.text?.enabled) icons.push({ icon: Type, label: "Text" });
-    if (customization.logo?.enabled) icons.push({ icon: Image, label: "Logo" });
-    if (customization.font?.enabled) icons.push({ icon: FileType, label: "Font" });
-    if (customization.color?.enabled) icons.push({ icon: Palette, label: "Color" });
-    return icons;
-  };
+  if (!customization) return [];
+  const icons = [];
+  // Support BOTH shapes: boolean (new) and { enabled } (legacy)
+  const isOn = (v) => v === true || (v && v.enabled === true);
+
+  if (isOn(customization.text))    icons.push({ icon: Type,     label: "Text"    });
+  if (isOn(customization.font))    icons.push({ icon: FileType, label: "Font"    });
+  if (isOn(customization.logo))    icons.push({ icon: Image,    label: "Logo"    });
+  if (isOn(customization.pattern)) icons.push({ icon: Palette,  label: "Pattern" });
+  return icons;
+};
 
   // ---------- Stats Cards ----------
   const statsCards = [
@@ -268,7 +276,7 @@ const CustomProducts = () => {
                       <div>
                         <h3
                           className="text-lg font-bold text-gray-800 line-clamp-1 cursor-pointer hover:text-orange-600 transition"
-                          onClick={() => navigate(`/admin/custom-products/${product.id}`)}
+                          onClick={() => navigate(`/admin/custom-products/${product._id}`)}
                         >
                           {product.name}
                         </h3>
@@ -309,20 +317,20 @@ const CustomProducts = () => {
 
                     <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
                       <Link
-                        to={`/admin/custom-products/${product.id}/edit`}
+                        to={`/admin/custom-products/${product._id}/edit`}
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-orange-50 text-gray-700 hover:text-orange-600 rounded-lg transition text-sm"
                       >
                         <Edit size={15} /> Edit
                       </Link>
                       <button
-                        onClick={() => handleDuplicate(product.id)}
+                        onClick={() => handleDuplicate(product._id)}
                         className="flex items-center justify-center gap-1 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition text-sm"
                         title="Duplicate"
                       >
                         <Copy size={15} />
                       </button>
                       <button
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDelete(product._id)}
                         className="flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition text-sm"
                         title="Delete"
                       >
