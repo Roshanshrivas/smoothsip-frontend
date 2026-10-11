@@ -15,13 +15,13 @@ import {
   Sparkles,
   TrendingUp,
   Eye,
-  Copy,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import StatsGrid from "../../components/admin/StatsGrid";
 import FilterBar from "../../components/admin/FilterBar";
 import Pagination from "../../components/admin/Pagination";
-import { customProductService } from "../../services/customProductService"; // ✅ correct path
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import { customProductService } from "../../services/customProductService";
 
 const CustomProducts = () => {
   const navigate = useNavigate();
@@ -32,6 +32,11 @@ const CustomProducts = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+
+  // ─── Delete confirmation state ───
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { _id, name }
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [stats, setStats] = useState({
     total: 0,
@@ -48,12 +53,14 @@ const CustomProducts = () => {
       const data = await customProductService.fetchCustomProducts();
       setProducts(data);
 
-      // Compute stats (adjust according to your product structure)
       const total = data.length;
       const active = data.filter((p) => p.status === "Active").length;
       const draft = data.filter((p) => p.status === "Draft").length;
       const inactive = data.filter((p) => p.status === "Inactive").length;
-      const revenue = data.reduce((sum, p) => sum + (p.salesCount || 0) * (p.basePrice || 0), 0);
+      const revenue = data.reduce(
+        (sum, p) => sum + (p.salesCount || 0) * (p.basePrice || 0),
+        0
+      );
 
       setStats({ total, active, draft, inactive, revenue });
     } catch (error) {
@@ -87,55 +94,47 @@ const CustomProducts = () => {
     currentPage * itemsPerPage
   );
 
-  // ---------- Handlers ----------
-  const handleDelete = async (id) => {
-    if (window.confirm("Delete this product permanently?")) {
-      try {
-        await customProductService.deleteCustomProduct(id);
-        toast.success("Product deleted");
-        loadData();
-      } catch (error) {
-        toast.error("Failed to delete");
-      }
-    }
+  // ---------- Delete Handlers ----------
+  const openDeleteDialog = (product) => {
+    setDeleteTarget({ _id: product._id, name: product.name });
+    setDeleteDialogOpen(true);
   };
 
-  const handleDuplicate = async (id) => {
+  const closeDeleteDialog = () => {
+    if (isDeleting) return;
+    setDeleteDialogOpen(false);
+    setDeleteTarget(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
     try {
-      const original = products.find((p) => String(p._id) === String(id) || String(p.id) === String(id));
-      if (!original) {
-      toast.error("Product not found");
-      return;
-      }
-      const { _id, id, createdAt, updatedAt, __v, ...rest } = original;
-      const newProduct = {
-      ...rest,
-      name: `${original.name} (Copy)`,
-      status: "Draft",
-      salesCount: 0,
-    };
-      await customProductService.createCustomProduct(newProduct);
-      toast.success("Product duplicated");
+      await customProductService.deleteCustomProduct(deleteTarget._id);
+      toast.success(`"${deleteTarget.name}" deleted`);
+      setDeleteDialogOpen(false);
+      setDeleteTarget(null);
       loadData();
     } catch (error) {
-      console.error("Duplicate failed:", error);
-      toast.error("Failed to duplicate");
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete product");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   // ---------- Get Customization Icons ----------
   const getCustomizationIcons = (customization) => {
-  if (!customization) return [];
-  const icons = [];
-  // Support BOTH shapes: boolean (new) and { enabled } (legacy)
-  const isOn = (v) => v === true || (v && v.enabled === true);
+    if (!customization) return [];
+    const icons = [];
+    const isOn = (v) => v === true || (v && v.enabled === true);
 
-  if (isOn(customization.text))    icons.push({ icon: Type,     label: "Text"    });
-  if (isOn(customization.font))    icons.push({ icon: FileType, label: "Font"    });
-  if (isOn(customization.logo))    icons.push({ icon: Image,    label: "Logo"    });
-  if (isOn(customization.pattern)) icons.push({ icon: Palette,  label: "Pattern" });
-  return icons;
-};
+    if (isOn(customization.text))    icons.push({ icon: Type,     label: "Text"    });
+    if (isOn(customization.font))    icons.push({ icon: FileType, label: "Font"    });
+    if (isOn(customization.logo))    icons.push({ icon: Image,    label: "Logo"    });
+    if (isOn(customization.pattern)) icons.push({ icon: Palette,  label: "Pattern" });
+    return icons;
+  };
 
   // ---------- Stats Cards ----------
   const statsCards = [
@@ -224,8 +223,12 @@ const CustomProducts = () => {
       ) : paginatedProducts.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm">
           <Package className="mx-auto h-16 w-16 text-gray-300" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No products found</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by creating your first customizable tumbler.</p>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">
+            No products found
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Get started by creating your first customizable tumbler.
+          </p>
           <button
             onClick={() => navigate("/admin/custom-products/add")}
             className="mt-4 inline-flex items-center gap-2 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition shadow-sm"
@@ -237,7 +240,9 @@ const CustomProducts = () => {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {paginatedProducts.map((product) => {
-              const customizationIcons = getCustomizationIcons(product.customization);
+              const customizationIcons = getCustomizationIcons(
+                product.customization
+              );
               const isDraft = product.status === "Draft";
               const isInactive = product.status === "Inactive";
 
@@ -248,10 +253,15 @@ const CustomProducts = () => {
                 >
                   <div
                     className="relative h-56 bg-gray-100 flex items-center justify-center p-4 cursor-pointer"
-                    onClick={() => navigate(`/admin/custom-products/${product._id}`)}
+                    onClick={() =>
+                      navigate(`/admin/custom-products/${product._id}`)
+                    }
                   >
                     <img
-                      src={product.mainImage || "https://placehold.co/400x400/FFF4E6/78350F?text=No+Image"}
+                      src={
+                        product.mainImage ||
+                        "https://placehold.co/400x400/FFF4E6/78350F?text=No+Image"
+                      }
                       alt={product.name}
                       className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
@@ -259,7 +269,11 @@ const CustomProducts = () => {
                     {(isDraft || isInactive) && (
                       <span
                         className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium shadow-sm
-                          ${isDraft ? "bg-yellow-100 text-yellow-700" : "bg-gray-200 text-gray-600"}`}
+                          ${
+                            isDraft
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-gray-200 text-gray-600"
+                          }`}
                       >
                         {isDraft ? "Draft" : "Inactive"}
                       </span>
@@ -276,13 +290,19 @@ const CustomProducts = () => {
                       <div>
                         <h3
                           className="text-lg font-bold text-gray-800 line-clamp-1 cursor-pointer hover:text-orange-600 transition"
-                          onClick={() => navigate(`/admin/custom-products/${product._id}`)}
+                          onClick={() =>
+                            navigate(`/admin/custom-products/${product._id}`)
+                          }
                         >
                           {product.name}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-2xl font-bold text-orange-600">₹{product.basePrice}</span>
-                          <span className="text-xs text-gray-400">+ customisation</span>
+                          <span className="text-2xl font-bold text-orange-600">
+                            ₹{product.basePrice}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            + customisation
+                          </span>
                         </div>
                       </div>
                       {product.color && (
@@ -296,16 +316,20 @@ const CustomProducts = () => {
 
                     <div className="flex flex-wrap gap-2 mt-3">
                       {customizationIcons.length > 0 ? (
-                        customizationIcons.map(({ icon: Icon, label }, idx) => (
-                          <span
-                            key={idx}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 rounded-full text-xs text-gray-600"
-                          >
-                            <Icon size={12} /> {label}
-                          </span>
-                        ))
+                        customizationIcons.map(
+                          ({ icon: Icon, label }, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 rounded-full text-xs text-gray-600"
+                            >
+                              <Icon size={12} /> {label}
+                            </span>
+                          )
+                        )
                       ) : (
-                        <span className="text-xs text-gray-400">No customisations</span>
+                        <span className="text-xs text-gray-400">
+                          No customisations
+                        </span>
                       )}
                     </div>
 
@@ -315,23 +339,17 @@ const CustomProducts = () => {
                       </div>
                     )}
 
+                    {/* ─── Actions: Edit + Delete only ─── */}
                     <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
                       <Link
                         to={`/admin/custom-products/${product._id}/edit`}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-orange-50 text-gray-700 hover:text-orange-600 rounded-lg transition text-sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-orange-50 text-gray-700 hover:text-orange-600 rounded-lg transition text-sm font-medium"
                       >
                         <Edit size={15} /> Edit
                       </Link>
                       <button
-                        onClick={() => handleDuplicate(product._id)}
-                        className="flex items-center justify-center gap-1 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition text-sm"
-                        title="Duplicate"
-                      >
-                        <Copy size={15} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product._id)}
-                        className="flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition text-sm"
+                        onClick={() => openDeleteDialog(product)}
+                        className="flex items-center justify-center gap-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition text-sm font-medium"
                         title="Delete"
                       >
                         <Trash2 size={15} />
@@ -354,6 +372,23 @@ const CustomProducts = () => {
           )}
         </>
       )}
+
+      {/* ─── Delete Confirmation Dialog ─── */}
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={closeDeleteDialog}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting} 
+        title="Delete this product?"
+        message={
+          deleteTarget
+            ? `You're about to permanently delete "${deleteTarget.name}". This action cannot be undone.`
+            : "Are you sure you want to delete this product?"
+        }
+        confirmText={isDeleting ? "Deleting..." : "Delete Product"}
+        cancelText="Cancel"
+        confirmVariant="danger"
+      />
     </div>
   );
 };
