@@ -94,31 +94,9 @@ async function generate() {
     console.log('   ⚠️  No products fetched — sitemap will only have static pages');
   }
 
-  // Categories
-  let categoriesXml = '';
-  const catRes = await fetchJson(`${API_URL}/categories`);
-  const categories =
-    catRes?.categories || catRes?.data?.categories || (Array.isArray(catRes) ? catRes : []);
-
-  if (Array.isArray(categories) && categories.length > 0) {
-    categoriesXml = categories
-      .map((c) =>
-        urlEntry({
-          loc: `${SITE_URL}/category/${c.slug}`,
-          lastmod: c.updatedAt
-            ? new Date(c.updatedAt).toISOString()
-            : now,
-          changefreq: 'weekly',
-          priority: '0.9',
-        })
-      )
-      .join('');
-    console.log(`   ✓ ${categories.length} categories`);
-  }
-
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${staticXml}${categoriesXml}${productsXml}
+${staticXml}${productsXml}
 </urlset>`;
 
   // Write to public/ so Vite copies it to dist/

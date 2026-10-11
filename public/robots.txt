@@ -14,8 +14,6 @@ Disallow: /profile/
 # ─── Allow product and category pages ──────────────────
 Allow: /product/
 Allow: /products/
-Allow: /category/
-Allow: /categories/
 
 # ─── Sitemap location ──────────────────────────────────
 Sitemap: https://smoothsip.in/sitemap.xml
