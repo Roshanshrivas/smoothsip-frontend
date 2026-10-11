@@ -18,4 +18,4 @@ Allow: /category/
 Allow: /categories/
 
 # ─── Sitemap location ──────────────────────────────────
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://smoothsip.in/sitemap.xml
