@@ -21,9 +21,7 @@ import {
   FiSmile,
 } from "react-icons/fi";
 
-import tumblerBlack from "../assets/tumblerimg.png";
-import tumblerOrange from "../assets/tumblerorangee.png";
-import tumblerWhite from "../assets/tumblerwhite.png";
+
 
 // ─── Brand Constants ──────────────────────────────────
 const BRAND_CYAN = "#00C2D6";
@@ -37,38 +35,29 @@ const CustomizeTeaser = () => {
   const samples = [
     {
       id: 1,
-      name: "Roshan's Custom",
-      text: "Roshan",
+      name: "Cotton Candy Ombre",
+      // text: "Roshan",
       color: "#FFFFFF",
-      image: tumblerBlack,
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791650802/tumbler/products/pnusek5bphmgz3i10eup.jpg",
       label: "Name Engraving",
     },
     {
       id: 2,
-      name: "Priya's Rose Gold",
-      text: "Priya ♥",
+      name: "Black Midnight Matte",
+      // text: "Priya ♥",
       color: "#FFD700",
-      image: tumblerOrange,
-      label: "Custom Text + Icon",
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791695584/tumbler/products/g2xwy3vky8ujqncoiyvx.jpg",
+      label: "Name Engraving",
+
     },
     {
       id: 3,
-      name: "Amit's Quote",
-      text: "Stay Hydrated",
+      name: "Refreshing Pine Green",
+      // text: "Stay Hydrated",
       color: "#FFFFFF",
-      image: tumblerWhite,
-      label: "Motivational Quote",
+      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791695289/tumbler/products/x8xuwmlah3go3grromks.jpg",
+      label: "Name Engraving",
     },
-  ];
-
-  // ─── Features ────────────────────────────────────────
-  const features = [
-    { icon: <TbPalette />, text: "10+ Colors", desc: "Matte, gloss, metallic" },
-    { icon: <TbLetterT />, text: "Personalized Text", desc: "Name, quote, or message" },
-    { icon: <TbTypography />, text: "Custom Fonts", desc: "10+ styles to choose" },
-    { icon: <TbSticker />, text: "Artwork / Icons", desc: "Upload your own design" },
-    { icon: <TbRuler />, text: "4 Sizes", desc: "16oz – 40oz available" },
-    { icon: <TbPackage />, text: "Accessories", desc: "Lids, straws, sleeves" },
   ];
 
   // ─── Animation Variants ──────────────────────────────
@@ -196,10 +185,6 @@ const CustomizeTeaser = () => {
                       className="h-44 sm:h-52 object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-sm"
                       loading="lazy"
                     />
-                    {/* Customization preview badge */}
-                    <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md rounded-full px-2.5 sm:px-3 py-1 text-[9px] sm:text-[10px] font-bold text-[#00C2D6] shadow-md border border-gray-100/50 flex items-center gap-1">
-                      <TbCheck className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> “{sample.text}”
-                    </div>
                     {/* Tag */}
                     <div className="absolute top-3 left-3 bg-[#00C2D6]/10 text-[#00C2D6] text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-0.5 rounded-full border border-[#00C2D6]/20">
                       {sample.label}

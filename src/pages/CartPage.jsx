@@ -42,7 +42,9 @@ import {
   validateCoupon,
   clearAppliedCoupon,
   selectCouponLoading,
+  fetchAvailableCoupons,
 } from '../store/slices/couponSlice';
+import AvailableCoupons from "../components/AvailableCoupons";
 
 const BRAND_CYAN = "#00C2D6";
 const FREE_SHIPPING_THRESHOLD = 499;
@@ -64,8 +66,8 @@ const CartPage = () => {
   // ─── Coupon State ─────────────────────────
   const appliedCoupon = useSelector(selectAppliedCoupon);
   const couponLoading = useSelector(selectCouponLoading);
-  const [couponCode, setCouponCode] = useState('');
-  const [couponError, setCouponError] = useState('');
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
 
   // ─── Local UI State ──────────────────────
   const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -85,12 +87,14 @@ const CartPage = () => {
   // ─── Coupon Handlers ──────────────────────
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
-    setCouponError('');
+    setCouponError("");
     try {
-      await dispatch(validateCoupon({ code: couponCode.trim(), subtotal: rawSubtotal })).unwrap();
-      setCouponCode('');
+      await dispatch(
+        validateCoupon({ code: couponCode.trim(), subtotal: rawSubtotal }),
+      ).unwrap();
+      setCouponCode("");
     } catch (err) {
-      setCouponError(err || 'Invalid coupon');
+      setCouponError(err || "Invalid coupon");
     }
   };
 
@@ -106,9 +110,16 @@ const CartPage = () => {
     }
   }, [dispatch, isAuthenticated]);
 
+  // Fetch available coupons whenever cart subtotal changes
+  useEffect(() => {
+    if (subtotal > 0) {
+      dispatch(fetchAvailableCoupons(subtotal));
+    }
+  }, [subtotal, dispatch]);
+
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddressId) {
-      const defaultAddr = addresses.find(a => a.isDefault) || addresses[0];
+      const defaultAddr = addresses.find((a) => a.isDefault) || addresses[0];
       setSelectedAddressId(defaultAddr?._id || defaultAddr?.id);
     }
   }, [addresses]);
@@ -138,7 +149,10 @@ const CartPage = () => {
         id: productId,
         title: item.product?.name || item.title,
         price: item.product?.price || item.price,
-        image: item.product?.mainImage  || (item.product?.images && item.product?.images[0]) || item.image,
+        image:
+          item.product?.mainImage ||
+          (item.product?.images && item.product?.images[0]) ||
+          item.image,
         discount: item.product?.discount || item.discount,
       });
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
@@ -151,10 +165,19 @@ const CartPage = () => {
   // ─── Address Management ──────────────────
   const handleSaveAddress = (e) => {
     e.preventDefault();
-    const required = ["fullName", "phoneNumber", "address", "city", "state", "pinCode"];
+    const required = [
+      "fullName",
+      "phoneNumber",
+      "address",
+      "city",
+      "state",
+      "pinCode",
+    ];
     for (const field of required) {
       if (!newAddress[field]?.trim()) {
-        toast.error(`Please enter ${field.replace(/([A-Z])/g, " $1").toLowerCase()}`);
+        toast.error(
+          `Please enter ${field.replace(/([A-Z])/g, " $1").toLowerCase()}`,
+        );
         return;
       }
     }
@@ -195,8 +218,8 @@ const CartPage = () => {
   const rawSubtotal = cartItems.reduce((sum, item) => {
     const isCustom = item.customization?.isCustom;
     const price = isCustom
-    ? (item.customization?.price || 0)
-    : (item.product?.price || 0);
+      ? item.customization?.price || 0
+      : item.product?.price || 0;
     return sum + price * item.quantity;
   }, 0);
 
@@ -206,17 +229,23 @@ const CartPage = () => {
     couponDiscountAmount = appliedCoupon.discountAmount || 0;
   }
 
-   // 🧮 Tax: 12% on discounted subtotal
+  // 🧮 Tax: 12% on discounted subtotal
   const discountedSubtotal = Math.max(0, rawSubtotal - couponDiscountAmount);
   const tax = Math.round(discountedSubtotal * 0.12);
   // Shipping: free above ₹499 (based on rawSubtotal)
-  const shippingCost = rawSubtotal >= FREE_SHIPPING_THRESHOLD || cartItems.length === 0 ? 0 : 49;
+  const shippingCost =
+    rawSubtotal >= FREE_SHIPPING_THRESHOLD || cartItems.length === 0 ? 0 : 49;
   // Final Total
   const totalAmount = discountedSubtotal + tax + shippingCost;
   const totalSavings = couponDiscountAmount; // savings = coupon discount only
-  const freeShippingProgress = Math.min(100, (rawSubtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const freeShippingProgress = Math.min(
+    100,
+    (rawSubtotal / FREE_SHIPPING_THRESHOLD) * 100,
+  );
 
-  const selectedAddress = addresses.find(a => (a._id || a.id) === selectedAddressId);
+  const selectedAddress = addresses.find(
+    (a) => (a._id || a.id) === selectedAddressId,
+  );
 
   // ─── Checkout Navigation ──────────────────
   const handleCheckout = () => {
@@ -238,7 +267,9 @@ const CartPage = () => {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-gray-50/50 font-sans">
         <div className="w-10 h-10 border-4 border-[#00C2D6] border-t-transparent rounded-full animate-spin" />
-        <p className="mt-4 text-sm font-medium text-gray-400">Loading your shopping cart…</p>
+        <p className="mt-4 text-sm font-medium text-gray-400">
+          Loading your shopping cart…
+        </p>
       </div>
     );
   }
@@ -252,28 +283,46 @@ const CartPage = () => {
             <div className="flex items-center justify-between relative px-2 sm:px-12">
               <div className="absolute top-4 left-8 right-8 sm:left-16 sm:right-16 h-[2px] bg-gray-100 -z-0" />
               <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 text-gray-400 flex items-center justify-center text-xs font-bold shadow-sm">1</div>
-                <span className="text-xs sm:text-sm font-semibold text-gray-400">Address</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 text-gray-400 flex items-center justify-center text-xs font-bold shadow-sm">
+                  1
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-gray-400">
+                  Address
+                </span>
               </div>
               <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#00C2D6] text-white flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm">2</div>
-                <span className="text-xs sm:text-sm font-bold text-gray-900">Order Summary</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#00C2D6] text-white flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm">
+                  2
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-gray-900">
+                  Order Summary
+                </span>
               </div>
               <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 bg-white text-gray-400 flex items-center justify-center text-xs font-bold">3</div>
-                <span className="text-xs sm:text-sm font-bold text-gray-400">Payment</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 bg-white text-gray-400 flex items-center justify-center text-xs font-bold">
+                  3
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-gray-400">
+                  Payment
+                </span>
               </div>
             </div>
           </div>
           <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B] tracking-tight">Your Shopping Cart</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B] tracking-tight">
+              Your Shopping Cart
+            </h1>
           </div>
           <div className="bg-white rounded-3xl border border-gray-100 p-12 text-center shadow-sm max-w-lg mx-auto space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#E6F9FA] text-[#00C2D6] flex items-center justify-center mx-auto">
               <FiShoppingCart size={32} />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Your cart is empty</h2>
-            <p className="text-sm text-gray-400 font-medium">Looks like you haven't added any tumblers yet.</p>
+            <h2 className="text-xl font-bold text-gray-900">
+              Your cart is empty
+            </h2>
+            <p className="text-sm text-gray-400 font-medium">
+              Looks like you haven't added any tumblers yet.
+            </p>
             <Link to="/allproducts">
               <button className="px-6 py-3 bg-[#00C2D6] hover:bg-[#00A0B0] text-white font-bold text-sm rounded-xl transition shadow-sm">
                 Explore All Products
@@ -372,8 +421,12 @@ const CartPage = () => {
                       product.mainImage ||
                       (product.images && product.images[0]) ||
                       "";
-                    const title = isCustom ? item.customization.name : (product.name || "Product");
-                    const price = isCustom ? item.customization.price : (product.price || 0);
+                    const title = isCustom
+                      ? item.customization.name
+                      : product.name || "Product";
+                    const price = isCustom
+                      ? item.customization.price
+                      : product.price || 0;
                     const quantity = item.quantity || 1;
                     const color = item.customization?.color || product.color;
                     const isInStock = product.stock > 0;
@@ -502,7 +555,6 @@ const CartPage = () => {
                     <h4 className="text-sm font-bold text-gray-900">
                       Free Shipping
                     </h4>
-                    
                   </div>
                 </div>
               </div>
@@ -704,6 +756,9 @@ const CartPage = () => {
                 </div>
               )}
 
+              {/* ─── Available Coupons (auto-loaded) ─── */}
+              <AvailableCoupons subtotal={rawSubtotal} />
+
               {/* Coupon Section – Cart Page */}
               <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="flex items-center gap-3">
@@ -853,6 +908,6 @@ const CartPage = () => {
       </div>
     </div>
   );
-};
+};;
 
 export default CartPage;

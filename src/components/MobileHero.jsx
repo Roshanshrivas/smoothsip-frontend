@@ -18,7 +18,7 @@ import {
   Award,
   RotateCcw,
 } from "lucide-react";
-import { publicCategoryService } from "../services/publicCategoryService";
+// import { publicCategoryService } from "../services/publicCategoryService";
 import { productService } from "../services/productService";
 import { addressService } from "../services/addressService"; // ✅ Added
 import { debounce } from "lodash";
@@ -54,8 +54,8 @@ export default function MobileEcommerceUI() {
   const autoScrollRef = useRef(null);
 
   // ─── Categories state ──────────────────────────────────────
-  const [categories, setCategories] = useState([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
+  // const [categories, setCategories] = useState([]);
+  // const [loadingCategories, setLoadingCategories] = useState(true);
 
   // ─── Address state (fetched from API) ─────────────────────
   const [addresses, setAddresses] = useState([]);
@@ -102,63 +102,63 @@ export default function MobileEcommerceUI() {
   ];
 
   // ─── Fetch real categories ──────────────────────────────────
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoadingCategories(true);
-        let data;
-        if (
-          publicCategoryService &&
-          typeof publicCategoryService.getCategories === "function"
-        ) {
-          data = await publicCategoryService.getCategories();
-        } else {
-          throw new Error("publicCategoryService not available");
-        }
-        const formatted = data.map((cat, idx) => ({
-          name: cat.name,
-          img: cat.image || "https://via.placeholder.com/150",
-          active: idx === 0,
-          id: cat._id || cat.id,
-          slug: cat.slug,
-        }));
-        setCategories(formatted);
-      } catch (error) {
-        console.error("Failed to load categories:", error);
-        toast.error("Could not load categories");
-        setCategories(getFallbackCategories());
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-    fetchCategories();
-  }, []);
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       setLoadingCategories(true);
+  //       let data;
+  //       if (
+  //         publicCategoryService &&
+  //         typeof publicCategoryService.getCategories === "function"
+  //       ) {
+  //         data = await publicCategoryService.getCategories();
+  //       } else {
+  //         throw new Error("publicCategoryService not available");
+  //       }
+  //       const formatted = data.map((cat, idx) => ({
+  //         name: cat.name,
+  //         img: cat.image || "https://via.placeholder.com/150",
+  //         active: idx === 0,
+  //         id: cat._id || cat.id,
+  //         slug: cat.slug,
+  //       }));
+  //       setCategories(formatted);
+  //     } catch (error) {
+  //       console.error("Failed to load categories:", error);
+  //       toast.error("Could not load categories");
+  //       setCategories(getFallbackCategories());
+  //     } finally {
+  //       setLoadingCategories(false);
+  //     }
+  //   };
+  //   fetchCategories();
+  // }, []);
 
-  const getFallbackCategories = () => [
-    {
-      name: "All Tumblers",
-      img: "https://images.unsplash.com/photo-1589365267167-27b2c5890b0e?w=150&auto=format&fit=crop&q=80",
-      active: true,
-    },
-    {
-      name: "Coffee",
-      img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      name: "Kids",
-      img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      name: "Office",
-      img: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      name: "Sports",
-      img: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=150&auto=format&fit=crop&q=80",
-    },
-    { name: "Gifts", isGift: true },
-    { name: "More", isMore: true },
-  ];
+  // const getFallbackCategories = () => [
+  //   {
+  //     name: "All Tumblers",
+  //     img: "https://images.unsplash.com/photo-1589365267167-27b2c5890b0e?w=150&auto=format&fit=crop&q=80",
+  //     active: true,
+  //   },
+  //   {
+  //     name: "Coffee",
+  //     img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150&auto=format&fit=crop&q=80",
+  //   },
+  //   {
+  //     name: "Kids",
+  //     img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=150&auto=format&fit=crop&q=80",
+  //   },
+  //   {
+  //     name: "Office",
+  //     img: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=150&auto=format&fit=crop&q=80",
+  //   },
+  //   {
+  //     name: "Sports",
+  //     img: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=150&auto=format&fit=crop&q=80",
+  //   },
+  //   { name: "Gifts", isGift: true },
+  //   { name: "More", isMore: true },
+  // ];
 
   // ─── Auto-scroll Logic ──────────────────────────────────
   useEffect(() => {
@@ -551,7 +551,7 @@ export default function MobileEcommerceUI() {
         </div>
 
         {/* ─── Deliver To Section (unchanged design) ────── */}
-        <div className="hidden px-4 py-2 bg-white">
+        {/* <div className="hidden px-4 py-2 bg-white">
           <div className="bg-[#F8F9FB] shadow-md border border-gray-100 rounded-xl p-2 flex items-center justify-between hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 rounded-xl bg-[#E0F4F7] flex items-center justify-center text-[#00A9C0] flex-shrink-0">
@@ -561,9 +561,7 @@ export default function MobileEcommerceUI() {
                 <p className="text-[12px] text-gray-400 font-medium">
                   Deliver to
                 </p>
-                {/* <h4 className="text-[13px] font-bold text-gray-800 leading-tight">
-                  {locationInfo.name}
-                </h4> */}
+                
                 <p className="text-[11px] font-bold text-gray-500">
                   {locationInfo.isAddressPresent
                     ? locationInfo.fullAddress
@@ -579,10 +577,10 @@ export default function MobileEcommerceUI() {
               <ChevronRight className="w-4 h-4 ml-0.5" />
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* ─── Categories (Dynamic Meesho-style) ────────────────────── */}
-        <div className="px-3 py-3 bg-white border-b border-gray-50">
+        {/* <div className="hidden px-3 py-3 bg-white border-b border-gray-50">
           {loadingCategories ? (
             <div className="flex justify-center py-4">
               <div className="w-6 h-6 border-2 border-[#00A9C0] border-t-transparent rounded-full animate-spin"></div>
@@ -597,7 +595,7 @@ export default function MobileEcommerceUI() {
                   }}
                   className="flex flex-col items-center flex-shrink-0 w-[64px] group cursor-pointer"
                 >
-                  {/* Circular Image Container */}
+                  
                   <div className="w-[60px] h-[60px] rounded-full overflow-hidden bg-[#F0F4F8] flex items-center justify-center transition-transform duration-200 active:scale-95">
                     {cat.isGift ? (
                       <div className="w-full h-full rounded-full bg-[#EBF5F6] flex items-center justify-center text-2xl">
@@ -621,8 +619,6 @@ export default function MobileEcommerceUI() {
                       />
                     )}
                   </div>
-
-                  {/* Single-line truncated text matching reference image */}
                   <span
                     title={cat.name}
                     className="w-full text-[12px] font-normal text-[#334155] text-center mt-1.5 truncate leading-tight tracking-tight block"
@@ -633,7 +629,7 @@ export default function MobileEcommerceUI() {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* ─── Hero Banner Section ──────────────────────── */}
         <div
