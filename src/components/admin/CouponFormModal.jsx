@@ -65,28 +65,71 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // ✅ Clear type-specific fields when discount type changes
+    if (name === "discountType" && value !== formData.discountType) {
+      setFormData((prev) => ({
+        ...prev,
+        discountType: value,
+        discountValue: "", // ← clear so stale value can't trigger error
+        maxDiscount: "", // ← only relevant for percentage
+      }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!formData.code.trim()) {
       toast.error("Coupon code is required");
       return;
     }
-    if (!formData.discountValue || parseFloat(formData.discountValue) <= 0) {
+
+    const discountValue = parseFloat(formData.discountValue);
+    if (!discountValue || discountValue <= 0) {
       toast.error("Discount value must be greater than 0");
       return;
     }
+
+    // ✅ Only check percentage range for percentage type
+    if (
+      formData.discountType === "percentage" &&
+      discountValue > 100
+    ) {
+      toast.error(`Percentage cannot exceed 100% (you entered ${discountValue}%)`);
+      return;
+    }
+
     if (!formData.expiryDate) {
       toast.error("Expiry date is required");
       return;
     }
-    if (formData.discountType === "percentage" && parseFloat(formData.discountValue) > 100) {
-      toast.error("Percentage discount cannot exceed 100%");
-      return;
-    }
-    onSave(formData);
+
+    // Build backend-ready payload
+    const payload = {
+      code: formData.code.trim().toUpperCase(),
+      description: formData.description.trim(),
+      discountType: formData.discountType,
+      discountValue: Number(discountValue),
+      minimumOrder: formData.minOrderAmount ? Number(formData.minOrderAmount) : 0,
+      maxDiscount:
+        formData.discountType === "percentage" && formData.maxDiscount
+          ? Number(formData.maxDiscount)
+          : null,
+      startDate: formData.startDate
+        ? new Date(formData.startDate).toISOString()
+        : new Date().toISOString(),
+      endDate: formData.expiryDate
+        ? new Date(formData.expiryDate).toISOString()
+        : null,
+      usageLimit: formData.usageLimit ? Number(formData.usageLimit) : null,
+      perUserLimit: formData.perUserLimit ? Number(formData.perUserLimit) : 1,
+      active: formData.status === "active",
+    };
+
+    onSave(payload);
   };
 
   const regenerateCode = () => {
@@ -107,12 +150,18 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
               {isEditing ? "Edit Coupon" : "Create New Coupon"}
             </h3>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
             <X size={24} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-100px)] space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 overflow-y-auto max-h-[calc(90vh-100px)] space-y-5"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -172,20 +221,48 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
               <label className="block text-sm font-medium mb-1">
                 Discount Value <span className="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                name="discountValue"
-                value={formData.discountValue}
-                onChange={handleChange}
-                min="1"
-                step="0.01"
-                className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm"
-                required
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  name="discountValue"
+                  value={formData.discountValue}
+                  onChange={handleChange}
+                  min="1"
+                  max={
+                    formData.discountType === "percentage" ? "100" : undefined
+                  }
+                  step={formData.discountType === "percentage" ? "1" : "1"}
+                  placeholder={
+                    formData.discountType === "percentage"
+                      ? "e.g., 20"
+                      : "e.g., 500"
+                  }
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm"
+                  required
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
+                  {formData.discountType === "percentage" ? "%" : "₹"}
+                </span>
+              </div>
+              {formData.discountType === "percentage" && (
+                <p className="text-[10px] text-gray-400 mt-1">
+                  Between 1 and 100
+                </p>
+              )}
             </div>
+
             <div>
               <label className="block text-sm font-medium mb-1">
-                Max Discount (optional)
+                Max Discount
+                {formData.discountType === "fixed" ? (
+                  <span className="text-[10px] text-gray-400 ml-1">
+                    (not needed for fixed)
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-gray-400 ml-1">
+                    (optional)
+                  </span>
+                )}
               </label>
               <input
                 type="number"
@@ -194,8 +271,11 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 onChange={handleChange}
                 min="1"
                 step="0.01"
-                placeholder="e.g., 500"
-                className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm"
+                placeholder={
+                  formData.discountType === "percentage" ? "e.g., 200" : "—"
+                }
+                disabled={formData.discountType === "fixed"}
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm disabled:opacity-40 disabled:bg-gray-50"
               />
             </div>
           </div>
@@ -234,7 +314,9 @@ const CouponFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Start Date</label>
+              <label className="block text-sm font-medium mb-1">
+                Start Date
+              </label>
               <input
                 type="date"
                 name="startDate"
