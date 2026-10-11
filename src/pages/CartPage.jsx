@@ -49,6 +49,90 @@ import AvailableCoupons from "../components/AvailableCoupons";
 const BRAND_CYAN = "#00C2D6";
 const FREE_SHIPPING_THRESHOLD = 499;
 
+// ─── Responsive Step Progress ──────────────────────
+const StepProgress = ({ isAddressSelected, onAddressClick }) => {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 px-4 sm:px-10 py-4 sm:py-6 shadow-sm">
+      <div className="relative">
+        {/* Track line — spans between the 1st and 3rd circle centers */}
+        <div
+          className="absolute h-[2px] bg-gray-100 rounded-full -z-0"
+          style={{ top: "14px", left: "16.66%", right: "16.66%" }}
+        />
+        {/* Filled progress — reaches 2nd circle when address is selected */}
+        <div
+          className="absolute h-[2px] bg-[#00C2D6] rounded-full transition-all duration-500 -z-0"
+          style={{
+            top: "14px",
+            left: "16.66%",
+            width: isAddressSelected ? "33.34%" : "0%",
+          }}
+        />
+
+        <div className="flex items-start justify-between relative z-10">
+          {/* ─── Step 1: Address ─── */}
+          <div
+            className="flex flex-col items-center flex-1 gap-1.5 min-w-0 px-1"
+            onClick={onAddressClick}
+            style={{ cursor: onAddressClick ? "pointer" : "default" }}
+          >
+            <div
+              className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-[10px] sm:text-xs font-bold bg-white transition-all shrink-0 ${
+                isAddressSelected
+                  ? "border-[#00C2D6] text-[#00C2D6]"
+                  : "border-gray-200 text-gray-400"
+              }`}
+            >
+              {isAddressSelected ? (
+                <FiCheck size={12} strokeWidth={3} />
+              ) : (
+                "1"
+              )}
+            </div>
+            <span
+              className={`text-[10px] sm:text-xs font-semibold text-center leading-tight whitespace-nowrap ${
+                isAddressSelected ? "text-gray-900" : "text-gray-400"
+              }`}
+            >
+              Address
+            </span>
+            <span className="hidden sm:block text-[10px] text-gray-400 font-medium whitespace-nowrap">
+              {isAddressSelected ? "✓ Verified" : "Delivery"}
+            </span>
+          </div>
+
+          {/* ─── Step 2: Order Summary (current) ─── */}
+          <div className="flex flex-col items-center flex-1 gap-1.5 min-w-0 px-1">
+            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#00C2D6] text-white flex items-center justify-center text-[10px] sm:text-xs font-bold shadow-sm shrink-0">
+              2
+            </div>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-900 text-center leading-tight">
+              Order
+              <span className="hidden sm:inline"> Summary</span>
+            </span>
+            <span className="hidden sm:block text-[10px] text-gray-400 font-medium whitespace-nowrap">
+              Review items
+            </span>
+          </div>
+
+          {/* ─── Step 3: Payment ─── */}
+          <div className="flex flex-col items-center flex-1 gap-1.5 min-w-0 px-1">
+            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 bg-white text-gray-400 flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0">
+              3
+            </div>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 text-center leading-tight whitespace-nowrap">
+              Payment
+            </span>
+            <span className="hidden sm:block text-[10px] text-gray-400 font-medium whitespace-nowrap">
+              Secure
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -279,35 +363,7 @@ const CartPage = () => {
     return (
       <div className="min-h-screen bg-[#F8FAFC] pb-16 font-sans text-gray-800">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pt-6">
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm mx-auto">
-            <div className="flex items-center justify-between relative px-2 sm:px-12">
-              <div className="absolute top-4 left-8 right-8 sm:left-16 sm:right-16 h-[2px] bg-gray-100 -z-0" />
-              <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 text-gray-400 flex items-center justify-center text-xs font-bold shadow-sm">
-                  1
-                </div>
-                <span className="text-xs sm:text-sm font-semibold text-gray-400">
-                  Address
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#00C2D6] text-white flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm">
-                  2
-                </div>
-                <span className="text-xs sm:text-sm font-bold text-gray-900">
-                  Order Summary
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 bg-white text-gray-400 flex items-center justify-center text-xs font-bold">
-                  3
-                </div>
-                <span className="text-xs sm:text-sm font-bold text-gray-400">
-                  Payment
-                </span>
-              </div>
-            </div>
-          </div>
+          <StepProgress isAddressSelected={false} />
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B] tracking-tight">
               Your Shopping Cart
@@ -339,60 +395,10 @@ const CartPage = () => {
     <div className="min-h-screen bg-[#F8FAFC] pb-16 font-sans text-gray-800">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pt-6">
         {/* Step Progress */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm mx-auto">
-          <div className="flex items-center justify-between relative px-2 sm:px-12">
-            <div className="absolute top-4 left-8 right-8 sm:left-16 sm:right-16 h-[2px] bg-gray-100 -z-0" />
-            <div
-              className="absolute top-4 left-8 sm:left-16 h-[2px] bg-[#00C2D6] transition-all duration-500 -z-0"
-              style={{ width: selectedAddress ? "50%" : "0%" }}
-            />
-            <div
-              className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2 cursor-pointer group"
-              onClick={() => setIsAddingAddress(true)}
-            >
-              <div
-                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold shadow-sm transition ${
-                  selectedAddress
-                    ? "border-[#00C2D6] bg-white text-[#00C2D6]"
-                    : "border-gray-200 text-gray-400"
-                }`}
-              >
-                {selectedAddress ? <FiCheck size={16} strokeWidth={3} /> : "1"}
-              </div>
-              <span
-                className={`text-xs sm:text-sm font-semibold ${selectedAddress ? "text-gray-900" : "text-gray-400"}`}
-              >
-                Address
-              </span>
-              <span className="text-[11px] text-gray-400 font-medium hidden sm:block">
-                {selectedAddress ? "✓ Verified" : "Delivery address"}
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#00C2D6] text-white flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm">
-                2
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-gray-900">
-                Order Summary
-              </span>
-              <span className="text-[11px] text-gray-400 font-medium hidden sm:block">
-                Review items
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 relative z-10 bg-white px-2">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-gray-200 bg-white text-gray-400 flex items-center justify-center text-xs font-bold">
-                3
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-gray-400">
-                Payment
-              </span>
-              <span className="text-[11px] text-gray-400 font-medium hidden sm:block">
-                Secure payment
-              </span>
-            </div>
-          </div>
-        </div>
-
+        <StepProgress
+          isAddressSelected={!!selectedAddress}
+          onAddressClick={() => setIsAddingAddress(true)}
+        />
         <div className="space-y-1">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B] tracking-tight">
             Your Shopping Cart
@@ -758,9 +764,6 @@ const CartPage = () => {
 
               {/* ─── Available Coupons (auto-loaded) ─── */}
               <AvailableCoupons subtotal={rawSubtotal} />
-
-              
-
               <div className="space-y-2.5 pt-1">
                 <button
                   onClick={handleCheckout}
