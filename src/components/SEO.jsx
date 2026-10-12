@@ -2,6 +2,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSeoSettings } from '../hooks/useSeoSettings';
 
+const SITE_URL = 'https://smoothsip.in';
+const BRAND = 'SmoothSip';
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
+
 const SEO = ({
   title,
   description,
@@ -9,91 +13,142 @@ const SEO = ({
   image,
   url,
   type = 'website',
-  siteName = 'Tumbler Studio',
-  twitterHandle = '@tumblerstudio',
+  siteName = BRAND,
   noIndex = false,
+  product = null,
+  breadcrumbs = null,
+  article = null,
   children,
 }) => {
-  // ─── Get admin SEO settings from database ────────────
-  const { seoSettings, loading } = useSeoSettings();
+  const { seoSettings } = useSeoSettings();
 
-  // ─── Environment variables (fallback) ────────────────
-  const envSiteTitle = import.meta.env.VITE_SITE_TITLE || 'Tumbler Studio';
-  const envDefaultDescription =
-    import.meta.env.VITE_SITE_DESCRIPTION ||
-    'Premium quality tumblers, custom designs, fast delivery.';
-  const envSiteUrl = import.meta.env.VITE_SITE_URL || 'https://tumblerstudio.com';
-  const envDefaultImage = import.meta.env.VITE_SITE_IMAGE || '/og-image.jpg';
-  const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-  const verificationCode = import.meta.env.VITE_GOOGLE_SITE_VERIFICATION;
+  const siteTitle = seoSettings?.metaTitle || BRAND;
+  const metaDescription =
+    description ||
+    seoSettings?.metaDescription ||
+    'Shop premium insulated tumblers at SmoothSip. 12-hour cold, 8-hour hot, BPA-free. Free shipping across India.';
+  const metaKeywords =
+    keywords ||
+    seoSettings?.metaKeywords ||
+    'SmoothSip, insulated tumbler, custom tumbler, stainless steel tumbler India';
+  const fullTitle =
+    title && title.includes(BRAND) ? title : title ? `${title} | ${BRAND}` : siteTitle;
+  const canonicalUrl = url
+    ? url.startsWith('http')
+      ? url
+      : `${SITE_URL}${url}`
+    : SITE_URL;
+  const ogImage = image || DEFAULT_IMAGE;
 
-  // ─── Merge: page props > admin settings > env vars ───
-  const siteTitle = title || seoSettings?.metaTitle || envSiteTitle;
-  const metaDescription = description || seoSettings?.metaDescription || envDefaultDescription;
-  const metaKeywords = keywords || seoSettings?.metaKeywords || 'tumbler, water bottle, custom tumbler, travel mug, thermos';
-  const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
-  const canonicalUrl = url || envSiteUrl;
-  const ogImage = image || envDefaultImage;
-
-  // ─── Render ──────────────────────────────────────────
   return (
-    <Helmet>
-      {/* Basic */}
+    <Helmet prioritizeSeoTags>
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
       {metaKeywords && <meta name="keywords" content={metaKeywords} />}
       <link rel="canonical" href={canonicalUrl} />
 
-      {/* Robots */}
-      {noIndex ? (
-        <meta name="robots" content="noindex, nofollow" />
-      ) : (
-        <meta name="robots" content="index, follow" />
-      )}
-
-      {/* Search Console Verification (if provided) */}
-      {verificationCode && verificationCode !== 'YOUR_VERIFICATION_CODE' && (
-        <meta name="google-site-verification" content={verificationCode} />
-      )}
+      <meta
+        name="robots"
+        content={noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}
+      />
+      <meta name="theme-color" content="#00C2D6" />
 
       {/* Open Graph */}
+      <meta property="og:type" content={type} />
+      <meta property="og:site_name" content={siteName} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:type" content={type} />
-      <meta property="og:site_name" content={siteName} />
+      <meta property="og:locale" content="en_IN" />
 
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={metaDescription} />
-      <meta name="twitter:image" content={ogImage} />
-      <meta name="twitter:site" content={twitterHandle} />
+      {/* Organization Schema — always present */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: BRAND,
+          url: SITE_URL,
+          logo: 'https://res.cloudinary.com/ghqmmyvr/image/upload/v1791789656/sslogo.png',
+          contactPoint: {
+            '@type': 'ContactPoint',
+            contactType: 'customer service',
+            email: 'connectsmoothsip@gmail.com',
+            areaServed: 'IN',
+          },
+        })}
+      </script>
 
-      {/* Extra */}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-      <meta name="theme-color" content="#f97316" />
-      <link rel="icon" href="/favicon.ico" />
-      <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-
-      {/* Google Analytics (only if ID exists) */}
-      {gaId && gaId !== 'YOUR_GA_ID' && (
-        <>
-          <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
-          <script>
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${gaId}');
-            `}
-          </script>
-        </>
+      {/* Product Schema */}
+      {product && (
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name || product.title,
+            image: product.mainImage || product.image,
+            description: product.description,
+            sku: product.sku || product._id,
+            brand: { '@type': 'Brand', name: BRAND },
+            offers: {
+              '@type': 'Offer',
+              url: canonicalUrl,
+              priceCurrency: 'INR',
+              price: product.price || product.basePrice,
+              availability:
+                (product.stock ?? 1) > 0
+                  ? 'https://schema.org/InStock'
+                  : 'https://schema.org/OutOfStock',
+              seller: { '@type': 'Organization', name: BRAND },
+            },
+            ...(product.rating > 0 && {
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: product.rating,
+                reviewCount: product.reviews || 1,
+              },
+            }),
+          })}
+        </script>
       )}
 
-      {/* Additional children (e.g., JSON-LD) */}
+      {/* Breadcrumb Schema */}
+      {breadcrumbs?.length > 0 && (
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: breadcrumbs.map((item, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: item.name,
+              item: `${SITE_URL}${item.url}`,
+            })),
+          })}
+        </script>
+      )}
+
+      {/* Article Schema */}
+      {article && (
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: article.headline || fullTitle,
+            description: metaDescription,
+            image: ogImage,
+            datePublished: article.datePublished,
+            dateModified: article.dateModified || article.datePublished,
+            author: { '@type': 'Organization', name: BRAND },
+            publisher: {
+              '@type': 'Organization',
+              name: BRAND,
+              logo: 'https://res.cloudinary.com/ghqmmyvr/image/upload/v1791789656/sslogo.png',
+            },
+          })}
+        </script>
+      )}
+
       {children}
     </Helmet>
   );

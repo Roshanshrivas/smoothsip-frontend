@@ -336,8 +336,9 @@ const ProductsPage = () => {
   return (
     <>
       <SEO
-        title={categoryName ? `${categoryName} SmoothSip` : "All Products"}
-        description={`Browse our collection of ${categoryName ? categoryName.toLowerCase() : "premium"} tumblers.`}
+        title="All Tumblers — Buy Premium Insulated Tumblers"
+        description="Browse all premium insulated tumblers at SmoothSip. 12H cold, 8H hot, BPA-free. Free shipping across India."
+        url="/allproducts"
         type="website"
       />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">

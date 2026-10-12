@@ -17,7 +17,10 @@ import MobileHero from '../components/MobileHero'
 const Home = () => {
   return (
     <>
-      <SEO />
+      <SEO
+        title="SmoothSip — Premium Insulated Tumblers in India"
+        description="Shop premium insulated tumblers at SmoothSip. 12-hour cold, 8-hour hot, BPA-free. Custom engraving available. Free shipping across India."
+        url="/"/>
       <div className='w-full h-auto bg-white'>
        <div>
 

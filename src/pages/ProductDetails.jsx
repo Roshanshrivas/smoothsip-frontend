@@ -620,11 +620,17 @@ const ProductDetailsPage = () => {
   return (
     <>
       <SEO
-        title={product?.name}
-        description={product?.description}
-        image={product?.images?.[0]}
-        url={`/product/${product?.id}`}
+        title={`${product.name} — Buy at ₹${product.price}`}
+        description={`Buy ${product.name} at ₹${product.price}. Premium insulated tumbler with 12H cold retention.`}
+        image={product.mainImage}
+        url={`/product/${product._id}`}
         type="product"
+        product={product}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Products", url: "/allproducts" },
+          { name: product.name, url: `/product/${product._id}` },
+        ]}
       />
       <motion.div
         ref={pageRef}
@@ -768,14 +774,15 @@ const ProductDetailsPage = () => {
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mt-2.5">
                       {product.title}
                     </h1>
-                    {product.rating > 0 && product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && (
-                    <div className="flex items-center gap-3 mt-3.5 flex-wrap">
-                      {renderStars(product.rating)}
-                      <span className="text-gray-500 font-semibold text-xs sm:text-sm">
-                        ({product.reviews} Verified Customer Reviews)
-                      </span>
-                    </div>
-                    )}
+                    {product.rating > 0 &&
+                      product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && (
+                        <div className="flex items-center gap-3 mt-3.5 flex-wrap">
+                          {renderStars(product.rating)}
+                          <span className="text-gray-500 font-semibold text-xs sm:text-sm">
+                            ({product.reviews} Verified Customer Reviews)
+                          </span>
+                        </div>
+                      )}
                   </div>
 
                   <div className="flex items-center gap-2 border-b border-gray-100 pb-5 flex-wrap">
@@ -793,11 +800,7 @@ const ProductDetailsPage = () => {
 
                   <div className="hidden sm:grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <FeatureCard icon={<BsSnow />} title="Cold 12H" index={0} />
-                    <FeatureCard
-                      icon={<BsCupHot />}
-                      title="Hot 8H"
-                      index={1}
-                    />
+                    <FeatureCard icon={<BsCupHot />} title="Hot 8H" index={1} />
                     <FeatureCard
                       icon={<BsShieldCheck />}
                       title="BPA Free"
@@ -901,28 +904,30 @@ const ProductDetailsPage = () => {
                         <FiShoppingCart size={16} /> Add to Cart
                       </motion.button>
                       {product.customizeProductId && (
-                      <Link 
-                         to={`/customize/${product.customizeProductId}`} 
-                         className="flex-1 hidden sm:block">
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="w-full border-2 border-gray-400 text-gray-600 font-bold py-2.5 rounded-xl transition-all hover:bg-gray-900 hover:text-white bg-white"
+                        <Link
+                          to={`/customize/${product.customizeProductId}`}
+                          className="flex-1 hidden sm:block"
                         >
-                          Customize Now
-                        </motion.button>
-                      </Link>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full border-2 border-gray-400 text-gray-600 font-bold py-2.5 rounded-xl transition-all hover:bg-gray-900 hover:text-white bg-white"
+                          >
+                            Customize Now
+                          </motion.button>
+                        </Link>
                       )}
                     </div>
                   </div>
                   {product.customizeProductId && (
-                  <Link 
-                     to={`/customize/${product.customizeProductId}`} 
-                     className="w-full hidden pt-1">
-                    <button className="w-full border-2 border-gray-900 text-gray-900 font-bold py-3 rounded-xl transition-all hover:bg-gray-900 hover:text-white bg-white">
-                      Customize Now
-                    </button>
-                  </Link>
+                    <Link
+                      to={`/customize/${product.customizeProductId}`}
+                      className="w-full hidden pt-1"
+                    >
+                      <button className="w-full border-2 border-gray-900 text-gray-900 font-bold py-3 rounded-xl transition-all hover:bg-gray-900 hover:text-white bg-white">
+                        Customize Now
+                      </button>
+                    </Link>
                   )}
                 </>
               )}
@@ -930,19 +935,25 @@ const ProductDetailsPage = () => {
           </div>
 
           {/* ─── TABS & REVIEWS (Desktop: Tabs | Mobile: Accordion) ─── */}
-          <div className={`grid gap-6 lg:gap-8 mt-12 sm:mt-16 md:mt-20 ${
-            loading || 
-             (product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && product.rating > 0)
-              ? "lg:grid-cols-3"
-              : "lg:grid-cols-1"
-              }`} >
+          <div
+            className={`grid gap-6 lg:gap-8 mt-12 sm:mt-16 md:mt-20 ${
+              loading ||
+              (product.reviews >= MIN_REVIEWS_TO_SHOW_RATING &&
+                product.rating > 0)
+                ? "lg:grid-cols-3"
+                : "lg:grid-cols-1"
+            }`}
+          >
             {/* Left column: Tabs (desktop) + Accordion (mobile) */}
-            <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ${
-               loading ||
-               (product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && product.rating > 0)
-                 ? "lg:col-span-2"
-                 : "lg:col-span-1"
-                 }`}>
+            <div
+              className={`bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ${
+                loading ||
+                (product.reviews >= MIN_REVIEWS_TO_SHOW_RATING &&
+                  product.rating > 0)
+                  ? "lg:col-span-2"
+                  : "lg:col-span-1"
+              }`}
+            >
               {/* ─── Desktop Tabs ─────────────────────────────── */}
               <div className="hidden md:block border-b border-gray-100 px-6 md:px-8 pt-4">
                 <div className="flex gap-6 md:gap-8 overflow-x-auto scrollbar-none">
@@ -1054,7 +1065,8 @@ const ProductDetailsPage = () => {
                 <SkeletonText width="w-full" height="h-20" className="mt-4" />
                 <SkeletonText width="w-full" height="h-10" className="mt-6" />
               </div>
-            ) : product.reviews >= MIN_REVIEWS_TO_SHOW_RATING && product.rating > 0 ? (
+            ) : product.reviews >= MIN_REVIEWS_TO_SHOW_RATING &&
+              product.rating > 0 ? (
               <motion.div
                 variants={fadeUp}
                 className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm flex flex-col justify-between h-fit lg:sticky lg:top-6"
@@ -1080,10 +1092,18 @@ const ProductDetailsPage = () => {
                   <div className="space-y-2 sm:space-y-2.5 mt-4 sm:mt-6 border-t border-gray-50 pt-4 sm:pt-5">
                     {[5, 4, 3, 2, 1].map((star) => {
                       const count = product.ratingsBreakdown?.[star] || 0;
-                      const pct = product.reviews > 0 ? Math.round((count / product.reviews) * 100) : 0;
+                      const pct =
+                        product.reviews > 0
+                          ? Math.round((count / product.reviews) * 100)
+                          : 0;
                       return (
-                        <div key={star} className="flex items-center text-[10px] sm:text-xs text-gray-600 font-medium gap-2 sm:gap-3">
-                          <span className="w-3 text-right font-bold">{star}★</span>
+                        <div
+                          key={star}
+                          className="flex items-center text-[10px] sm:text-xs text-gray-600 font-medium gap-2 sm:gap-3"
+                        >
+                          <span className="w-3 text-right font-bold">
+                            {star}★
+                          </span>
                           <div className="flex-1 h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-[#ffb800] rounded-full transition-all duration-500"
@@ -1095,7 +1115,7 @@ const ProductDetailsPage = () => {
                           </span>
                         </div>
                       );
-                      })}
+                    })}
                   </div>
                   <p className="text-[11px] text-gray-400 mt-3 text-center">
                     Based on {product.reviews} verified reviews
@@ -1104,12 +1124,13 @@ const ProductDetailsPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full mt-6 sm:mt-8 border-2 border-gray-900 text-gray-900 font-bold py-2.5 sm:py-3 rounded-xl text-sm transition-all hover:bg-gray-900 hover:text-white bg-white">
+                  className="w-full mt-6 sm:mt-8 border-2 border-gray-900 text-gray-900 font-bold py-2.5 sm:py-3 rounded-xl text-sm transition-all hover:bg-gray-900 hover:text-white bg-white"
+                >
                   Write a Review
                 </motion.button>
               </motion.div>
-            ) : null }
-            </div>
+            ) : null}
+          </div>
 
           {/* Logistics Info Cards */}
           <motion.div
