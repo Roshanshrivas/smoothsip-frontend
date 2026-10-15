@@ -7,7 +7,7 @@ import { bannerService } from "../services/bannerService";
 
 // ─── Static fallback ─────────────────────────────────────
 const staticFeatures = [
-  { icon: "FiSun", label: "24H Cold / 12H Hot" },
+  { icon: "FiSun", label: "12H Cold / 8H Hot" },
   { icon: "FiMoon", label: "Leak‑Proof & Durable" },
   { icon: "FiDroplet", label: "Sweat‑Free Exterior" },
   { icon: "FiHeart", label: "Made with Care" },
@@ -43,7 +43,7 @@ const LifestyleSection = () => {
   // ─── Use banner data if available ──────────────────────
   const heading = banner?.title || "Made for your every moment";
   const subtitle = banner?.subtitle || "From sunrise coffee to late‑night focus, our tumblers keep every sip at the perfect temperature.";
-  const imageSrc = banner?.image || "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303674/Pastel_SmoothSip_Summer_Essentials.png";
+  const imageSrc = banner?.image || "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791983234/SmoothSip_Beachside_Tumbler_Collection_1.png";
   const ctaLink = banner?.link || "/allproducts";
   const ctaText = banner?.ctaText || "Shop Lifestyle";
   const features = banner?.content?.features || staticFeatures;
@@ -140,13 +140,13 @@ const LifestyleSection = () => {
               {heading}
             </motion.h2>
             <motion.p
-              className="text-gray-600 text-[15px] xsm:m-0 sm:my-6  sssm:text-base md:text-lg leading-relaxed max-w-md"
+              className="text-gray-600 text-[15px] xsm:m-0 sm:my-6 sssm:text-base md:text-lg leading-relaxed max-w-md"
               variants={textVariants}>
               {subtitle}
             </motion.p>
 
             <motion.div
-              className="grid grid-cols-2 sm:grid-cols-2 sm:gap-3 sm:pt-2"
+              className="grid grid-cols-2 sm:grid-cols-2 sm:gap-3 mt-5 sm:mt-0 sm:pt-2"
               variants={containerVariants}
             >
               {features.map((item, idx) => {
@@ -154,7 +154,7 @@ const LifestyleSection = () => {
                 return (
                   <motion.div
                     key={idx}
-                    className="md:flex items-center gap-1 sm:gap-3 xsm:hidden"
+                    className="flex items-center gap-1 sm:gap-3"
                     variants={featureItemVariants}
                   >
                     <div className="w-8 h-8 sm:w-6 sm:h-6 rounded-full bg-[#EAF9FB] flex items-center justify-center flex-shrink-0">

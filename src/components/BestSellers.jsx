@@ -35,20 +35,21 @@ const fallbackProducts = [
 // ─── Timing ────────────────────────────────────────
 const isTouchDevice =
   typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
-const AUTOPLAY_INTERVAL = isTouchDevice ? 3500 : 4500;   // faster on mobile
-const RESUME_DELAY      = 5000;                          // resume after user stops
-const GAP_PX            = 20;                            // matches gap-5
+const AUTOPLAY_INTERVAL = isTouchDevice ? 3500 : 4500;
+const RESUME_DELAY = 5000;
+const GAP_PX = 20;
 
 // ─── Skeleton card ─────────────────────────────────
+// CHANGED: responsive — fills grid cell on mobile, keeps basis on desktop
 const SkeletonCard = () => (
-  <div className="flex-shrink-0 basis-[78%] xs:basis-[60%] sm:basis-[46%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.5%]">
+  <div className="w-full sm:w-auto sm:flex-shrink-0 sm:basis-[46%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.5%]">
     <div className="w-full rounded-2xl bg-white shadow-sm overflow-hidden">
       <div
         className="aspect-square bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 bg-[length:200%_100%]"
         style={{ animation: "shimmer 1.6s linear infinite" }}
       />
-      <div className="p-4 space-y-3">
-        <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+        <div className="h-3 sm:h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
         <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
         <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
       </div>
@@ -59,17 +60,17 @@ const SkeletonCard = () => (
 const BestSellers = () => {
   const navigate = useNavigate();
 
-  const [products, setProducts]   = useState([]);
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [canScrollLeft, setLeft]  = useState(false);
+  const [canScrollLeft, setLeft] = useState(false);
   const [canScrollRight, setRight] = useState(false);
 
-  const scrollRef   = useRef(null);
-  const autoTimer   = useRef(null);
+  const scrollRef = useRef(null);
+  const autoTimer = useRef(null);
   const resumeTimer = useRef(null);
-  const pausedRef   = useRef(false);
+  const pausedRef = useRef(false);
 
-  // ─── Fetch ────────────────────────────────────────
+  // ─── Fetch (unchanged) ────────────────────────────
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -86,7 +87,7 @@ const BestSellers = () => {
     return () => { cancelled = true; };
   }, []);
 
-  // ─── Arrow visibility ────────────────────────────
+  // ─── Arrow visibility (unchanged) ────────────────
   const updateArrows = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -115,7 +116,7 @@ const BestSellers = () => {
   };
 
   const clearTimers = () => {
-    if (autoTimer.current)   { clearTimeout(autoTimer.current); autoTimer.current = null; }
+    if (autoTimer.current) { clearTimeout(autoTimer.current); autoTimer.current = null; }
     if (resumeTimer.current) { clearTimeout(resumeTimer.current); resumeTimer.current = null; }
   };
 
@@ -129,7 +130,7 @@ const BestSellers = () => {
     resumeTimer.current = setTimeout(() => { pausedRef.current = false; }, RESUME_DELAY);
   }, []);
 
-  // ─── Autoplay — runs on ALL devices ─────────────
+  // ─── Autoplay — no-op on mobile grid (container not scrollable) ───
   useEffect(() => {
     if (isLoading || products.length === 0) return;
 
@@ -141,7 +142,13 @@ const BestSellers = () => {
         return;
       }
 
-      const step  = getStep();
+      // If container isn't horizontally scrollable (mobile grid), skip
+      if (el.scrollWidth <= el.clientWidth + 4) {
+        autoTimer.current = setTimeout(tick, AUTOPLAY_INTERVAL);
+        return;
+      }
+
+      const step = getStep();
       const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - step * 0.6;
 
       el.scrollBy({ left: atEnd ? -el.scrollWidth : step, behavior: "smooth" });
@@ -155,7 +162,7 @@ const BestSellers = () => {
 
   useEffect(() => () => clearTimers(), []);
 
-  // ─── Arrow click ─────────────────────────────────
+  // ─── Arrow click (unchanged) ─────────────────────
   const scrollByCard = (dir) => {
     const el = scrollRef.current;
     if (!el) return;
@@ -164,61 +171,59 @@ const BestSellers = () => {
     scheduleResume();
   };
 
-  // ─── Desktop mouse drag only (touch handled natively) ───
-const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
-const DRAG_THRESHOLD = 6; // px — must move this far before it's a drag
+  // ─── Mouse drag (desktop only — unchanged) ───────
+  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false, id: null });
+  const DRAG_THRESHOLD = 6;
 
-const onPointerDown = (e) => {
-  if (e.pointerType !== "mouse" || e.button !== 0) return;
-  const el = scrollRef.current;
-  if (!el) return;
-  drag.current = {
-    active: true,
-    startX: e.clientX,
-    startLeft: el.scrollLeft,
-    moved: false,
-    id: e.pointerId,
+  const onPointerDown = (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    // Skip drag on mobile grid
+    if (el.scrollWidth <= el.clientWidth + 4) return;
+    drag.current = {
+      active: true,
+      startX: e.clientX,
+      startLeft: el.scrollLeft,
+      moved: false,
+      id: e.pointerId,
+    };
+    pauseAuto();
   };
-  // ⚠️ DO NOT setPointerCapture — it blocks child clicks
-  // ⚠️ DO NOT set cursor here — wait until drag actually starts
-  pauseAuto();
-};
 
-const onPointerMove = (e) => {
-  const d = drag.current;
-  if (!d.active) return;
-  const el = scrollRef.current;
-  if (!el) return;
-  const dx = e.clientX - d.startX;
+  const onPointerMove = (e) => {
+    const d = drag.current;
+    if (!d.active) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const dx = e.clientX - d.startX;
 
-  // Only start dragging after the threshold
-  if (!d.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
+    if (!d.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
 
-  if (!d.moved) {
-    // First time crossing threshold → activate drag visuals
-    d.moved = true;
-    el.style.cursor = "grabbing";
-    el.style.userSelect = "none";
-    try { el.setPointerCapture(e.pointerId); } catch {}
-  }
-
-  el.scrollLeft = d.startLeft - dx;
-};
-
-const endDrag = () => {
-  const d = drag.current;
-  if (!d.active) return;
-  const el = scrollRef.current;
-  if (el) {
-    el.style.cursor = "";
-    el.style.userSelect = "";
-    if (d.moved) {
-      try { el.releasePointerCapture(d.id); } catch {}
+    if (!d.moved) {
+      d.moved = true;
+      el.style.cursor = "grabbing";
+      el.style.userSelect = "none";
+      try { el.setPointerCapture(e.pointerId); } catch {}
     }
-  }
-  d.active = false;
-  scheduleResume();
-};
+
+    el.scrollLeft = d.startLeft - dx;
+  };
+
+  const endDrag = () => {
+    const d = drag.current;
+    if (!d.active) return;
+    const el = scrollRef.current;
+    if (el) {
+      el.style.cursor = "";
+      el.style.userSelect = "";
+      if (d.moved) {
+        try { el.releasePointerCapture(d.id); } catch {}
+      }
+    }
+    d.active = false;
+    scheduleResume();
+  };
 
   const onClickCapture = (e) => {
     if (drag.current.moved) {
@@ -230,9 +235,9 @@ const endDrag = () => {
 
   return (
     <section className="w-full py-4 sm:py-12 bg-[#e6f7ff]/30 overflow-hidden">
-      <div className="w-full mx-auto px-3 sm:px-4 lg:px-6">
+      <div className="w-full mx-auto px-1 sm:px-4 lg:px-6">
 
-        {/* Header */}
+        {/* Header (unchanged) */}
         <motion.div
           className="flex flex-row justify-between items-center mb-5 sm:mb-10 gap-4"
           initial={{ opacity: 0, y: -20 }}
@@ -259,13 +264,13 @@ const endDrag = () => {
           </motion.button>
         </motion.div>
 
-        {/* Carousel */}
+        {/* Carousel Wrapper (unchanged) */}
         <div
           className="relative"
           onMouseEnter={pauseAuto}
           onMouseLeave={scheduleResume}
         >
-          {/* Left arrow */}
+          {/* Left arrow (unchanged) */}
           <AnimatePresence>
             {canScrollLeft && (
               <motion.button
@@ -283,7 +288,7 @@ const endDrag = () => {
             )}
           </AnimatePresence>
 
-          {/* Right arrow */}
+          {/* Right arrow (unchanged) */}
           <AnimatePresence>
             {canScrollRight && (
               <motion.button
@@ -301,7 +306,11 @@ const endDrag = () => {
             )}
           </AnimatePresence>
 
-          {/* Track */}
+          {/* ══════════════════════════════════════════════
+              TRACK — THE ONLY CHANGE
+              Mobile  : grid grid-cols-2 gap-3 (wrap, no scroll)
+              Desktop : flex gap-5 overflow-x-auto (carousel)
+             ══════════════════════════════════════════════ */}
           <div
             ref={scrollRef}
             onPointerDown={onPointerDown}
@@ -311,7 +320,11 @@ const endDrag = () => {
             onClickCapture={onClickCapture}
             onTouchStart={pauseAuto}
             onTouchEnd={scheduleResume}
-            className="flex gap-5 overflow-x-auto pb-6 hide-scrollbar cursor-grab active:cursor-grabbing"
+            className="
+              grid grid-cols-2 gap-2
+              sm:flex sm:gap-5 sm:overflow-x-auto sm:pb-6 sm:cursor-grab sm:active:cursor-grabbing
+              hide-scrollbar
+            "
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -321,14 +334,15 @@ const endDrag = () => {
             }}
           >
             {isLoading
-              ? Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
               : products.map((product, i) => (
                   <motion.div
                     key={product.id || product._id || i}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(i * 0.05, 0.3) }}
-                    className="flex-shrink-0 basis-[78%] xs:basis-[60%] sm:basis-[46%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.5%]"
+                    // CHANGED: mobile = full grid cell, desktop = carousel basis
+                    className="w-full sm:w-auto sm:flex-shrink-0 sm:basis-[46%] md:basis-[31%] lg:basis-[23%] xl:basis-[18.5%]"
                   >
                     <ProductCard product={product} displayTag="BEST SELLER" />
                   </motion.div>

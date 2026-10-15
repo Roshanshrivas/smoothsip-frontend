@@ -209,20 +209,13 @@ const AboutUs = () => {
               className="relative flex justify-center"
             >
               <div className="relative w-full max-w-md aspect-square">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#00C2D6]/20 via-[#00C2D6]/10 to-transparent rounded-3xl -rotate-6 scale-105" />
+                <div className="absolute inset-0 rounded-3xl scale-105" />
                 <motion.img
                   animate={floatAnimation}
-                  src="https://res.cloudinary.com/ghqmmyvr/image/upload/v1791308659/Pastel_SmoothSip_Tumbler_Cutout.png"
+                  src="https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303134/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_10.jpg"
                   alt="Premium Tumbler"
-                  className="relative w-full h-full object-contain drop-shadow-2xl"
+                  className="relative w-full rounded-2xl h-full object-contain drop-shadow-2xl"
                 />
-                <div className="absolute -bottom-4 -right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg px-5 py-3 border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    <span className="text-sm font-bold text-gray-900 dark:text-white">4.9/5</span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">(2,340 reviews)</span>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </div>

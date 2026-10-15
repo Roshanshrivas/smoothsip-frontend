@@ -29,7 +29,7 @@ export default function BrandPanel() {
   return (
     <div
       className="relative w-full lg:w-1/2 min-h-[400px] lg:min-h-screen bg-cover bg-center order-2 lg:order-1"
-      style={{ backgroundImage: `url('https://res.cloudinary.com/ghqmmyvr/image/upload/v1791698136/file_000000002374821196b41e6fc3263d44.png')` }}
+      style={{ backgroundImage: `url('https://res.cloudinary.com/ghqmmyvr/image/upload/v1791985883/loginpageimg.jpg')` }}
     >
       {/* Darker overlay for better text legibility */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/40" />

@@ -397,8 +397,8 @@ const TrackOrderPage = () => {
 
             <div className="mt-6 text-center text-xs text-gray-500">
               Need help? Email{' '}
-              <a href="mailto:support@smoothsip.in" className="text-[#00C2D6] font-semibold hover:underline">
-                support@smoothsip.in
+              <a href="mailto:connectsmoothsip@gmail.com" className="text-[#00C2D6] font-semibold hover:underline">
+                connectsmoothsip@gmail.com
               </a>
             </div>
           </div>

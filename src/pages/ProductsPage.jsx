@@ -353,7 +353,7 @@ const ProductsPage = () => {
           >
             <div className="hidden lg:flex items-center gap-2 text-sm mb-4">
               <Link to="/" className="flex items-center gap-1 text-gray-500 hover:text-[#00C2D6] transition">
-                🏠 Home
+                Home
               </Link>
               <span className="text-gray-300">/</span>
               <span className="font-medium text-gray-700">Products</span>

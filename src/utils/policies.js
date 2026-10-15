@@ -6,7 +6,7 @@ const CONTACT = {
   email: 'connectsmoothsip@gmail.com',
   website: 'smoothsip.in',
   gst: '24AXLPG7588B1ZC',
-  instagram: '@smoothsip',
+  instagram: 'smoothsip.co',
   phone: '+91 9109575185',
   addressBhopal: '28/1 Shirdipuram, Mandakini Society, Kolar Road, Bhopal, Madhya Pradesh – 462042',
   addressMumbai: 'Building No. RB II/27, Quarter No. 4, near Parel Railway Station, Mumbai, Maharashtra – 400012',

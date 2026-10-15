@@ -12,6 +12,7 @@ import UGCGallery from '../components/UGCGallery'
 import Newsletter from '../components/Newsletter'
 import SEO from '../components/SEO';
 import MobileHero from '../components/MobileHero'
+import MobileEcommerceUI from '../components/MobileEcommerceUI'
 
 
 const Home = () => {
@@ -26,7 +27,8 @@ const Home = () => {
 
         {/* ── Mobile & Tablet Hero (visible on screens smaller than md) ── */}
         <div className='block md:hidden'>
-          <MobileHero />
+          {/* <MobileHero /> */}
+          <MobileEcommerceUI/>
         </div>
         {/* ── Desktop Hero (visible on md screens and larger) ── */}
         <div className='hidden md:block'>

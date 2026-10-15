@@ -122,10 +122,10 @@ const PolicyPage = ({ slug: slugProp }) => {
                         {CONTACT_INFO.website}
                       </a>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Link to="https://www.instagram.com/smoothsip.co" className="flex items-center gap-2 text-sm text-gray-600">
                       <FiInstagram size={14} className="text-[#00C2D6]" />
                       <span>{CONTACT_INFO.instagram}</span>
-                    </div>
+                    </Link>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <BsPhone size={14} className="text-[#00C2D6]" />
                       <span>{CONTACT_INFO.phone}</span>

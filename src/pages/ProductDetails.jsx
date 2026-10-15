@@ -407,7 +407,7 @@ const ProductDetailsPage = () => {
             {product.weight > 0 && (
               <div className="grid grid-cols-3 p-3 sm:p-4 text-xs sm:text-sm bg-gray-50/50">
                 <span className="font-bold text-gray-500 col-span-1">
-                  ⚖️ Weight
+                  Weight
                 </span>
                 <span className="text-gray-800 font-medium col-span-2 pl-2 sm:pl-4 break-words">
                   {formatWeight(product.weight)}
@@ -421,7 +421,7 @@ const ProductDetailsPage = () => {
                 product.dimensions.height) && (
                 <div className="grid grid-cols-3 p-3 sm:p-4 text-xs sm:text-sm bg-white">
                   <span className="font-bold text-gray-500 col-span-1">
-                    📐 Dimensions
+                    Dimensions
                   </span>
                   <span className="text-gray-800 font-medium col-span-2 pl-2 sm:pl-4 break-words">
                     {product.dimensions.length} × {product.dimensions.width} ×{" "}
@@ -433,7 +433,7 @@ const ProductDetailsPage = () => {
             {product.material && (
               <div className="grid grid-cols-3 p-3 sm:p-4 text-xs sm:text-sm bg-gray-50/50">
                 <span className="font-bold text-gray-500 col-span-1">
-                  🛡️ Material
+                  Material
                 </span>
                 <span className="text-gray-800 font-medium col-span-2 pl-2 sm:pl-4 break-words">
                   {product.material}
@@ -444,7 +444,7 @@ const ProductDetailsPage = () => {
             {product.color && (
               <div className="grid grid-cols-3 p-3 sm:p-4 text-xs sm:text-sm bg-white">
                 <span className="font-bold text-gray-500 col-span-1">
-                  🎨 Color
+                  Color
                 </span>
                 <span className="text-gray-800 font-medium col-span-2 pl-2 sm:pl-4 break-words">
                   {product.color}

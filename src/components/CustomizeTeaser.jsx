@@ -3,29 +3,12 @@ import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  TbPalette,
-  TbLetterT,
-  TbTypography,
-  TbSticker,
-  TbRuler,
-  TbPackage,
   TbSparkles,
-  TbCheck,
-  TbClock,
 } from "react-icons/tb";
-import {
-  FiArrowRight,
-  FiStar,
-  FiTrendingUp,
-  FiShield,
-  FiSmile,
-} from "react-icons/fi";
-
-
+import { FiArrowRight } from "react-icons/fi";
 
 // ─── Brand Constants ──────────────────────────────────
 const BRAND_CYAN = "#00C2D6";
-const BRAND_HOVER = "#00A0B0";
 
 const CustomizeTeaser = () => {
   const sectionRef = useRef(null);
@@ -36,26 +19,25 @@ const CustomizeTeaser = () => {
     {
       id: 1,
       name: "Cotton Candy Ombre",
-      // text: "Roshan",
       color: "#FFFFFF",
-      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791650802/tumbler/products/pnusek5bphmgz3i10eup.jpg",
+      image:
+        "https://res.cloudinary.com/ghqmmyvr/image/upload/v1792041238/tumbler/products/roqpuzzybudlnbrr8m3z.jpg",
       label: "Name Engraving",
     },
     {
       id: 2,
       name: "Black Midnight Matte",
-      // text: "Priya ♥",
       color: "#FFD700",
-      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791695584/tumbler/products/g2xwy3vky8ujqncoiyvx.jpg",
+      image:
+        "https://res.cloudinary.com/ghqmmyvr/image/upload/v1792041285/tumbler/products/e1wt4ciqkhlkbixyghzh.jpg",
       label: "Name Engraving",
-
     },
     {
       id: 3,
-      name: "Refreshing Pine Green",
-      // text: "Stay Hydrated",
+      name: "LAVENDER MUSE",
       color: "#FFFFFF",
-      image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791695289/tumbler/products/x8xuwmlah3go3grromks.jpg",
+      image:
+        "https://res.cloudinary.com/ghqmmyvr/image/upload/v1792042567/LAVENDER_MUSE_1.jpg",
       label: "Name Engraving",
     },
   ];
@@ -69,14 +51,13 @@ const CustomizeTeaser = () => {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 25 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", damping: 15, stiffness: 100 } },
-  };
-
   const sampleVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", damping: 16 } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", damping: 16 },
+    },
   };
 
   const badgeVariants = {
@@ -90,7 +71,7 @@ const CustomizeTeaser = () => {
       className="w-full bg-gradient-to-b from-[#E6F9FA]/60 via-white to-[#E6F9FA]/30 py-12 sm:py-16 md:py-20 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-14">
-        {/* ─── Header ────────────────────────────────────── */}
+        {/* ─── Header ─── */}
         <motion.div
           className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4"
           initial={{ opacity: 0, y: -20 }}
@@ -108,7 +89,10 @@ const CustomizeTeaser = () => {
 
           <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-950 tracking-tight leading-tight">
             Design Your Own{" "}
-            <span className="relative inline-block" style={{ color: BRAND_CYAN }}>
+            <span
+              className="relative inline-block"
+              style={{ color: BRAND_CYAN }}
+            >
               Tumbler
               <svg
                 className="absolute -bottom-2 left-0 w-full h-2"
@@ -122,8 +106,14 @@ const CustomizeTeaser = () => {
                   strokeWidth="2"
                   fill="none"
                   initial={{ pathLength: 0, opacity: 0 }}
-                  animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 0.3, ease: "easeInOut" }}
+                  animate={
+                    isInView ? { pathLength: 1, opacity: 1 } : {}
+                  }
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.3,
+                    ease: "easeInOut",
+                  }}
                 />
               </svg>
             </span>
@@ -135,82 +125,73 @@ const CustomizeTeaser = () => {
           </p>
         </motion.div>
 
-        {/* ─── Sample Gallery (Horizontally Scrollable on Mobile) ── */}
-        <div className="space-y-4 sm:space-y-6">
-          <motion.div
-            className="flex items-center justify-center gap-2 text-xs font-bold text-gray-600 uppercase tracking-wider"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.2 }}
-          >
-            <FiTrendingUp style={{ color: BRAND_CYAN }} />
-            <span>What Others Are Creating</span>
-          </motion.div>
-
-          {/* ─── Scrollable container ───────────────────── */}
-          <div className="relative">
-            {/* Gradient fade indicators on mobile */}
-            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none sm:hidden" />
-            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none sm:hidden" />
-
+        {/* ─── Sample Gallery ───────────────────────────────
+            MOBILE  : grid-cols-2 with first card spanning 2 cols
+                      → Row 1: Full-width card
+                      → Row 2: Two cards side-by-side
+            DESKTOP : sm:grid-cols-3 (same 3 cards in a row as before)
+           ─────────────────────────────────────────────────── */}
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 max-w-5xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          {samples.map((sample, index) => (
             <motion.div
-              className="flex sm:grid sm:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 max-w-5xl mx-auto px-1 sm:px-0 scroll-smooth"
-              style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                WebkitOverflowScrolling: "touch",
-              }}
-              variants={containerVariants}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
+              key={sample.id}
+              variants={sampleVariants}
+              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              className={`
+                bg-white rounded-2xl sm:rounded-3xl p-1 sm:p-3
+                border border-gray-100 shadow-sm hover:shadow-xl
+                transition-all duration-300 group flex flex-col justify-between
+                ${index === 0 ? "col-span-2 sm:col-span-1" : "col-span-1"}
+              `}
             >
-              {/* Hide scrollbar on all browsers */}
-              <style jsx>{`
-                .scroll-smooth::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
+              <div
+                className={`
+                  relative bg-gradient-to-br from-[#F8FAFC] to-[#F1F3F5]
+                  rounded-xl sm:rounded-2xl flex items-center justify-center p-1 overflow-hidden
+                  ${index === 0 ? "h-56 sm:h-64" : "h-44 sm:h-64"}
+                `}
+              >
+                <img
+                  src={sample.image}
+                  alt={sample.name}
+                  className={`
+                    object-contain transition-transform duration-500
+                    group-hover:scale-105 drop-shadow-sm
+                    ${index === 0 ? "h-44 sm:h-52" : "h-36 sm:h-52"}
+                  `}
+                  loading="lazy"
+                  decoding="async"
+                />
+                {/* Tag */}
+                <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#00C2D6]/10 text-[#00C2D6] text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-0.5 rounded-full border border-[#00C2D6]/20">
+                  {sample.label}
+                </div>
+              </div>
 
-              {samples.map((sample) => (
-                <motion.div
-                  key={sample.id}
-                  variants={sampleVariants}
-                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                  className="flex-shrink-0 w-[260px] sm:w-full bg-white rounded-3xl p-3 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
+              <div className="p-2 sm:p-3 text-center space-y-0.5">
+                <p
+                  className={`
+                    hidden sm:block font-bold text-gray-900
+                    ${index === 0 ? "text-sm sm:text-sm" : "text-[12px] sm:text-sm"}
+                    leading-tight
+                  `}
                 >
-                  <div className="relative bg-gradient-to-br from-[#F8FAFC] to-[#F1F3F5] rounded-2xl h-56 sm:h-64 flex items-center justify-center p-4 overflow-hidden">
-                    <img
-                      src={sample.image}
-                      alt={sample.name}
-                      className="h-44 sm:h-52 object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-sm"
-                      loading="lazy"
-                    />
-                    {/* Tag */}
-                    <div className="absolute top-3 left-3 bg-[#00C2D6]/10 text-[#00C2D6] text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-0.5 rounded-full border border-[#00C2D6]/20">
-                      {sample.label}
-                    </div>
-                  </div>
-                  <div className="p-2 sm:p-3 text-center space-y-0.5">
-                    <p className="font-bold text-sm text-gray-900">{sample.name}</p>
-                    <p className="text-xs text-gray-400 font-medium">Custom engraved tumbler</p>
-                  </div>
-                </motion.div>
-              ))}
+                  {sample.name}
+                </p>
+                <p className="text-[10px] sm:text-xs text-gray-400 font-medium">
+                  Custom engraved tumbler
+                </p>
+              </div>
             </motion.div>
-          </div>
+          ))}
+        </motion.div>
 
-          {/* Scroll hint for mobile */}
-          <motion.p
-            className="text-center text-[10px] text-gray-400 font-medium sm:hidden"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.5 }}
-          >
-            ← Swipe to see more →
-          </motion.p>
-        </div>
-
-        {/* ─── Call to Action ────────────────────────────── */}
+        {/* ─── Call to Action ─── */}
         <motion.div
           className="text-center space-y-4 pt-2"
           initial={{ opacity: 0, y: 20 }}
@@ -220,7 +201,10 @@ const CustomizeTeaser = () => {
           <Link to="/customize" className="inline-block">
             <motion.button
               className="inline-flex items-center gap-3 bg-[#00C2D6] hover:bg-[#00A0B0] text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-2xl font-bold text-xs sm:text-sm md:text-base shadow-lg shadow-[#00C2D6]/25 transition-all duration-300 outline-none"
-              whileHover={{ scale: 1.03, boxShadow: "0 20px 40px -12px rgba(0,194,214,0.4)" }}
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 20px 40px -12px rgba(0,194,214,0.4)",
+              }}
               whileTap={{ scale: 0.97 }}
             >
               Start Customizing Now

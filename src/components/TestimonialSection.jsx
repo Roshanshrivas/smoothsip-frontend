@@ -214,7 +214,7 @@ const TestimonialSection = () => {
             </div>
 
             {/* RIGHT – Stats counters */}
-            <div className="hidden lg:col-span-6 border-t lg:border-t-0 lg:border-l border-gray-100 sm:grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 bg-white items-center p-6 lg:p-8">
+            <div className="lg:col-span-6 border-t lg:border-t-0 lg:border-l border-gray-100 sm:grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 bg-white items-center p-6 lg:p-8">
               {stats.map((item, idx) => (
                 <div key={idx} className="flex flex-col items-center justify-center text-center p-3 space-y-1.5">
                   <div className="w-12 h-12 rounded-full bg-[#E6F9FA] text-[#00C2D6] flex items-center justify-center shadow-xs">

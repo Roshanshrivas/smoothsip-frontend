@@ -24,7 +24,7 @@ const staticSlides = [
   {
     id: 1,
     heading: 'Why Choose <span class="text-[#14C6D8]">Tumbler?</span>',
-    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791307112/SmoothSip_Tumbler_Cart_Studio_Shot.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791985049/ChatGPT_Image_Oct_14_2026_07_07_11_PM.png",
     features: [
       { icon: "FiBox", title: "Top Quality", subtitle: "Materials" },
       { icon: "FiShield", title: "Stylish & Modern", subtitle: "Designs" },
@@ -35,7 +35,7 @@ const staticSlides = [
   {
     id: 2,
     heading: 'Premium <span class="text-[#14C6D8]">Performance</span>',
-    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303133/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_12.jpg",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791984332/two.jpg",
     features: [
       { icon: "FiClock", title: "12H Cold", subtitle: "8H Hot" },
       { icon: "FiDroplet", title: "Leak Proof", subtitle: "Design" },
@@ -46,7 +46,7 @@ const staticSlides = [
   {
     id: 3,
     heading: 'Designed <span class="text-[#14C6D8]">For You</span>',
-    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791303134/Gemini_Generated_Image_1ppnm1ppnm1ppnm1_11.jpg",
+    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1789723309/ChatGPT_Image_Sep_18_2026_02_51_34_PM_u56l7x.png",
     features: [
       { icon: "FiHeart", title: "Health First", subtitle: "BPA-Free" },
       { icon: "FiSmile", title: "Modern Look", subtitle: "Sleek Design" },
@@ -243,7 +243,7 @@ const WhyChooseSection = () => {
                   loading="lazy"
                 />
                 <div className="absolute inset-y-0 left-0 w-16 sm:w-24 lg:w-28 bg-gradient-to-r from-[#E6F9FA] via-[#E6F9FA]/80 to-transparent pointer-events-none hidden lg:block" />
-                <div className="absolute inset-x-0 top-0 h-16 sm:h-20 bg-gradient-to-b from-[#E6F9FA] via-[#E6F9FA]/80 to-transparent pointer-events-none lg:hidden" />
+                <div className="absolute inset-x-0 top-0 h-4 sm:h-20 bg-gradient-to-b from-[#E6F9FA] via-[#E6F9FA]/80 to-transparent pointer-events-none lg:hidden" />
               </div>
 
               {/* ─── Slide counter ───────────────────────── */}
