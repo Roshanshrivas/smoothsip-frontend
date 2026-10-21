@@ -4,16 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { fabric } from 'fabric';
 import toast from 'react-hot-toast';
-import {
-  FiType, FiUpload, FiShoppingCart,
-  FiTrash2, FiPlus, FiChevronDown, FiChevronUp,
-  FiXCircle, FiX, FiGrid,
-} from 'react-icons/fi';
+import { FiType, FiShoppingCart, FiTrash2, FiPlus, FiChevronDown, FiChevronUp, FiX, FiGrid } from 'react-icons/fi';
 import { CiUndo, CiRedo } from 'react-icons/ci';
 import { addCustomItemToCart } from '../store/slices/cartSlice';
 import { PersonalizedOrderPolicyCompact } from './PersonalizedOrderPolicy';
 import { customProductService } from '../services/customProductService';
-
 
 
 // ─── Available fonts (14 total) ───
@@ -36,62 +31,6 @@ const AVAILABLE_FONTS = [
   'Luckiest Guy',
 ];
 
-// ---------- Built‑in patterns ----------
-const createPattern = (type, color = '#ff6b00') => {
-  const canvas = document.createElement('canvas');
-  canvas.width = 40;
-  canvas.height = 40;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = 'transparent';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  switch (type) {
-    case 'dots':
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(20, 20, 4, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(0, 0, 4, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(40, 40, 4, 0, 2 * Math.PI);
-      ctx.fill();
-      break;
-    case 'stripes':
-      ctx.fillStyle = color;
-      for (let i = 0; i < 40; i += 8) ctx.fillRect(i, 0, 3, 40);
-      break;
-    case 'chevron':
-      ctx.fillStyle = color;
-      for (let i = 0; i < 40; i += 12) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i + 6, 20);
-        ctx.lineTo(i, 40);
-        ctx.fill();
-      }
-      break;
-    case 'floral':
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(20, 20, 6, 0, 2 * Math.PI);
-      ctx.fill();
-      for (let a = 0; a < 4; a++) {
-        ctx.beginPath();
-        ctx.ellipse(
-          20 + 12 * Math.cos((a * Math.PI) / 2),
-          20 + 12 * Math.sin((a * Math.PI) / 2),
-          4, 8, 0, 0, 2 * Math.PI
-        );
-        ctx.fill();
-      }
-      break;
-    default:
-      return null;
-  }
-  return new fabric.Pattern({ source: canvas, repeat: 'repeat' });
-};
 
 const TumblerCustomizer = ({
   products = [],
@@ -121,7 +60,6 @@ const TumblerCustomizer = ({
   const [fontStyle, setFontStyle] = useState('normal');
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [activeDesignObject, setActiveDesignObject] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
@@ -130,8 +68,6 @@ const TumblerCustomizer = ({
     tumbler: true,
     text: customization.text !== false,
     font: customization.font !== false,
-    logo: customization.logo !== false,
-    pattern: customization.pattern !== false,
     actions: true,
   });
 
@@ -148,8 +84,6 @@ const TumblerCustomizer = ({
         ...prev,
         text: product.customization?.text !== false,
         font: product.customization?.font !== false,
-        logo: product.customization?.logo !== false,
-        pattern: product.customization?.pattern !== false,
       }));
     }
   }, [activeProductId, products]);
@@ -173,8 +107,6 @@ const TumblerCustomizer = ({
         () => {
           fabricCanvas.current.renderAll();
           const objects = fabricCanvas.current.getObjects();
-          const designObj = objects.find((obj) => obj.pattern && obj.fill?.source);
-          setActiveDesignObject(designObj || null);
         }
       );
       toast.success('Undo');
@@ -192,8 +124,6 @@ const TumblerCustomizer = ({
         () => {
           fabricCanvas.current.renderAll();
           const objects = fabricCanvas.current.getObjects();
-          const designObj = objects.find((obj) => obj.pattern && obj.fill?.source);
-          setActiveDesignObject(designObj || null);
         }
       );
       toast.success('Redo');
@@ -337,7 +267,6 @@ const TumblerCustomizer = ({
       top: area.top + 40,
       width: area.width - 40,
       fontSize,
-      fill: textColor,
       fontFamily: selectedFont,
       fontWeight,
       fontStyle,
@@ -404,60 +333,6 @@ const TumblerCustomizer = ({
     toast.success('Text added');
   };
 
-  const uploadLogo = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      fabric.Image.fromURL(reader.result, (img) => {
-        const area = selectedTumbler.logoArea || {
-          left: 150, top: 50, width: 200, height: 150,
-        };
-        let scale = 1;
-        if (img.width > area.width) scale = area.width / img.width;
-        if (img.height * scale > area.height) scale = area.height / img.height;
-        img.scale(scale);
-        img.set({
-          left: area.left + (area.width - img.width * scale) / 2,
-          top: area.top + (area.height - img.height * scale) / 2,
-          cornerColor: '#ff6b00',
-          borderColor: '#ff6b00',
-          hasRotatingPoint: true,
-        });
-        fabricCanvas.current.add(img);
-        fabricCanvas.current.setActiveObject(img);
-        fabricCanvas.current.renderAll();
-        saveState();
-        toast.success('Logo added');
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const applyDesign = (patternType) => {
-    if (activeDesignObject) fabricCanvas.current.remove(activeDesignObject);
-    const area = selectedTumbler.logoArea || {
-      left: 150, top: 50, width: 200, height: 150,
-    };
-    const pattern = createPattern(patternType, '#ff6b00');
-    if (!pattern) return;
-    const rect = new fabric.Rect({
-      left: area.left,
-      top: area.top,
-      width: area.width,
-      height: area.height,
-      fill: pattern,
-      selectable: true,
-      hasRotatingPoint: true,
-      cornerColor: '#ff6b00',
-    });
-    fabricCanvas.current.add(rect);
-    fabricCanvas.current.setActiveObject(rect);
-    fabricCanvas.current.renderAll();
-    setActiveDesignObject(rect);
-    saveState();
-    toast.success(`Applied ${patternType} pattern`);
-  };
 
   // ---------- Add to Cart ----------
     const addToCart = async () => {
@@ -525,8 +400,6 @@ const TumblerCustomizer = ({
       fontWeight: allTexts[0]?.fontWeight || fontWeight,
       fontStyle: allTexts[0]?.fontStyle || fontStyle,
       textColor,
-      hasDesign: !!activeDesignObject,
-      pattern: activeDesignObject ? "pattern" : null,
     };
 
     console.log('Dispatching to cart:', customizationData);
@@ -544,8 +417,25 @@ const TumblerCustomizer = ({
    // toast is already shown by the thunk
     } finally {
       setIsAddingToCart(false);
+      // Close sidebar on mobile after adding
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
     } 
   }
+
+// Lock body scroll when sidebar opens on mobile
+useEffect(() => {
+  if (!sidebarOpen) return;
+  if (typeof window === "undefined") return;
+  if (window.innerWidth >= 1024) return; // desktop — no lock needed
+
+  const original = document.body.style.overflow;
+  document.body.style.overflow = "hidden";
+  return () => {
+    document.body.style.overflow = original;
+  };
+}, [sidebarOpen]);
 
   // ---------- UI helpers ----------
   const toggleSection = (section) => {
@@ -586,7 +476,7 @@ const TumblerCustomizer = ({
   const { customization: cust } = selectedTumbler;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-row">
+    <div className="h-[100dvh] lg:h-auto lg:min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-row overflow-hidden lg:overflow-visible">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-50 bg-black/50 lg:hidden"
@@ -596,25 +486,28 @@ const TumblerCustomizer = ({
 
       <aside
         className={`
-          fixed lg:relative top-0 left-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto z-40
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
-        `}
+        fixed lg:relative top-0 left-0 h-[100dvh] lg:h-full w-[88vw] max-w-sm sm:w-80
+        bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
+        overflow-y-auto overscroll-contain z-50 lg:z-40
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
+      `}
       >
-        <div className="p-5">
+        {/* Sticky header — outside padding wrapper, sticks to sidebar top */}
+        <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex justify-between items-center lg:hidden">
+          <h2 className="text-base font-bold text-gray-800">Customize</h2>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600"
+            aria-label="Close"
+          >
+            <FiX size={18} />
+          </button>
+        </div>
+        <div className="p-4 sm:p-5">
           {/* ─── POLICY WARNING (always at top) ─── */}
           <PersonalizedOrderPolicyCompact />
 
-          <div className="flex justify-between items-center mb-4 lg:hidden">
-            <h2 className="text-xl font-bold">Tools</h2>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="text-gray-500 hover:text-orange-500"
-            >
-              <FiX size={24} />
-            </button>
-          </div>
-
-          {/* Product Info */}
+          {/* Product Info — keep everything below */}
           <div className="mb-4 p-3 bg-gray-50 rounded-xl">
             <h3 className="font-bold text-gray-800">{selectedTumbler.name}</h3>
             <p className="text-sm text-gray-500">
@@ -645,8 +538,6 @@ const TumblerCustomizer = ({
                           ...prev,
                           text: product.customization?.text !== false,
                           font: product.customization?.font !== false,
-                          logo: product.customization?.logo !== false,
-                          pattern: product.customization?.pattern !== false,
                         }));
                       }}
                       className={`rounded-xl border p-2 transition ${
@@ -879,26 +770,127 @@ const TumblerCustomizer = ({
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col items-center p-4 bg-gradient-to-br from-gray-50 to-gray-100 overflow-auto">
-        <div className="relative bg-white shadow-2xl rounded-2xl p-2 inline-block">
-          <canvas
-            id="canvas"
-            ref={canvasRef}
-            className="rounded-xl shadow-inner max-w-full h-auto"
-            style={{ maxHeight: "80vh", width: "auto" }}
-          />
+      <main className="flex-1 flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 min-w-0 h-full overflow-hidden">
+        {/* ─── MOBILE TOP BAR ─── */}
+        <div className="lg:hidden flex-shrink-0 z-30 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">
+              Personalize
+            </p>
+            <h1 className="font-bold text-gray-900 text-sm truncate">
+              {selectedTumbler.name}
+            </h1>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex items-center gap-1.5 ml-3 px-3.5 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 active:scale-95 transition"
+          >
+            <FiGrid size={14} />
+            Customize
+          </button>
         </div>
-        <div className="mt-6 bg-white rounded-xl shadow-md p-3 max-w-md w-full">
-          <div className="flex justify-between items-center text-sm">
-            <div>
-              <span className="font-semibold">Design summary:</span>{" "}
-              {selectedTumbler.name} | {userText || "No text"} | {selectedFont}
+
+        {/* ─── CANVAS AREA (scrolls internally) ─── */}
+        <div className="flex-1 flex flex-col items-center justify-start p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
+          <div
+            className="tumbler-canvas-wrapper mx-auto bg-white rounded-2xl shadow-2xl p-2 w-full"
+            style={{
+              maxWidth: "min(400px, calc((100dvh - 200px) * 5 / 7))",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                aspectRatio: "500 / 700",
+                position: "relative",
+              }}
+            >
+              <canvas
+                id="canvas"
+                ref={canvasRef}
+                style={{ touchAction: "none" }}
+              />
             </div>
-            <div className="text-orange-600 font-bold">
-              ₹{selectedTumbler.basePrice}
+          </div>
+
+          {/* Design summary */}
+          <div className="mt-3 sm:mt-6 bg-white rounded-xl shadow-md p-3 w-full max-w-md">
+            <div className="flex justify-between items-center gap-2 text-xs sm:text-sm">
+              <div className="min-w-0 flex-1">
+                <span className="font-semibold text-gray-700">Design:</span>{" "}
+                <span className="text-gray-600">
+                  {selectedTumbler.name}
+                  {userText && ` · "${userText}"`}
+                  {` · ${selectedFont}`}
+                </span>
+              </div>
+              <div className="text-orange-600 font-bold whitespace-nowrap">
+                ₹{selectedTumbler.basePrice}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* ─── MOBILE STICKY ACTION BAR (always visible at bottom) ─── */}
+        <div className="lg:hidden flex-shrink-0 z-30 bg-white border-t border-gray-200 px-3 py-2.5 flex gap-2 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex-1 py-2.5 border-2 border-orange-500 text-orange-500 rounded-xl text-sm font-bold hover:bg-orange-50 transition active:scale-[0.98]"
+          >
+            <FiType className="inline mr-1" size={14} /> Edit Design
+          </button>
+          <button
+            onClick={addToCart}
+            disabled={isAddingToCart}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition active:scale-[0.98] flex items-center justify-center gap-1.5 ${
+              isAddingToCart
+                ? "bg-orange-300 text-white cursor-not-allowed"
+                : "bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20"
+            }`}
+          >
+            {isAddingToCart ? (
+              <>
+                <svg
+                  className="animate-spin h-3.5 w-3.5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-90"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Adding…
+              </>
+            ) : (
+              <>
+                <FiShoppingCart size={14} /> Add — ₹{selectedTumbler.basePrice}
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* ─── Fabric CSS override (single instance, moved here) ─── */}
+        <style>{`
+    .tumbler-canvas-wrapper .canvas-container {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .tumbler-canvas-wrapper .canvas-container > canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  `}</style>
       </main>
     </div>
   );

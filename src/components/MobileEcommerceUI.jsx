@@ -62,7 +62,7 @@ export default function MobileEcommerceUI() {
         <motion.h1
           variants={itemVariants}
           className="
-            mt-4 ssm:mt-5
+            mt-14 ssm:mt-12
             text-[34px]
             ssm:text-[38px]
             sssm:text-[38px]
