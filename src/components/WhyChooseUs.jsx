@@ -24,7 +24,7 @@ const staticSlides = [
   {
     id: 1,
     heading: 'Why Choose <span class="text-[#14C6D8]">Tumbler?</span>',
-    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791985049/ChatGPT_Image_Oct_14_2026_07_07_11_PM.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1792688918/sliderone.png",
     features: [
       { icon: "FiBox", title: "Top Quality", subtitle: "Materials" },
       { icon: "FiShield", title: "Stylish & Modern", subtitle: "Designs" },
@@ -35,7 +35,7 @@ const staticSlides = [
   {
     id: 2,
     heading: 'Premium <span class="text-[#14C6D8]">Performance</span>',
-    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1791984332/two.jpg",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1792689710/slidersecond.png",
     features: [
       { icon: "FiClock", title: "12H Cold", subtitle: "8H Hot" },
       { icon: "FiDroplet", title: "Leak Proof", subtitle: "Design" },
@@ -46,7 +46,7 @@ const staticSlides = [
   {
     id: 3,
     heading: 'Designed <span class="text-[#14C6D8]">For You</span>',
-    image: "https://res.cloudinary.com/dbkpwluh0/image/upload/v1789723309/ChatGPT_Image_Sep_18_2026_02_51_34_PM_u56l7x.png",
+    image: "https://res.cloudinary.com/ghqmmyvr/image/upload/v1792690960/sliderthirdd.png",
     features: [
       { icon: "FiHeart", title: "Health First", subtitle: "BPA-Free" },
       { icon: "FiSmile", title: "Modern Look", subtitle: "Sleek Design" },
