@@ -139,6 +139,7 @@ const TumblerCustomizer = ({
       height: 700,
       preserveObjectStacking: true,
       backgroundColor: '#ffffff',
+      allowTouchScrolling: true,
     });
     fabricCanvas.current = canvas;
     canvas.on('object:modified', saveState);
@@ -158,6 +159,9 @@ const TumblerCustomizer = ({
     const canvas = fabricCanvas.current;
     canvas.clear();
 
+    const CANVAS_W = 500;
+    const CANVAS_H = 700;
+
     const imageUrl =
       selectedTumbler.mainImage ||
       'https://placehold.co/500x700/FFF4E6/78350F?text=No+Image';
@@ -169,9 +173,24 @@ const TumblerCustomizer = ({
           loadFallback(canvas);
           return;
         }
-        img.scaleToWidth(500);
-        img.selectable = false;
-        img.evented = false;
+
+      // ✅ Fit image to BOTH dimensions (contain) — never crops
+      const scale = Math.min(
+        CANVAS_W / img.width,
+        CANVAS_H / img.height
+      );
+      img.scale(scale);
+
+      // ✅ Center the scaled image inside the canvas
+      img.set({
+        left: (CANVAS_W - img.width * scale) / 2,
+        top:  (CANVAS_H - img.height * scale) / 2,
+        originX: 'left',
+        originY: 'top',
+        selectable: false,
+        evented: false,
+      });
+
         canvas.setBackgroundImage(img, () => {
           canvas.renderAll();
           addGuideAreas();
@@ -184,23 +203,36 @@ const TumblerCustomizer = ({
   };
 
   const loadFallback = (canvas) => {
-    fabric.Image.fromURL(
-      'https://placehold.co/500x700/FFF4E6/78350F?text=Image+Not+Found',
-      (img) => {
-        if (img) {
-          img.scaleToWidth(500);
-          img.selectable = false;
-          img.evented = false;
-          canvas.setBackgroundImage(img, () => {
-            canvas.renderAll();
-            addGuideAreas();
-            saveState();
-          });
-        }
-      },
-      { crossOrigin: 'anonymous' }
-    );
-  };
+  const CANVAS_W = 500;
+  const CANVAS_H = 700;
+
+  fabric.Image.fromURL(
+    'https://placehold.co/500x700/FFF4E6/78350F?text=Image+Not+Found',
+    (img) => {
+      if (img) {
+        const scale = Math.min(
+          CANVAS_W / img.width,
+          CANVAS_H / img.height
+        );
+        img.scale(scale);
+        img.set({
+          left: (CANVAS_W - img.width * scale) / 2,
+          top:  (CANVAS_H - img.height * scale) / 2,
+          originX: 'left',
+          originY: 'top',
+          selectable: false,
+          evented: false,
+        });
+        canvas.setBackgroundImage(img, () => {
+          canvas.renderAll();
+          addGuideAreas();
+          saveState();
+        });
+      }
+    },
+    { crossOrigin: 'anonymous' }
+  );
+};
 
   const addGuideAreas = () => {
     const canvas = fabricCanvas.current;
@@ -476,7 +508,7 @@ useEffect(() => {
   const { customization: cust } = selectedTumbler;
 
   return (
-    <div className="h-[100dvh] lg:h-auto lg:min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-row overflow-hidden lg:overflow-visible">
+    <div className="h-[100dvh] bg-gradient-to-br from-gray-100 to-gray-200 flex flex-row overflow-hidden">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-50 bg-black/50 lg:hidden"
@@ -486,11 +518,12 @@ useEffect(() => {
 
       <aside
         className={`
-        fixed lg:relative top-0 left-0 h-[100dvh] lg:h-full w-[88vw] max-w-sm sm:w-80
-        bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
-        overflow-y-auto overscroll-contain z-50 lg:z-40
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
-      `}
+           sidebar-scroll
+           fixed lg:relative top-0 left-0 h-full w-[88vw] max-w-sm sm:w-80
+           bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
+           overflow-y-auto overscroll-contain z-50 lg:z-40
+           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
+         `}
       >
         {/* Sticky header — outside padding wrapper, sticks to sidebar top */}
         <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex justify-between items-center lg:hidden">
@@ -791,7 +824,7 @@ useEffect(() => {
         </div>
 
         {/* ─── CANVAS AREA (scrolls internally) ─── */}
-        <div className="flex-1 flex flex-col items-center justify-start p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
+        <div className="scroll-smooth-mobile flex-1 flex flex-col items-center justify-start p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
           <div
             className="tumbler-canvas-wrapper mx-auto bg-white rounded-2xl shadow-2xl p-2 w-full"
             style={{
@@ -805,11 +838,7 @@ useEffect(() => {
                 position: "relative",
               }}
             >
-              <canvas
-                id="canvas"
-                ref={canvasRef}
-                style={{ touchAction: "none" }}
-              />
+              <canvas id="canvas" ref={canvasRef} />
             </div>
           </div>
 
@@ -882,18 +911,18 @@ useEffect(() => {
 
         {/* ─── Fabric CSS override (single instance, moved here) ─── */}
         <style>{`
-    .tumbler-canvas-wrapper .canvas-container {
-      width: 100% !important;
-      height: 100% !important;
-    }
-    .tumbler-canvas-wrapper .canvas-container > canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  `}</style>
-      </main>
-    </div>
-  );
-};
+          .tumbler-canvas-wrapper .canvas-container {
+            width: 100% !important;
+            height: 100% !important;
+          }
+          .tumbler-canvas-wrapper .canvas-container > canvas {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        `}</style>
+            </main>
+          </div>
+        );
+      };
 
 export default TumblerCustomizer;
