@@ -127,7 +127,9 @@ const OrderDetail = () => {
           <ArrowLeft size={16} /> Orders
         </Link>
         <span>/</span>
-        <span className="text-gray-800 font-medium">#{order.orderNumber || order.id}</span>
+        <span className="text-gray-800 font-medium">
+          #{order.orderNumber || order.id}
+        </span>
       </div>
 
       {/* Header */}
@@ -284,16 +286,60 @@ const OrderDetail = () => {
         {/* Right: Order Items */}
         <div className="lg:col-span-2">
           <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+            <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex flex-wrap justify-between items-center gap-3">
               <h3 className="font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                 <Package size={16} /> Order Items
               </h3>
-              <button
-                onClick={() => window.print()}
-                className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-600 transition"
-              >
-                <Printer size={16} /> Print
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() =>
+                    window.open(
+                      `/admin/orders/${id}/print/all`,
+                      "_blank",
+                      "width=900,height=750",
+                    )
+                  }
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-orange-500 text-white rounded-md hover:bg-orange-600 transition shadow-sm"
+                >
+                  <Printer size={13} /> Print All Documents
+                </button>
+                <button
+                  onClick={() =>
+                    window.open(
+                      `/admin/orders/${id}/print/invoice`,
+                      "_blank",
+                      "width=900,height=750",
+                    )
+                  }
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                >
+                  <FileText size={13} /> Invoice
+                </button>
+                <button
+                  onClick={() =>
+                    window.open(
+                      `/admin/orders/${id}/print/shipping-label`,
+                      "_blank",
+                      "width=600,height=700",
+                    )
+                  }
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                >
+                  <Truck size={13} /> Label
+                </button>
+                <button
+                  onClick={() =>
+                    window.open(
+                      `/admin/orders/${id}/print/packing-slip`,
+                      "_blank",
+                      "width=900,height=750",
+                    )
+                  }
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                >
+                  <Package size={13} /> Packing Slip
+                </button>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -363,69 +409,76 @@ const OrderDetail = () => {
                 </tbody>
               </table>
             </div>
-             {/* ═══════════════════════════════════════════
+            {/* ═══════════════════════════════════════════
     CUSTOMER DESIGNS — for production
     ═══════════════════════════════════════════ */}
-{order.items?.some((i) => i.customization?.designImage) && (
-  <div className="border-t border-gray-200 dark:border-gray-800 bg-orange-50/40 dark:bg-orange-950/10 p-5">
-    <h4 className="font-semibold text-sm text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-      <Package size={16} className="text-orange-500" />
-      Customer Designs — Send to Production
-    </h4>
+            {order.items?.some((i) => i.customization?.designImage) && (
+              <div className="border-t border-gray-200 dark:border-gray-800 bg-orange-50/40 dark:bg-orange-950/10 p-5">
+                <h4 className="font-semibold text-sm text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                  <Package size={16} className="text-orange-500" />
+                  Customer Designs — Send to Production
+                </h4>
 
-    <div className="space-y-4">
-      {order.items.map((item, idx) => {
-        if (!item.customization?.designImage) return null;
-        return (
-          <div
-            key={idx}
-            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4"
-          >
-            <div className="flex justify-between items-start mb-3 gap-3">
-              <div>
-                <p className="font-medium text-gray-800 dark:text-white text-sm">
-                  {item.name}
-                  <span className="text-gray-400 font-normal"> · Qty {item.quantity}</span>
-                </p>
-                {/* Text metadata */}
-                {item.customization?.allTexts?.length > 0 && (
-                  <div className="text-xs text-gray-500 mt-1 space-y-0.5">
-                    {item.customization.allTexts.map((t, i) => (
-                      <div key={i}>
-                        <span style={{ fontFamily: t.fontFamily }} className="font-medium text-gray-700">
-                          "{t.text}"
-                        </span>
-                        <span className="text-gray-400 ml-2">
-                          {t.fontFamily} · {t.fontSize}px · {t.fontWeight}
-                        </span>
+                <div className="space-y-4">
+                  {order.items.map((item, idx) => {
+                    if (!item.customization?.designImage) return null;
+                    return (
+                      <div
+                        key={idx}
+                        className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4"
+                      >
+                        <div className="flex justify-between items-start mb-3 gap-3">
+                          <div>
+                            <p className="font-medium text-gray-800 dark:text-white text-sm">
+                              {item.name}
+                              <span className="text-gray-400 font-normal">
+                                {" "}
+                                · Qty {item.quantity}
+                              </span>
+                            </p>
+                            {/* Text metadata */}
+                            {item.customization?.allTexts?.length > 0 && (
+                              <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                                {item.customization.allTexts.map((t, i) => (
+                                  <div key={i}>
+                                    <span
+                                      style={{ fontFamily: t.fontFamily }}
+                                      className="font-medium text-gray-700"
+                                    >
+                                      "{t.text}"
+                                    </span>
+                                    <span className="text-gray-400 ml-2">
+                                      {t.fontFamily} · {t.fontSize}px ·{" "}
+                                      {t.fontWeight}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <a
+                            href={item.customization.designImage}
+                            download={`design-${item.sku || item.name}-${idx}.jpg`}
+                            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+                          >
+                            <Download size={12} /> Download
+                          </a>
+                        </div>
+
+                        <div className="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 p-3 flex justify-center">
+                          <img
+                            src={item.customization.designImage}
+                            alt="Customer design"
+                            className="max-h-72 object-contain"
+                          />
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    );
+                  })}
+                </div>
               </div>
-
-              <a
-                href={item.customization.designImage}
-                download={`design-${item.sku || item.name}-${idx}.jpg`}
-                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
-              >
-                <Download size={12} /> Download
-              </a>
-            </div>
-
-            <div className="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 p-3 flex justify-center">
-              <img
-                src={item.customization.designImage}
-                alt="Customer design"
-                className="max-h-72 object-contain"
-              />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
+            )}
           </div>
         </div>
       </div>

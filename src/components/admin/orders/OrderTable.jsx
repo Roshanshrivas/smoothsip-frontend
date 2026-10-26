@@ -12,6 +12,8 @@ import {
   Ban,
   AlertCircle,
   X,
+  FileText,
+  Truck,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -56,6 +58,81 @@ const getFirstProduct = (order) => {
 // ---------- Cancellation Eligibility ----------
 const canCancelOrder = (status) => {
   return status === "Pending" || status === "Processing";
+};
+
+// ─── Print Menu Popover ───
+const PrintMenuPopover = ({ orderId }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    if (open) document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [open]);
+
+  const print = (type) => {
+    setOpen(false);
+    const url = `/admin/orders/${orderId}/print/${type}`;
+    const w = window.open(url, "_blank", "width=900,height=750");
+    if (!w) toast.error("Please allow popups to print.");
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-1.5 rounded-md text-gray-500 hover:text-orange-600 hover:bg-orange-50 transition"
+        title="Print documents"
+      >
+        <Printer size={15} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="absolute right-0 mt-1 w-52 bg-white rounded-lg shadow-xl border border-gray-100 z-30 overflow-hidden"
+          >
+            {/* Primary — combined PDF */}
+            <button
+              onClick={() => print("all")}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-semibold bg-orange-50 text-orange-700 hover:bg-orange-100 border-b border-orange-100"
+            >
+              <Printer size={14} /> Print All Documents
+              <span className="ml-auto text-[10px] bg-orange-500 text-white px-1.5 py-0.5 rounded">3 pages</span>
+            </button>
+
+            <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50">
+              Individual
+            </div>
+            <button
+              onClick={() => print("invoice")}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              <FileText size={14} /> Tax Invoice
+            </button>
+            <button
+              onClick={() => print("shipping-label")}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              <Truck size={14} /> Shipping Label
+            </button>
+            <button
+              onClick={() => print("packing-slip")}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              <Package size={14} /> Packing Slip
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
 // ==============================================
@@ -205,7 +282,6 @@ const OrderTable = ({
   onDeleteOrder = () => {},
   onSendEmail = () => {},
   onCancelOrder = () => {},
-  onPrintInvoice,
   selectedOrders = [],
   onSelectOrder = () => {},
   onSelectAll = () => {},
@@ -246,15 +322,6 @@ const OrderTable = ({
     },
     [onUpdateStatus]
   );
-
-  // ---------- Print handler ----------
-  const handlePrint = useCallback((orderId, type = "invoice") => {
-    const url = `/admin/orders/${orderId}/print/${type}`;
-    const printWindow = window.open(url, "_blank", "width=900,height=700");
-    if (!printWindow) {
-      toast.error("Please allow popups to print the invoice.");
-    }
-  }, []);
 
   // ---------- Open Cancel Modal ----------
   const openCancelModal = useCallback((order) => {
@@ -324,12 +391,6 @@ const OrderTable = ({
         case "cancel":
           openCancelModal(order);
           break;
-        case "print-packing":
-          handlePrint(order.id, "packing-slip");
-          break;
-        case "print-shipping":
-          handlePrint(order.id, "shipping-label");
-          break;
         default:
           break;
       }
@@ -340,7 +401,6 @@ const OrderTable = ({
       onDeleteOrder,
       onSendEmail,
       openCancelModal,
-      handlePrint,
     ]
   );
 
@@ -497,99 +557,57 @@ const OrderTable = ({
                     </div>
                   </td>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center justify-center gap-1">
-                      {/* Print button */}
-                      <button
-                        onClick={() => {
-                          if (onPrintInvoice) {
-                            onPrintInvoice(order.id);
-                          } else {
-                            handlePrint(order.id, "invoice");
-                          }
-                        }}
-                        className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
-                        title="Print invoice"
-                      >
-                        <Printer size={15} />
-                      </button>
-                      {/* Dropdown */}
-                      <div className="relative" ref={menuRef}>
-                        <button
-                          onClick={() => setOpenMenuId(openMenuId === order.id ? null : order.id)}
-                          className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
-                          title="More actions"
-                        >
-                          <MoreVertical size={15} />
-                        </button>
-                        <AnimatePresence>
-                          {openMenuId === order.id && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 z-20 overflow-hidden"
-                            >
-                              <button
-                                onClick={() => handleMenuAction("edit", order)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                              >
-                                <Edit size={14} /> Edit Order
-                              </button>
-                              <button
-                                onClick={() => handleMenuAction("duplicate", order)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                              >
-                                <Copy size={14} /> Duplicate
-                              </button>
-                              <button
-                                onClick={() => handleMenuAction("email", order)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                              >
-                                <Send size={14} /> Email Invoice
-                              </button>
-                              <button
-                                onClick={() => handleMenuAction("print-packing", order)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                              >
-                                <Printer size={14} /> Packing Slip
-                              </button>
-                              <button
-                                onClick={() => handleMenuAction("print-shipping", order)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                              >
-                                <Printer size={14} /> Shipping Label
-                              </button>
+  <div className="flex items-center justify-center gap-1">
 
-                              {/* ===== CANCEL BUTTON – Only if cancellable ===== */}
-                              {isCancellable && (
-                                <button
-                                  onClick={() => handleMenuAction("cancel", order)}
-                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-gray-100 mt-1 pt-1"
-                                >
-                                  <Ban size={14} /> Cancel Order
-                                </button>
-                              )}
+    {/* ── Printer icon → popover with 4 print options ── */}
+    <PrintMenuPopover orderId={order.id} />
 
-                              {/* ===== SHOW "CANCELLED" STATUS if already cancelled ===== */}
-                              {isAlreadyCancelled && (
-                                <div className="w-full px-3 py-2 text-sm text-gray-400 flex items-center gap-2 border-t border-gray-100 mt-1 pt-1">
-                                  <Ban size={14} /> Cancelled
-                                </div>
-                              )}
-
-                              <hr className="my-1" />
-                              <button
-                                onClick={() => handleMenuAction("delete", order)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 size={14} /> Delete
-                              </button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  </td>
+    {/* ── 3-dots → order management only ── */}
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={() => setOpenMenuId(openMenuId === order.id ? null : order.id)}
+        className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+        title="More actions"
+      >
+        <MoreVertical size={15} />
+      </button>
+      <AnimatePresence>
+        {openMenuId === order.id && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 z-20 overflow-hidden"
+          >
+            <button onClick={() => handleMenuAction("edit", order)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <Edit size={14} /> Edit Order
+            </button>
+            <button onClick={() => handleMenuAction("duplicate", order)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <Copy size={14} /> Duplicate
+            </button>
+            <button onClick={() => handleMenuAction("email", order)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <Send size={14} /> Email Invoice
+            </button>
+            <hr className="my-1" />
+            {isCancellable && (
+              <button onClick={() => handleMenuAction("cancel", order)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                <Ban size={14} /> Cancel Order
+              </button>
+            )}
+            {isAlreadyCancelled && (
+              <div className="w-full px-3 py-2 text-sm text-gray-400 flex items-center gap-2">
+                <Ban size={14} /> Cancelled
+              </div>
+            )}
+            <button onClick={() => handleMenuAction("delete", order)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+              <Trash2 size={14} /> Delete
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  </div>
+</td>
                 </motion.tr>
               );
             })}
