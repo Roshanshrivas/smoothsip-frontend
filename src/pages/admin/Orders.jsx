@@ -168,7 +168,7 @@ useEffect(() => {
 
   // Stats
   const [stats, setStats] = useState({
-    total: 0,
+    totalOrders: 0,
     pending: 0,
     processing: 0,
     shipped: 0,
@@ -282,7 +282,7 @@ useEffect(() => {
   const statsCards = [
     {
       title: "Total Orders",
-      value: stats.total || 0,
+      value: stats.totalOrders || 0,
       icon: Package,
       color: "blue",
       growth: stats.salesGrowth,
