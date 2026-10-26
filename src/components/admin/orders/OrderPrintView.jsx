@@ -1,425 +1,397 @@
-// src/components/admin/orders/OrderPrintView.jsx
 import React, { useEffect } from "react";
 import QRCode from "react-qr-code";
+import "./OrderPrintView.css";
 
-// ─── Business Config ───
 const BUSINESS = {
-  name: "Tumbler Studio",
-  tagline: "Premium Hydration Gear",
-  addressLine1: "Sector 62",
-  addressLine2: "Noida, Uttar Pradesh",
-  pinCode: "201301",
-  state: "Uttar Pradesh",
-  stateCode: "09",
-  phone: "+91 98765 43210",
-  email: "support@tumblerstudio.com",
-  website: "tumblerstudio.com",
-  gstin: "09ABCDE1234F1Z5",
-  pan: "ABCDE1234F",
-  hsnCode: "96170010",
+  name: "Smoothsip",
+  tagline: "Premium Insulated Tumblers",
+  addressLine1: "28/1 Shirdipuram, Kolar Road, Bhopal (M.P.) 462042",
+  addressLine2: "near Parel Railway Station, Mumbai, Maharashtra, 400012",
+  pinCode: "462042",
+  state: "Madhya Pradesh",
+  stateCode: "23",
+  phone: "+91 9109575185",
+  email: "connectsmoothsip@gmail.com",
+  website: "smoothsip.in",
+  gstin: "23BQFPJ3171D1ZB",
+  pan: "ABCDXXXX",
+  // hsnCode: "",
   gstRate: 18,
-  bank: "HDFC Bank · A/C 50200012345678 · IFSC HDFC0001234",
+  // bank: "HDFC Bank · A/C 50200012345678 · IFSC HDFC0001234",
 };
 
 const INR = new Intl.NumberFormat("en-IN", {
   style: "currency", currency: "INR",
   minimumFractionDigits: 2, maximumFractionDigits: 2,
 });
-const formatCurrency = (n) => INR.format(Number(n) || 0);
+const formatCurrency = (val) => INR.format(Number(val) || 0);
+const formatAmount = (val) => formatCurrency(val).replace("₹", "").trim();
 
 const getBaseUrl = () =>
   typeof window === "undefined" ? `https://${BUSINESS.website}` : window.location.origin;
 
-const getOrderNumber = (o) => o.orderNumber || o.id || o._id || "—";
-const getCustomerName = (o) =>
-  o.customer?.name || (typeof o.customer === "string" ? o.customer : null) ||
-  o.shippingAddress?.name || o.billingAddress?.name || "Customer";
+const getOrderNumber = (order) => order.orderNumber || order.id || order._id || "—";
 
-const buildAddressString = (addr) => {
-  if (!addr) return "—";
-  if (typeof addr === "string") return addr;
-  return [addr.address, addr.city, addr.state, addr.pinCode, addr.country]
-    .filter(Boolean).join(", ") || "—";
+const getCustomerName = (order) =>
+  order.customer?.name || (typeof order.customer === "string" ? order.customer : null) ||
+  order.shippingAddress?.name || "Customer";
+
+const buildAddressString = (address) => {
+  if (!address) return "Address not provided";
+  if (typeof address === "string") return address;
+  return [address.address, address.city, address.state, address.pinCode, address.country]
+    .filter(Boolean).join("\n") || "Address not provided";
 };
 
-const isIntraState = (s) =>
-  !s || s.trim().toLowerCase() === BUSINESS.state.toLowerCase();
-
-const numberToWords = (num) => {
-  const ONES=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
-  const TENS=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
-  const c=(n)=>{
-    if(n<20)return ONES[n];
-    if(n<100)return TENS[Math.floor(n/10)]+(n%10?" "+ONES[n%10]:"");
-    if(n<1000)return ONES[Math.floor(n/100)]+" Hundred"+(n%100?" "+c(n%100):"");
-    if(n<100000)return c(Math.floor(n/1000))+" Thousand"+(n%1000?" "+c(n%1000):"");
-    if(n<10000000)return c(Math.floor(n/100000))+" Lakh"+(n%100000?" "+c(n%100000):"");
-    return c(Math.floor(n/10000000))+" Crore"+(n%10000000?" "+c(n%10000000):"");
+const numberToWords = (amount) => {
+  const ONES = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+  const TENS = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+  const convert = (number) => {
+    if (number === 0) return "Zero";
+    if (number < 20) return ONES[number];
+    if (number < 100) return TENS[Math.floor(number / 10)] + (number % 10 ? " " + ONES[number % 10] : "");
+    if (number < 1000) return ONES[Math.floor(number / 100)] + " Hundred" + (number % 100 ? " " + convert(number % 100) : "");
+    if (number < 100000) return convert(Math.floor(number / 1000)) + " Thousand" + (number % 1000 ? " " + convert(number % 1000) : "");
+    if (number < 10000000) return convert(Math.floor(number / 100000)) + " Lakh" + (number % 100000 ? " " + convert(number % 100000) : "");
+    return convert(Math.floor(number / 10000000)) + " Crore" + (number % 10000000 ? " " + convert(number % 10000000) : "");
   };
-  const r=Math.floor(num), p=Math.round((num-r)*100);
-  let out=c(r)+" Rupees";
-  if(p>0)out+=" and "+c(p)+" Paise";
-  return out+" Only";
+  const safeAmount = Math.max(0, Number(amount) || 0);
+  const rupees = Math.floor(safeAmount + 0.000001);
+  const paise = Math.round((safeAmount - rupees) * 100);
+  let result = `${convert(rupees)} Rupees`;
+  if (paise > 0) result += ` and ${convert(paise)} Paise`;
+  return `${result} Only`;
 };
 
-// Shared calculations — computed once per render
 const buildCalc = (order) => {
-  const items = order.items || [];
-  const subtotal = items.reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.quantity) || 0), 0);
+  const items = (Array.isArray(order.items) ? order.items : []).map((item) => ({
+    ...item,
+    price: Number(item.price) || 0,
+    quantity: Number(item.quantity) || 0,
+  }));
+
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = Number(order.shipping) || 0;
-  const discount = Number(order.couponDiscount || order.discount) || 0;
-  const total = Number(order.total) || (subtotal - discount + shipping);
-  const intra = isIntraState(order.shippingAddress?.state);
-  const goodsAmount = subtotal - discount;
-  const taxableGoods = goodsAmount / (1 + BUSINESS.gstRate / 100);
-  const totalGST = goodsAmount - taxableGoods;
-  const cgst = intra ? totalGST / 2 : 0;
-  const sgst = intra ? totalGST / 2 : 0;
-  const igst = intra ? 0 : totalGST;
+  const discount = Number(order.couponDiscount ?? order.discount) || 0;
+  const taxableAmount = Math.max(0, subtotal - discount);
+
+  const invoiceSubtotal = taxableAmount / (1 + BUSINESS.gstRate / 100);
+  const gstAmount = taxableAmount - invoiceSubtotal;
+
+  const total = order.total !== undefined && order.total !== null ? Number(order.total) : taxableAmount + shipping;
   const orderDate = new Date(order.createdAt || order.date || Date.now());
+  const formattedDate = Number.isNaN(orderDate.getTime()) ? "—" : orderDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+
   return {
-    items, subtotal, shipping, discount, total, intra, cgst, sgst, igst,
-    totalGST,
-    formattedDate: orderDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
-    invoiceNumber: `INV/${getOrderNumber(order)}`,
-    orderNumber: getOrderNumber(order),
-    customerName: getCustomerName(order),
-    email: order.email || order.customer?.email || "",
-    phone: order.phone || order.shippingAddress?.phone || "",
+    items, subtotal, invoiceSubtotal, gstAmount, shipping, discount, total,
+    formattedDate, invoiceNumber: `SS-2026-00${getOrderNumber(order)}`,
+    orderNumber: getOrderNumber(order), customerName: getCustomerName(order),
+    email: order.email || "", phone: order.phone || order.shippingAddress?.phone || "",
     billingAddress: buildAddressString(order.billingAddress || order.shippingAddress),
     shippingAddress: buildAddressString(order.shippingAddress),
-    shipState: order.shippingAddress?.state || BUSINESS.state,
-    trackingNumber: order.trackingNumber || `TUM-${getOrderNumber(order)}`,
+    trackingNumber: order.trackingNumber || "123456789012",
     amountInWords: numberToWords(total),
+    totalUnits: items.reduce((sum, item) => sum + item.quantity, 0),
   };
 };
 
-// ═══════════════════════════════════════════════
-// 1. TAX INVOICE
-// ═══════════════════════════════════════════════
+const Brand = ({ tagline = false }) => (
+  <div>
+    <h1 className="inv-brand">{BUSINESS.name}</h1>
+    {tagline && <p className="inv-tagline">{BUSINESS.tagline}</p>}
+  </div>
+);
+
+const AddressText = ({ value, style }) => (
+  <p className="inv-addr-text" style={style}>{value}</p>
+);
+
 const Invoice = ({ order }) => {
   const c = buildCalc(order);
-  const cancelled = order.status === "Cancelled";
-
   return (
-    <div style={{ ...styles.pageContent, position: "relative" }}>
-      {cancelled && (
-        <div style={styles.watermark}>CANCELLED</div>
-      )}
-
-      <div style={styles.invoiceHeader}>
-        <div>
-          <h1 style={styles.brandName}>✦ {BUSINESS.name.toUpperCase()}</h1>
-          <p style={styles.brandTag}>{BUSINESS.tagline}</p>
-          <p style={styles.detail}>
-            {BUSINESS.addressLine1}, {BUSINESS.addressLine2} – {BUSINESS.pinCode}<br />
-            <strong>GSTIN:</strong> {BUSINESS.gstin} &nbsp;|&nbsp; <strong>PAN:</strong> {BUSINESS.pan}<br />
-            📞 {BUSINESS.phone} &nbsp;|&nbsp; ✉ {BUSINESS.email}
-          </p>
-        </div>
-        <div style={styles.metaBox}>
-          <span style={styles.metaLabel}>TAX INVOICE</span>
-          <span style={styles.metaValue}>{c.invoiceNumber}</span>
-          <span style={{ fontSize: 11, color: "#6b7280", display: "block", marginTop: 2 }}>
-            {c.formattedDate}
-          </span>
+    <div className="invoice-sheet">
+      <div className="inv-header">
+        <Brand tagline />
+        <div className="inv-meta-right">
+          <h2 className="inv-title">TAX INVOICE</h2>
+          <p className="inv-subtitle">Original for Recipient</p>
+          <table className="inv-meta-table">
+            <tbody>
+              <tr><td>Invoice No</td><td>: {c.invoiceNumber}</td></tr>
+              <tr><td>Order No</td><td>: {c.orderNumber}</td></tr>
+              <tr><td>Invoice Date</td><td>: {c.formattedDate}</td></tr>
+              <tr><td>Order Date</td><td>: {c.formattedDate}</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div style={styles.addressesGrid}>
-        <div>
-          <p style={styles.label}>Billed To</p>
-          <p style={styles.value}>{c.customerName}</p>
-          {c.email && <p style={styles.detail}>{c.email}</p>}
-          {c.phone && <p style={styles.detail}>{c.phone}</p>}
-          <p style={styles.detail}>{c.billingAddress}</p>
+      <div className="inv-addr-grid">
+        <div className="inv-addr-box">
+          <p className="inv-addr-title">Bill To</p>
+          <p className="inv-addr-name">{c.customerName}</p>
+          <AddressText value={c.billingAddress} />
+          {c.phone && <AddressText value={`Mobile: ${c.phone}`} />}
         </div>
-        <div style={{ textAlign: "right" }}>
-          <p style={styles.label}>Invoice Details</p>
-          <p style={styles.detail}><strong>Order No:</strong> #{c.orderNumber}</p>
-          <p style={styles.detail}>
-            <strong>Payment:</strong> {order.paymentMethod || "—"} ·{" "}
-            <span style={{ fontWeight: "bold", color: order.paymentStatus === "Paid" ? "#16a34a" : "#dc2626" }}>
-              {order.paymentStatus || "Unpaid"}
-            </span>
-          </p>
-          <p style={styles.detail}>
-            <strong>Status:</strong>{" "}
-            <span style={{ fontWeight: "bold", color: cancelled ? "#dc2626" : "#ea580c" }}>{order.status}</span>
-          </p>
-          <p style={styles.detail}><strong>Place of Supply:</strong> {c.shipState} {c.intra ? "(Intra)" : "(Inter)"}</p>
+        <div className="inv-addr-box" style={{ borderRight: "none" }}>
+          <p className="inv-addr-title">Ship To</p>
+          <p className="inv-addr-name">{c.customerName}</p>
+          <AddressText value={c.shippingAddress} />
+          {c.phone && <AddressText value={`Mobile: ${c.phone}`} />}
         </div>
       </div>
 
-      <table style={styles.itemTable}>
+      <table className="inv-table">
         <thead>
           <tr>
-            <th style={{ ...styles.th, textAlign: "center", width: 36 }}>#</th>
-            <th style={{ ...styles.th, textAlign: "left" }}>Description</th>
-            <th style={{ ...styles.th, textAlign: "center", width: 70 }}>HSN</th>
-            <th style={{ ...styles.th, textAlign: "center", width: 46 }}>Qty</th>
-            <th style={{ ...styles.th, textAlign: "right", width: 90 }}>Rate</th>
-            <th style={{ ...styles.th, textAlign: "right", width: 100 }}>Amount</th>
+            <th className="inv-th" style={{ width: 30 }}>#</th>
+            <th className="inv-th">Product</th>
+            <th className="inv-th" style={{ width: 70, textAlign: "center" }}>HSN/SAC</th>
+            <th className="inv-th" style={{ width: 40, textAlign: "center" }}>Qty</th>
+            <th className="inv-th" style={{ width: 80, textAlign: "right" }}>Price (₹)</th>
+            <th className="inv-th" style={{ width: 90, textAlign: "right" }}>Total (₹)</th>
           </tr>
         </thead>
         <tbody>
-          {c.items.map((item, idx) => (
-            <tr key={idx}>
-              <td style={{ ...styles.td, textAlign: "center" }}>{idx + 1}</td>
-              <td style={{ ...styles.td, textAlign: "left" }}>
-                {item.name}
-                <div style={styles.skuText}>SKU: {item.sku || "N/A"}</div>
-                {item.customization?.allTexts?.length > 0 && (
-                  <div style={{ ...styles.skuText, color: "#ea580c" }}>
-                    Personalization: {item.customization.allTexts.map((t) => `"${t.text}"`).join(", ")}
-                  </div>
-                )}
-              </td>
-              <td style={{ ...styles.td, textAlign: "center" }}>{item.hsnCode || BUSINESS.hsnCode}</td>
-              <td style={{ ...styles.td, textAlign: "center" }}>{item.quantity}</td>
-              <td style={{ ...styles.td, textAlign: "right" }}>{formatCurrency(item.price)}</td>
-              <td style={{ ...styles.td, textAlign: "right", fontWeight: 600 }}>
-                {formatCurrency(item.price * item.quantity)}
-              </td>
-            </tr>
-          ))}
+          {c.items.length === 0 ? (
+            <tr><td colSpan="6" className="inv-td" style={{ textAlign: "center", padding: 20 }}>No items found.</td></tr>
+          ) : (
+            c.items.map((item, index) => (
+              <tr key={item._id || item.sku || index}>
+                <td className="inv-td" style={{ textAlign: "center" }}>{index + 1}</td>
+                <td className="inv-td">
+                  <div className="inv-item-name">{item.name || "Product"}</div>
+                  <div className="inv-item-desc">{item.description || "Item Description"}</div>
+                </td>
+                <td className="inv-td" style={{ textAlign: "center" }}>{item.hsnCode || BUSINESS.hsnCode}</td>
+                <td className="inv-td" style={{ textAlign: "center" }}>{item.quantity}</td>
+                <td className="inv-td" style={{ textAlign: "right" }}>{formatAmount(item.price)}</td>
+                <td className="inv-td" style={{ textAlign: "right" }}>{formatAmount(item.price * item.quantity)}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20, marginTop: 8 }}>
-        <div>
-          <p style={styles.label}>Amount in Words</p>
-          <p style={{ fontSize: 12, fontStyle: "italic", marginTop: 4 }}>{c.amountInWords}</p>
-          <div style={{ marginTop: 14, padding: "8px 10px", background: "#f9fafb", borderLeft: "3px solid #ea580c" }}>
-            <p style={{ fontSize: 10, color: "#4b5563", margin: 0, lineHeight: 1.5 }}>
-              <strong>Bank:</strong> {BUSINESS.bank}
-            </p>
-          </div>
-        </div>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+      <div className="inv-totals-wrap">
+        <table className="inv-totals-table">
           <tbody>
-            <tr><td style={styles.summaryLabel}>Subtotal</td><td style={styles.summaryValue}>{formatCurrency(c.subtotal)}</td></tr>
-            {c.discount > 0 && (
-              <tr><td style={styles.summaryLabel}>Discount</td><td style={{ ...styles.summaryValue, color: "#16a34a" }}>− {formatCurrency(c.discount)}</td></tr>
-            )}
-            <tr><td style={styles.summaryLabel}>Shipping</td><td style={styles.summaryValue}>{formatCurrency(c.shipping)}</td></tr>
-            {c.intra ? (
-              <>
-                <tr><td style={styles.summaryLabel}>CGST ({BUSINESS.gstRate / 2}%)</td><td style={styles.summaryValue}>{formatCurrency(c.cgst)}</td></tr>
-                <tr><td style={styles.summaryLabel}>SGST ({BUSINESS.gstRate / 2}%)</td><td style={styles.summaryValue}>{formatCurrency(c.sgst)}</td></tr>
-              </>
-            ) : (
-              <tr><td style={styles.summaryLabel}>IGST ({BUSINESS.gstRate}%)</td><td style={styles.summaryValue}>{formatCurrency(c.igst)}</td></tr>
-            )}
             <tr>
-              <td style={{ ...styles.summaryLabel, borderTop: "2px solid #1a1a1a", paddingTop: 10, fontWeight: 700, fontSize: 14 }}>GRAND TOTAL</td>
-              <td style={{ ...styles.summaryValue, borderTop: "2px solid #1a1a1a", paddingTop: 10, fontSize: 18, color: "#ea580c", fontWeight: 800 }}>
-                {formatCurrency(c.total)}
-              </td>
+              <td className="inv-totals-label">Sub Total</td>
+              <td className="inv-totals-val">₹ {formatAmount(c.invoiceSubtotal)}</td>
+            </tr>
+            <tr>
+              <td className="inv-totals-label">GST ({BUSINESS.gstRate}%)</td>
+              <td className="inv-totals-val">₹ {formatAmount(c.gstAmount)}</td>
+            </tr>
+            {c.shipping > 0 && (
+              <tr>
+                <td className="inv-totals-label">Shipping</td>
+                <td className="inv-totals-val">₹ {formatAmount(c.shipping)}</td>
+              </tr>
+            )}
+            {c.discount > 0 && (
+              <tr>
+                <td className="inv-totals-label">Discount</td>
+                <td className="inv-totals-val">- ₹ {formatAmount(c.discount)}</td>
+              </tr>
+            )}
+            <tr className="inv-totals-grand">
+              <td className="inv-totals-label">Total</td>
+              <td className="inv-totals-val">₹ {formatAmount(c.total)}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div style={styles.invoiceFooter}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ background: "white", padding: 8, borderRadius: 4, border: "1px solid #e5e7eb" }}>
-            <QRCode value={`${getBaseUrl()}/track/order/${order.id}`} size={70} level="M" />
-          </div>
-          <div>
-            <p style={{ fontSize: 11, color: "#4b5563", margin: 0 }}>Scan to track your order</p>
-            <p style={{ fontSize: 13, fontWeight: "bold", margin: "4px 0 0 0" }}>Thank you for your business!</p>
-          </div>
+      <div className="inv-words">
+        <strong>Amount in Words:</strong>
+        <p style={{ margin: "6px 0 0" }}>{c.amountInWords}</p>
+      </div>
+
+      <div className="inv-footer">
+        <div>
+          <p className="inv-sign-for">For SmoothSip</p>
+          <div className="inv-sign-line" />
+          <p className="inv-sign-label">Authorized Signatory</p>
         </div>
-        <div style={{ textAlign: "right", fontSize: 10, color: "#9ca3af" }}>
-          <p style={{ margin: 0 }}>Computer-generated invoice.</p>
-          <p style={{ margin: 0 }}>No signature required.</p>
+        <div className="inv-footer-right">
+          <p><strong>GSTIN:</strong> {BUSINESS.gstin}</p>
+          <p><strong>PAN:</strong> {BUSINESS.pan}</p>
+          <p><strong>Support:</strong> {BUSINESS.email}</p>
+          <p>{BUSINESS.website}</p>
         </div>
       </div>
     </div>
   );
 };
 
-// ═══════════════════════════════════════════════
-// 2. PACKING SLIP (no prices — for warehouse)
-// ═══════════════════════════════════════════════
 const PackingSlip = ({ order }) => {
   const c = buildCalc(order);
   return (
-    <div style={styles.pageContent}>
-      <div style={{ borderBottom: "3px solid #ea580c", paddingBottom: 15, marginBottom: 20 }}>
-        <h1 style={styles.brandName}>✦ {BUSINESS.name.toUpperCase()}</h1>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-          <span style={{ background: "#f3f4f6", padding: "4px 12px", borderRadius: 4, fontWeight: "bold", fontSize: 13 }}>
-            PACKING SLIP
-          </span>
-          <span style={{ fontSize: 13 }}>Order #{c.orderNumber} · {c.formattedDate}</span>
-        </div>
-      </div>
-
-      <div style={styles.addressesGrid}>
-        <div>
-          <p style={styles.label}>From (Warehouse)</p>
-          <p style={styles.value}>{BUSINESS.name}</p>
-          <p style={styles.detail}>{BUSINESS.addressLine1}, {BUSINESS.addressLine2} – {BUSINESS.pinCode}</p>
-          <p style={styles.detail}>📞 {BUSINESS.phone}</p>
-        </div>
+    <div className="pack-sheet">
+      <div className="pack-header">
+        <Brand />
         <div style={{ textAlign: "right" }}>
-          <p style={styles.label}>Ship To</p>
-          <p style={styles.value}>{c.customerName}</p>
-          <p style={styles.detail}>{c.shippingAddress}</p>
-          {c.phone && <p style={styles.detail}>📞 {c.phone}</p>}
+          <h2 className="pack-title">Packing Slip</h2>
+          <p className="pack-meta">Order # {c.orderNumber}</p>
+          <p className="pack-meta">Date: {c.formattedDate}</p>
         </div>
       </div>
 
-      <table style={styles.itemTable}>
+      <div className="pack-box">
+        <p className="pack-box-title">Shipping Address</p>
+        <p className="inv-addr-name">{c.customerName}</p>
+        <AddressText value={c.shippingAddress} />
+        {c.phone && <AddressText value={`Mobile: ${c.phone}`} />}
+      </div>
+
+      <p className="pack-section-title">Order Items</p>
+      <table className="pack-table">
         <thead>
           <tr>
-            <th style={{ ...styles.th, textAlign: "left", width: 36 }}>#</th>
-            <th style={{ ...styles.th, textAlign: "left" }}>Item</th>
-            <th style={{ ...styles.th, textAlign: "left", width: 120 }}>SKU</th>
-            <th style={{ ...styles.th, textAlign: "center", width: 90 }}>Qty to Pack</th>
+            <th className="pack-th" style={{ width: 30 }}>#</th>
+            <th className="pack-th">Product</th>
+            <th className="pack-th" style={{ width: 50, textAlign: "center" }}>Qty</th>
           </tr>
         </thead>
         <tbody>
-          {c.items.map((item, idx) => (
-            <tr key={idx}>
-              <td style={{ ...styles.td, textAlign: "left" }}>{idx + 1}</td>
-              <td style={{ ...styles.td, textAlign: "left" }}>
-                {item.name}
-                {item.customization?.allTexts?.length > 0 && (
-                  <div style={{ ...styles.skuText, color: "#ea580c", fontWeight: 600 }}>
-                    ⚠️ Personalized: {item.customization.allTexts.map((t) => `"${t.text}"`).join(", ")}
-                  </div>
-                )}
-              </td>
-              <td style={{ ...styles.td, textAlign: "left" }}>{item.sku || "N/A"}</td>
-              <td style={{ ...styles.td, textAlign: "center", fontWeight: "bold" }}>{item.quantity}</td>
-            </tr>
-          ))}
+          {c.items.length === 0 ? (
+             <tr><td colSpan="3" className="pack-td" style={{ textAlign: "center", padding: 20 }}>No items found.</td></tr>
+          ) : (
+            c.items.map((item, index) => (
+              <tr key={item._id || item.sku || index}>
+                <td className="pack-td" style={{ textAlign: "center" }}>{index + 1}</td>
+                <td className="pack-td">
+                  <div className="inv-item-name">{item.name || "Product"}</div>
+                  <div className="inv-item-desc">{item.description || "Item Description"}</div>
+                </td>
+                <td className="pack-td" style={{ textAlign: "center" }}>{item.quantity}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
-      <div style={{ marginTop: 24, padding: 14, background: "#fef9f5", borderLeft: "4px solid #ea580c" }}>
-        <p style={{ fontSize: 12, color: "#4b5563", margin: 0 }}>
-          🔔 <strong>Packing Instructions:</strong> Verify every item and personalization before sealing.
-          Total items: <strong>{c.items.reduce((s, i) => s + (i.quantity || 0), 0)}</strong>
-        </p>
+      <div className="pack-box" style={{ marginTop: 20 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+          <tbody>
+            {[
+              ["Order ID", c.orderNumber],
+              ["Order Date", c.formattedDate],
+              ["Shipping Method", order.shippingMethod || "Standard Delivery"],
+              ["Payment Method", order.paymentMethod || "COD"],
+            ].map(([label, value]) => (
+              <tr key={label}>
+                <td style={{ padding: "5px 0", color: "#555" }}>{label}</td>
+                <td style={{ padding: "5px 0", fontWeight: 600 }}>: {value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="pack-footer">
+        <p>Thank you for shopping with SmoothSip!</p>
+        <p>Stay Hydrated &nbsp;•&nbsp; Stay Healthy</p>
       </div>
     </div>
   );
 };
 
-// ═══════════════════════════════════════════════
-// 3. SHIPPING LABEL
-// ═══════════════════════════════════════════════
 const ShippingLabel = ({ order }) => {
   const c = buildCalc(order);
-  const trackingUrl = `${getBaseUrl()}/track/${c.trackingNumber}`;
+  const trackingUrl = `${getBaseUrl()}/track/${encodeURIComponent(c.trackingNumber)}`;
+
+  const barcodeLines = Array.from({ length: 38 }, (_, index) => {
+    const width = [1, 2, 3][index % 3];
+    return <div key={index} style={{ width, height: 48, background: "#000", marginRight: 2, flexShrink: 0 }} />;
+  });
 
   return (
-    <div style={{ ...styles.pageContent, maxWidth: 540, border: "2px solid #1a1a1a" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #1a1a1a", paddingBottom: 10 }}>
-        <span style={{ fontWeight: "bold", fontSize: 20 }}>✦ {BUSINESS.name.toUpperCase()}</span>
-        <span style={{ fontSize: 10, textAlign: "right", fontWeight: 700, lineHeight: 1.2 }}>
-          PRIORITY<br />SHIPPING
-        </span>
-      </div>
-
-      <div style={{ marginTop: 16, paddingBottom: 12 }}>
-        <p style={{ fontSize: 9, fontWeight: 700, color: "#6b7280", letterSpacing: 1.5, marginBottom: 4 }}>SHIP TO</p>
-        <p style={{ fontSize: 20, fontWeight: 800, margin: 0, lineHeight: 1.2 }}>{c.customerName}</p>
-        <p style={{ fontSize: 14, color: "#1a1a1a", margin: "6px 0 0 0", lineHeight: 1.4 }}>{c.shippingAddress}</p>
-        {c.phone && <p style={{ fontSize: 15, fontWeight: 700, margin: "6px 0 0 0" }}>📞 {c.phone}</p>}
-      </div>
-
-      <div style={{ borderTop: "1px dashed #1a1a1a", borderBottom: "1px dashed #1a1a1a", padding: "10px 0", margin: "10px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <p style={{ fontSize: 9, color: "#6b7280", margin: 0, fontWeight: 700, letterSpacing: 1 }}>TRACKING</p>
-          <p style={{ fontSize: 14, fontFamily: "monospace", fontWeight: 700, margin: "2px 0 0 0" }}>{c.trackingNumber}</p>
-        </div>
+    <div className="label-sheet">
+      <div className="label-header">
+        <h1 className="label-brand">SmoothSip</h1>
         <div style={{ textAlign: "right" }}>
-          <p style={{ fontSize: 9, color: "#6b7280", margin: 0, fontWeight: 700, letterSpacing: 1 }}>ORDER</p>
-          <p style={{ fontSize: 13, fontWeight: 700, margin: "2px 0 0 0" }}>#{c.orderNumber}</p>
+          <p className="label-courier">Delhivery</p>
+          <p className="label-tracking-text">Tracking No:</p>
+          <p className="label-tracking-no">{c.trackingNumber}</p>
         </div>
       </div>
 
-      <div style={{ fontSize: 10, color: "#4b5563", lineHeight: 1.5 }}>
-        <strong>FROM:</strong> {BUSINESS.name} · {BUSINESS.addressLine1}, {BUSINESS.addressLine2} – {BUSINESS.pinCode}
+      <div className="barcode-wrap">
+        <div className="barcode-bars">{barcodeLines}</div>
+        <p className="barcode-num">{c.trackingNumber}</p>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
-        <QRCode value={trackingUrl} size={64} level="M" />
-        <div style={{ textAlign: "right", fontSize: 8, color: "#9ca3af" }}>
-          <p style={{ margin: 0 }}>Scan to track</p>
-          <p style={{ margin: "2px 0 0 0" }}>{new Date().toLocaleString("en-IN")}</p>
+      <div className="label-ship-to">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p className="label-section-title">Ship To:</p>
+          <p className="label-name">{c.customerName}</p>
+          <p className="label-addr">{c.shippingAddress}</p>
+          {c.phone && <p className="label-addr">Mobile: {c.phone}</p>}
         </div>
+        <div style={{ marginLeft: 10, flexShrink: 0 }}>
+          <QRCode value={trackingUrl} size={65} level="M" />
+        </div>
+      </div>
+
+      <div className="label-details">
+        <p className="label-section-title">Order Details:</p>
+        <table className="label-table">
+          <tbody>
+            {[
+              ["Order ID", c.orderNumber],
+              ["Order Date", c.formattedDate],
+              ["Weight", order.weight || "0.5 kg"],
+              ["Dimensions", order.dimensions || "20 x 15 x 15 cm"],
+            ].map(([label, value]) => (
+              <tr key={label}>
+                <td className="label-td-key">{label}</td>
+                <td className="label-td-val">: {value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="label-from">
+        <p className="label-section-title">From:</p>
+        <p className="label-name">{BUSINESS.name}</p>
+        <p className="label-addr">{BUSINESS.addressLine1}</p>
+        <p className="label-addr">India</p>
+      </div>
+
+      <div className="label-cod">
+        <span className="label-cod-text">
+          {String(order.paymentMethod || "COD").toUpperCase() === "COD" ? "COD" : "PAID"}
+        </span>
+        <span className="label-cod-amt">₹ {formatAmount(c.total)}</span>
       </div>
     </div>
   );
 };
 
-// ═══════════════════════════════════════════════
-// 4. COMBINED — all 3 in one PDF (A4, 3 pages)
-// ═══════════════════════════════════════════════
-const Combined = ({ order }) => (
-  <>
-    <div style={{ marginBottom: 30 }}>
-      <PackingSlip order={order} />
-    </div>
-    <div className="page-break" />
-    <div style={{ marginBottom: 30 }}>
-      <Invoice order={order} />
-    </div>
-    <div className="page-break" />
-    <div>
-      <ShippingLabel order={order} />
-      <p style={{ fontSize: 9, color: "#9ca3af", textAlign: "center", marginTop: 10, fontStyle: "italic" }}>
-        ✂ Cut along the border and stick on box
-      </p>
-    </div>
-  </>
-);
-
-// ═══════════════════════════════════════════════
-// MAIN EXPORT
-// ═══════════════════════════════════════════════
-const OrderPrintView = ({ order, type = "invoice" }) => {
+const OrderPrintView = ({ order, type = "invoice", autoPrint = true }) => {
   useEffect(() => {
-    if (!order) return;
+    if (!order || !autoPrint) return undefined;
     let cancelled = false;
-    requestAnimationFrame(() => {
+    const firstFrame = requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (!cancelled) window.print();
       });
     });
-    return () => { cancelled = true; };
-  }, [order]);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(firstFrame);
+    };
+  }, [order, autoPrint]);
 
-  // Only swap page size for the standalone label
-  useEffect(() => {
-    if (type !== "shipping-label") return;
-    const el = document.createElement("style");
-    el.id = "__ship_label_page__";
-    el.textContent = "@page { size: 100mm 150mm; margin: 3mm; }";
-    document.head.appendChild(el);
-    return () => el.remove();
-  }, [type]);
-
-  if (!order) return <div style={styles.centered}>No order data available</div>;
-
-  const render = () => {
-    switch (type) {
-      case "packing-slip":   return <PackingSlip order={order} />;
-      case "shipping-label": return <ShippingLabel order={order} />;
-      case "all":            return <Combined order={order} />;
-      default:               return <Invoice order={order} />;
-    }
-  };
+  if (!order) return <div className="centered">No order data available</div>;
 
   const handleClose = () => {
     window.close();
-    setTimeout(() => {
+    window.setTimeout(() => {
       if (!window.closed) {
         if (window.history.length > 1) window.history.back();
         else window.location.href = "/admin/orders";
@@ -427,67 +399,41 @@ const OrderPrintView = ({ order, type = "invoice" }) => {
     }, 150);
   };
 
+  const renderDocument = () => {
+    switch (type) {
+      case "packing-slip":
+        return <PackingSlip order={order} />;
+      case "shipping-label":
+        return <ShippingLabel order={order} />;
+      case "all":
+        return (
+          <>
+            <div className="print-document"><PackingSlip order={order} /></div>
+            <div className="page-break" />
+            <div className="print-document"><Invoice order={order} /></div>
+            <div className="page-break" />
+            <div className="print-document"><ShippingLabel order={order} /></div>
+          </>
+        );
+      case "invoice":
+      default:
+        return <Invoice order={order} />;
+    }
+  };
+
   return (
-    <div style={{ minHeight: "100vh", background: "#f3f4f6", padding: 20 }}>
-      {render()}
-      <div style={{ textAlign: "center", padding: 15, marginTop: 15 }} className="no-print">
-        <button onClick={() => window.print()} style={styles.printBtn}>🖨️ Print / Save as PDF</button>
-        <button onClick={handleClose} style={styles.closeBtn}>Close</button>
+    <div className={`page-wrapper ${type === "shipping-label" ? "label-mode" : ""}`}>
+      {renderDocument()}
+      <div className="no-print actions">
+        <button type="button" onClick={() => window.print()} className="btn-print">
+          Print / Save as PDF
+        </button>
+        <button type="button" onClick={handleClose} className="btn-close">
+          Close
+        </button>
       </div>
-      <style>{`
-        @media print {
-          body { background: white !important; }
-          .no-print { display: none !important; }
-          .page-break { page-break-after: always; break-after: page; }
-          @page { margin: 10mm; size: A4; }
-        }
-      `}</style>
     </div>
   );
-};
-
-// ═══════════════════════════════════════════════
-// STYLES
-// ═══════════════════════════════════════════════
-const styles = {
-  pageContent: {
-    background: "#ffffff",
-    padding: "32px 40px",
-    maxWidth: 820,
-    width: "100%",
-    margin: "0 auto",
-    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
-    borderRadius: 12,
-    fontFamily: "'Inter', 'Segoe UI', Arial, sans-serif",
-    color: "#1a1a1a",
-    boxSizing: "border-box",
-  },
-  centered: { display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" },
-  brandName: { fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px", margin: 0, color: "#1a1a1a" },
-  brandTag: { fontSize: 11, color: "#6b7280", letterSpacing: 2, margin: "2px 0 8px 0", textTransform: "uppercase" },
-  invoiceHeader: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "2px solid #ea580c", paddingBottom: 16, marginBottom: 20, gap: 20 },
-  metaBox: { background: "#fff7ed", border: "1px solid #fed7aa", padding: "10px 16px", borderRadius: 8, textAlign: "right", minWidth: 180 },
-  metaLabel: { fontSize: 10, color: "#9a3412", display: "block", letterSpacing: 1, fontWeight: 700 },
-  metaValue: { fontSize: 15, fontWeight: 800, color: "#c2410c", display: "block", marginTop: 2 },
-  addressesGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 },
-  label: { fontSize: 10, fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 },
-  value: { fontSize: 15, fontWeight: 700, margin: "0 0 3px 0", color: "#111827" },
-  detail: { fontSize: 12, color: "#4b5563", margin: "2px 0", lineHeight: 1.5 },
-  itemTable: { width: "100%", borderCollapse: "collapse", marginBottom: 16 },
-  th: { padding: "9px 6px", background: "#f9fafb", fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#4b5563", borderBottom: "2px solid #e5e7eb", letterSpacing: 0.5 },
-  td: { padding: "10px 6px", borderBottom: "1px solid #f3f4f6", fontSize: 12, color: "#1a1a1a", verticalAlign: "top" },
-  skuText: { fontSize: 10, color: "#9ca3af", marginTop: 2 },
-  summaryLabel: { padding: "5px 8px", color: "#4b5563" },
-  summaryValue: { padding: "5px 8px", textAlign: "right", fontWeight: 600 },
-  invoiceFooter: { marginTop: 24, paddingTop: 16, borderTop: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 },
-  printBtn: { padding: "10px 28px", background: "#ea580c", color: "white", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 13, marginRight: 8 },
-  closeBtn: { padding: "10px 22px", background: "#f3f4f6", color: "#374151", border: "1px solid #d1d5db", borderRadius: 8, fontWeight: 600, cursor: "pointer", fontSize: 13 },
-  watermark: {
-    position: "absolute", top: "40%", left: "50%",
-    transform: "translate(-50%, -50%) rotate(-25deg)",
-    fontSize: 80, fontWeight: 900, color: "rgba(220,38,38,0.08)",
-    letterSpacing: 8, pointerEvents: "none", whiteSpace: "nowrap",
-  },
 };
 
 export default OrderPrintView;

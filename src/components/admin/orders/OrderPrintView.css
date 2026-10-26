@@ -1,0 +1,159 @@
+/* ─── GLOBAL & RESET ─── */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #111827;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  background: #f3f4f6;
+  padding: 20px;
+}
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* ─── SHARED TYPOGRAPHY ─── */
+.inv-brand { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -1px; color: #111; }
+.inv-tagline { font-size: 12px; color: #263746; margin: 4px 0 0; }
+.inv-addr-name { font-size: 13px; font-weight: 700; margin: 0 0 4px; }
+.inv-addr-text { font-size: 12px; color: #263746; margin: 2px 0; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; }
+.inv-item-name { font-size: 12px; font-weight: 700; margin: 0; }
+.inv-item-desc { font-size: 11px; color: #263746; margin: 4px 0 0; line-height: 1.4; }
+
+/* ─── TAX INVOICE ─── */
+.invoice-sheet {
+  background: #fff; padding: 24px; max-width: 800px; width: 100%; margin: 0 auto;
+  border: 1px solid #cbd0d3; color: #111827; box-sizing: border-box;
+}
+.inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+.inv-meta-right { text-align: right; min-width: 190px; }
+.inv-title { font-size: 18px; font-weight: 800; margin: 0; text-transform: uppercase; }
+.inv-subtitle { font-size: 11px; color: #263746; margin: 3px 0 10px; }
+.inv-meta-table { font-size: 11px; margin-left: auto; border-collapse: collapse; text-align: left; line-height: 1.8; }
+.inv-addr-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #cbd5da; margin-bottom: 18px; }
+.inv-addr-box { padding: 10px; min-width: 0; border-right: 1px solid #cbd5da; }
+.inv-addr-title { font-size: 12px; font-weight: 700; margin: -10px -10px 9px; padding: 7px 10px; background: #edf1f3; }
+
+.inv-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #cbd5da; }
+.inv-th { background: #edf1f3; padding: 8px 6px; font-size: 10px; font-weight: 700; text-align: left; border-bottom: 1px solid #cbd5da; border-right: 1px solid #cbd5da; }
+.inv-td { padding: 9px 6px; font-size: 10px; vertical-align: top; border-bottom: 1px solid #cbd5da; border-right: 1px solid #cbd5da; overflow-wrap: anywhere; }
+
+.inv-totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+.inv-totals-table { width: 280px; max-width: 100%; border-collapse: collapse; font-size: 11px; }
+.inv-totals-label { padding: 7px 9px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+.inv-totals-val { padding: 7px 9px; text-align: right; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+.inv-totals-grand { background: #e9edef; font-weight: bold; }
+
+.inv-words { font-size: 11px; margin-bottom: 22px; border-top: 1px solid #cbd5da; padding-top: 10px; overflow-wrap: anywhere; }
+.inv-footer { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; border-top: 1px solid #cbd5da; padding-top: 14px; }
+.inv-sign-for { font-size: 12px; font-weight: 700; margin: 0 0 30px; }
+.inv-sign-line { width: 145px; max-width: 100%; border-bottom: 1px solid #111; margin-bottom: 5px; }
+.inv-sign-label { font-size: 10px; color: #555; margin: 0; }
+.inv-footer-right { font-size: 10px; color: #263746; text-align: right; line-height: 1.6; overflow-wrap: anywhere; }
+
+/* ─── PACKING SLIP ─── */
+.pack-sheet { background: #fff; padding: 24px; max-width: 600px; width: 100%; margin: 0 auto; border: 1px solid #cbd0d3; color: #111827; }
+.pack-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 25px; }
+.pack-title { font-size: 17px; font-weight: 800; margin: 0; }
+.pack-meta { font-size: 11px; color: #263746; margin: 5px 0 0; }
+.pack-box { background: #fafafa; padding: 12px; border: 1px solid #d8dfe2; margin-bottom: 18px; min-width: 0; }
+.pack-box-title { font-size: 13px; font-weight: 700; margin: -12px -12px 10px; padding: 8px 12px; background: #edf1f3; }
+.pack-section-title { font-size: 14px; font-weight: 700; margin: 0 0 10px; }
+.pack-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; border: 1px solid #cbd5da; }
+.pack-th { background: #edf1f3; padding: 9px; font-size: 11px; font-weight: 700; text-align: left; border-bottom: 1px solid #cbd5da; border-right: 1px solid #cbd5da; }
+.pack-td { padding: 10px; font-size: 11px; vertical-align: top; border-bottom: 1px solid #cbd5da; border-right: 1px solid #cbd5da; overflow-wrap: anywhere; }
+.pack-footer { text-align: center; margin-top: 35px; font-size: 12px; font-weight: 600; color: #263746; }
+
+/* ─── SHIPPING LABEL (100x150mm) ─── */
+.label-sheet {
+  background: #fff; 
+  padding: 5mm; 
+  width: 100mm; 
+  height: 150mm; /* ✅ Changed from min-height to exact height */
+  margin: 0 auto;
+  border: 1px solid #cbd0d3; 
+  color: #111; 
+  box-sizing: border-box; 
+  display: flex; 
+  flex-direction: column;
+  page: shipping-label; 
+}
+.label-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; border-bottom: 1px solid #cbd0d3; padding-bottom: 10px; margin-bottom: 10px; }
+.label-brand { font-size: 25px; font-weight: 800; margin: 0; letter-spacing: -1px; }
+.label-courier { font-size: 13px; font-weight: 800; margin: 0; }
+.label-tracking-text { font-size: 10px; color: #333; margin: 3px 0; }
+.label-tracking-no { font-size: 11px; font-weight: 700; margin: 0; overflow-wrap: anywhere; }
+.barcode-wrap { text-align: center; margin: 12px 0; overflow: hidden; }
+.barcode-bars { display: flex; justify-content: center; align-items: flex-end; height: 48px; margin-bottom: 5px; overflow: hidden; }
+.barcode-num { font-size: 12px; font-family: monospace; letter-spacing: 2px; margin: 0; }
+.label-ship-to { display: flex; justify-content: space-between; gap: 6px; border-bottom: 1px solid #cbd0d3; padding-bottom: 12px; margin-bottom: 12px; }
+.label-section-title { font-size: 11px; font-weight: 700; margin: 0 0 7px; }
+.label-name { font-size: 12px; font-weight: 700; margin: 0 0 4px; }
+.label-addr { font-size: 11px; color: #111; margin: 3px 0; line-height: 1.4; white-space: pre-line; overflow-wrap: anywhere; }
+.label-details { margin-bottom: 12px; }
+.label-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.label-td-key { padding: 4px 0; color: #333; width: 85px; vertical-align: top; }
+.label-td-val { padding: 4px 0; font-weight: 600; overflow-wrap: anywhere; }
+.label-from { border-top: 1px solid #cbd0d3; padding-top: 10px; margin-bottom: 15px; }
+.label-cod { background: #202326; color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 11px 12px; margin-top: auto; }
+.label-cod-text { font-size: 16px; font-weight: 800; letter-spacing: 1px; }
+.label-cod-amt { font-size: 16px; font-weight: 800; white-space: nowrap; }
+
+/* ─── BUTTONS & ACTIONS ─── */
+.actions { text-align: center; padding: 15px; margin-top: 15px; }
+.btn-print { padding: 12px 25px; background: #202326; color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 14px; margin-right: 10px; }
+.btn-close { padding: 12px 24px; background: #fff; color: #111; border: 1px solid #111; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 14px; }
+
+/* ─── PRINT SPECIFIC RULES ─── */
+@media screen {
+  .print-document { margin-bottom: 40px; }
+}
+
+@media print {
+  body { background: #fff !important; }
+  .no-print { display: none !important; }
+  .page-break { page-break-after: always; break-after: page; }
+  .print-document { margin: 0 !important; }
+  
+  /* Global A4 page size */
+  @page { margin: 10mm; size: A4; }
+
+  /* Shipping Label Specific Page Size (100x150mm) */
+  @page shipping-label {
+    size: 100mm 150mm;
+    margin: 0;
+  }
+
+  /* When printing ONLY the label, reset wrapper and margins */
+  .label-mode {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+    min-height: 0 !important;
+    height: 150mm !important; /* ✅ Forced height to prevent overflow to page 2 */
+  }
+
+  /* Remove borders and enforce exact dimensions on the label during print */
+  .label-sheet {
+    width: 100% !important;
+    height: 100% !important; /* ✅ Fills the forced 150mm height perfectly */
+    min-height: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 5mm !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important; /* ✅ Prevents the printer from adding a blank 2nd page */
+  }
+}
